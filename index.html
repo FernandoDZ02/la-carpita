@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedidos La Carpita - Asistente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:linear-gradient(135deg,#ffe082,#ffca28);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding:20px 10px;
+    }
+    .app{
+      width:100%;
+      max-width:900px;
+      background:#ffffff;
+      border-radius:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.15);
+      overflow:hidden;
+    }
+    header{
+      padding:14px 18px;
+      background:#ffb300;
+      color:#3e2723;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    header h1{
+      font-size:1.2rem;
+      font-weight:700;
+    }
+    header span{
+      font-size:0.8rem;
+      opacity:0.8;
+    }
+    main{padding:16px 18px 20px;}
+
+    .steps{
+      display:flex;
+      justify-content:space-between;
+      gap:6px;
+      margin-bottom:14px;
+    }
+    .step-indicator{
+      flex:1;
+      text-align:center;
+      font-size:0.75rem;
+      padding:4px 6px;
+      border-radius:999px;
+      background:#f5f5f5;
+      color:#777;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+    }
+    .step-indicator span.circle{
+      width:18px;height:18px;border-radius:999px;
+      border:2px solid #bdbdbd;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:0.7rem;
+    }
+    .step-indicator.active{
+      background:#ffe082;
+      color:#e65100;
+      font-weight:600;
+    }
+    .step-indicator.active span.circle{
+      border-color:#ff8f00;
+      background:#ffb300;
+      color:#fff;
+    }
+
+    .step{
+      display:none;
+      animation:fadeIn .25s ease-out;
+    }
+    .step.active{display:block;}
+
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(4px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    h2{
+      font-size:1rem;
+      margin-bottom:8px;
+      color:#424242;
+    }
+    p.helper{
+      font-size:0.8rem;
+      color:#757575;
+      margin-bottom:10px;
+    }
+
+    .card{
+      background:#fafafa;
+      border-radius:14px;
+      padding:12px 14px;
+      border:1px solid #eee;
+      margin-bottom:10px;
+    }
+
+    label{
+      display:block;
+      font-size:0.8rem;
+      margin-top:6px;
+      margin-bottom:2px;
+      color:#555;
+    }
+    select,input[type="text"],input[type="number"],textarea{
+      width:100%;
+      padding:7px 8px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      font-size:0.85rem;
+      outline:none;
+      transition:border .15s,box-shadow .15s;
+      background:#fff;
+    }
+    select:focus,input:focus,textarea:focus{
+      border-color:#ffb300;
+      box-shadow:0 0 0 2px rgba(255,179,0,0.25);
+    }
+    textarea{
+      resize:vertical;
+      min-height:60px;
+    }
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .col{
+      flex:1 1 200px;
+    }
+
+    .radio-group{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:0.78rem;
+      margin-top:3px;
+    }
+    .radio-group label{
+      margin:0;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid #ddd;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      background:#fff;
+    }
+    .radio-group input{accent-color:#ff9800;}
+
+    .option-title{
+      font-size:0.8rem;
+      font-weight:600;
+      color:#5d4037;
+      margin-top:4px;
+    }
+    .note{
+      font-size:0.75rem;
+      color:#9e9e9e;
+      margin-top:4px;
+    }
+
+    button{
+      border:none;
+      border-radius:999px;
+      padding:9px 16px;
+      font-size:0.9rem;
+      font-weight:600;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      transition:background .15s,transform .1s,box-shadow .15s;
+    }
+    button:active{transform:scale(0.98);}
+    .btn-primary{
+      background:#ff9800;
+      color:#fff;
+      box-shadow:0 3px 10px rgba(255,152,0,0.35);
+    }
+    .btn-primary:hover{background:#fb8c00;}
+    .btn-secondary{
+      background:#eeeeee;
+      color:#424242;
+    }
+    .btn-secondary:hover{background:#e0e0e0;}
+
+    .actions{
+      margin-top:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:0.8rem;
+      margin-top:6px;
+    }
+    th,td{
+      padding:5px 6px;
+      border-bottom:1px solid #eee;
+      vertical-align:top;
+    }
+    th{background:#fffde7;text-align:left;color:#6d4c41;}
+    tfoot td{
+      font-weight:700;
+      border-top:1px solid #ddd;
+    }
+
+    .total-row{
+      font-size:0.95rem;
+    }
+    .total-final{
+      font-size:1rem;
+      color:#c62828;
+    }
+    .badge{
+      display:inline-block;
+      padding:2px 6px;
+      border-radius:999px;
+      background:#e0f2f1;
+      color:#00695c;
+      font-size:0.7rem;
+      margin-left:4px;
+    }
+
+    @media (max-width:600px){
+      header h1{font-size:1rem;}
+      .step-indicator{font-size:0.7rem;}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>Pedidos La Carpita</h1>
+      <span>Asistente paso a paso</span>
+    </div>
+    <div style="font-size:0.75rem;text-align:right;">
+      Envío: <strong>$10</strong> (opcional)
+    </div>
+  </header>
+
+  <main>
+    <!-- Indicador de pasos -->
+    <div class="steps">
+      <div class="step-indicator active" data-step-ind="1">
+        <span class="circle">1</span> Alimento
+      </div>
+      <div class="step-indicator" data-step-ind="2">
+        <span class="circle">2</span> Personalizar
+      </div>
+      <div class="step-indicator" data-step-ind="3">
+        <span class="circle">3</span> Confirmar
+      </div>
+      <div class="step-indicator" data-step-ind="4">
+        <span class="circle">4</span> Total y envío
+      </div>
+    </div>
+
+    <!-- PASO 1 -->
+    <section class="step active" id="step1">
+      <h2>Paso 1 · Elige el alimento</h2>
+      <p class="helper">Selecciona la categoría y el alimento que vas a agregar al pedido.</p>
+
+      <div class="card">
+        <div class="row">
+          <div class="col">
+            <label for="categoria">Categoría</label>
+            <select id="categoria">
+              <option value="individual">Individuales</option>
+              <option value="banderillas">Banderillas</option>
+              <option value="mini">Mini banderillas</option>
+              <option value="papas">Papas solas</option>
+              <option value="super">Súper Combos (2 alimentos + papas)</option>
+              <option value="mega">Mega Combos</option>
+              <option value="extra">Extras</option>
+            </select>
+          </div>
+          <div class="col">
+            <label for="producto">Alimento</label>
+            <select id="producto"></select>
+          </div>
+        </div>
+        <p class="note">Cada vez que continúes se agregará <strong>1</strong> unidad de este alimento. Si el cliente quiere más, simplemente lo agregas de nuevo.</p>
+      </div>
+
+      <div class="actions">
+        <span></span>
+        <button class="btn-primary" id="btnPaso1">
+          Siguiente · Personalizar →
+        </button>
+      </div>
+    </section>
+
+    <!-- PASO 2 -->
+    <section class="step" id="step2">
+      <h2>Paso 2 · Personaliza el alimento</h2>
+      <p class="helper">Aderezos, papas y salsas según el tipo de alimento.</p>
+
+      <!-- Tarjeta de opciones -->
+      <div class="card">
+
+        <!-- Aderezo individual -->
+        <div id="seccionAderezoIndividual">
+          <div class="option-title">Aderezo del alimento (incluye 1)</div>
+          <label for="aderezoPrincipal">Aderezo incluido</label>
+          <select id="aderezoPrincipal"></select>
+
+          <label class="option-title">¿Cómo va el aderezo?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="modoAderezoPrincipal" value="Untado" checked> Untado</label>
+            <label><input type="radio" name="modoAderezoPrincipal" value="Aparte"> Aparte</label>
+            <label><input type="radio" name="modoAderezoPrincipal" value="Sin"> Solo (sin aderezo)</label>
+          </div>
+
+          <div style="margin-top:6px;">
+            <label style="font-size:0.8rem;">
+              <input type="checkbox" id="chkDobleAderezo">
+              Agregar doble aderezo (+$8)
+            </label>
+          </div>
+
+          <div id="seccionDobleAderezo" style="display:none;margin-top:6px;">
+            <label for="aderezoExtra">Segundo aderezo</label>
+            <select id="aderezoExtra"></select>
+
+            <label class="option-title">¿Cómo va el segundo aderezo?</label>
+            <div class="radio-group">
+              <label><input type="radio" name="modoAderezoExtra" value="Untado" checked> Untado</label>
+              <label><input type="radio" name="modoAderezoExtra" value="Aparte"> Aparte</label>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px dashed #e0e0e0;margin:10px 0;">
+        </div>
+
+        <!-- Papas (tipo y salsas) -->
+        <div id="seccionTipoPapas">
+          <div class="option-title">Papas del alimento</div>
+          <label for="tipoPapa">Tipo de papa</label>
+          <select id="tipoPapa">
+            <option value="Francesa" data-extra="0">Francesa (incluida)</option>
+            <option value="Curly" data-extra="8">Curly (+$8)</option>
+            <option value="Waffle" data-extra="8">Waffle (+$8)</option>
+            <option value="Gajo" data-extra="8">Gajo (+$8)</option>
+          </select>
+          <p class="note">Cambio de tipo de papa tiene costo adicional de $8.</p>
+        </div>
+
+        <div id="seccionCondimentosPapas" style="margin-top:8px;">
+          <div class="option-title">Queso, catsup y salsa en las papas</div>
+          <div class="row">
+            <div class="col">
+              <label>Queso</label>
+              <div class="radio-group">
+                <label><input type="radio" name="quesoPapa" value="Untado" checked> Untado</label>
+                <label><input type="radio" name="quesoPapa" value="Aparte"> Aparte</label>
+                <label><input type="radio" name="quesoPapa" value="Sin"> Solas (sin queso)</label>
+              </div>
+            </div>
+            <div class="col">
+              <label>Catsup</label>
+              <div class="radio-group">
+                <label><input type="radio" name="catsupPapa" value="Untado" checked> Untado</label>
+                <label><input type="radio" name="catsupPapa" value="Aparte"> Aparte</label>
+                <label><input type="radio" name="catsupPapa" value="Sin"> Solas (sin catsup)</label>
+              </div>
+            </div>
+            <div class="col">
+              <label>Salsa</label>
+              <div class="radio-group">
+                <label><input type="radio" name="salsaPapa" value="Untado" checked> Untado</label>
+                <label><input type="radio" name="salsaPapa" value="Aparte"> Aparte</label>
+                <label><input type="radio" name="salsaPapa" value="Sin"> Solas (sin salsa)</label>
+              </div>
+            </div>
+          </div>
+          <hr style="border:none;border-top:1px dashed #e0e0e0;margin:10px 0;">
+        </div>
+
+        <!-- Mini banderillas / banderillas -->
+        <div id="seccionMiniBanderillas">
+          <div class="option-title">Mini banderillas / Banderillas</div>
+          <p class="note">Incluyen queso, catsup, mayonesa y salsa. Elige si van untados, aparte o solas.</p>
+          <div class="row">
+            <div class="col">
+              <label>Queso</label>
+              <div class="radio-group">
+                <label><input type="radio" name="quesoMini" value="Untado" checked> Untado</label>
+                <label><input type="radio" name="quesoMini" value="Aparte"> Aparte</label>
+                <label><input type="radio" name="quesoMini" value="Sin"> Sin</label>
+              </div>
+            </div>
+            <div class="col">
+              <label>Catsup</label>
+              <div class="radio-group">
+                <label><input type="radio" name="catsupMini" value="Untado" checked> Untado</label>
+                <label><input type="radio" name="catsupMini" value="Aparte"> Aparte</label>
+                <label><input type="radio" name="catsupMini" value="Sin"> Sin</label>
+              </div>
+            </div>
+            <div class="col">
+              <label>Mayonesa</label>
+              <div class="radio-group">
+                <label><input type="radio" name="mayoMini" value="Untado" checked> Untado</label>
+                <label><input type="radio" name="mayoMini" value="Aparte"> Aparte</label>
+                <label><input type="radio" name="mayoMini" value="Sin"> Sin</label>
+              </div>
+            </div>
+            <div class="col">
+              <label>Salsa</label>
+              <div class="radio-group">
+                <label><input type="radio" name="salsaMini" value="Untado" checked> Untado</label>
+                <label><input type="radio" name="salsaMini" value="Aparte"> Aparte</label>
+                <label><input type="radio" name="salsaMini" value="Sin"> Sin</label>
+              </div>
+            </div>
+          </div>
+          <hr style="border:none;border-top:1px dashed #e0e0e0;margin:10px 0;">
+        </div>
+
+        <!-- Aderezos para combos -->
+        <div id="seccionAderezosCombo">
+          <div class="option-title">Aderezos por alimento del combo</div>
+          <div id="contenedorAderezosCombo"></div>
+          <p class="note">Cada alimento del combo incluye 1 aderezo. Si se marca doble aderezo se agregan $8 por cada alimento con extra.</p>
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button class="btn-secondary" id="btnBack2">← Volver</button>
+        <button class="btn-primary" id="btnPaso2">Siguiente · Confirmar alimento →</button>
+      </div>
+    </section>
+
+    <!-- PASO 3 -->
+    <section class="step" id="step3">
+      <h2>Paso 3 · Revisa este alimento</h2>
+      <p class="helper">Confirma que esté correcto antes de agregarlo al pedido.</p>
+
+      <div class="card">
+        <div id="resumenItemActual" style="font-size:0.85rem;white-space:pre-line;"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-secondary" id="btnBack3">← Editar opciones</button>
+        <button class="btn-primary" id="btnAgregar">
+          Agregar este alimento al pedido +
+        </button>
+      </div>
+    </section>
+
+    <!-- PASO 4 -->
+    <section class="step" id="step4">
+      <h2>Paso 4 · Total, envío y pago</h2>
+      <p class="helper">Aquí ves todo el pedido. Puedes agregar más alimentos o enviar directo a WhatsApp.</p>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div style="font-size:0.85rem;">
+            Pedido actual <span class="badge" id="badgeItems">0 alimentos</span>
+          </div>
+          <button class="btn-secondary" id="btnAgregarOtro">+ Agregar otro alimento</button>
+        </div>
+
+        <table>
+          <thead>
+          <tr>
+            <th>Alimento</th>
+            <th>Precio</th>
+          </tr>
+          </thead>
+          <tbody id="detallePedido"></tbody>
+          <tfoot>
+          <tr class="total-row">
+            <td>Subtotal alimentos</td>
+            <td id="subtotal">$0.00</td>
+          </tr>
+          <tr class="total-row">
+            <td>
+              <label style="font-size:0.8rem;">
+                <input type="checkbox" id="chkEnvio">
+                Envío a domicilio (+$10)
+              </label>
+            </td>
+            <td id="costoEnvio">$0.00</td>
+          </tr>
+          <tr class="total-row">
+            <td>Total a pagar</td>
+            <td id="totalGeneral" class="total-final">$0.00</td>
+          </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div class="col">
+            <label for="metodoPago">Método de pago</label>
+            <select id="metodoPago">
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Tarjeta">Tarjeta</option>
+            </select>
+          </div>
+          <div class="col">
+            <label for="pagaCon">Si paga en efectivo, ¿con cuánto?</label>
+            <input type="number" id="pagaCon" min="0" step="1" placeholder="Ej. 200">
+            <div id="textoCambio" class="note"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div class="col">
+            <label for="nombreCliente">Nombre del cliente (opcional)</label>
+            <input type="text" id="nombreCliente" placeholder="">
+          </div>
+          <div class="col">
+            <label for="telefonoCliente">Teléfono del cliente (opcional)</label>
+            <input type="text" id="telefonoCliente" placeholder="">
+          </div>
+        </div>
+        <label for="direccionCliente">Dirección / punto de entrega</label>
+        <textarea id="direccionCliente" placeholder="Calle, número, colonia..."></textarea>
+
+        <label for="referenciaCliente">Referencias adicionales</label>
+        <textarea id="referenciaCliente" placeholder="Color de casa, entre calles, piso, etc."></textarea>
+
+        <div class="actions">
+          <button class="btn-secondary" id="btnLimpiar">Vaciar pedido</button>
+          <button class="btn-primary" id="btnWhatsApp">Enviar pedido a WhatsApp 📲</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const COSTO_DOBLE_ADEREZO = 8;
+  const COSTO_ENVIO = 10;
+  const NUM_WHATSAPP_LA_CARPITA = "525561375307"; // 52 + 10 dígitos
+
+  const ADEREZOS = [
+    "Ranch",
+    "Mango habanero",
+    "Buffalo",
+    "Miel habanero",
+    "Koreana",
+    "BBQ",
+    "Ranch habanero"
+  ];
+
+  const PRODUCTOS = [
+    // INDIVIDUALES
+    {id:"boneless", nombre:"Boneless", categoria:"individual", precio:65, incluyePapas:false, tieneAderezo:true},
+    {id:"boneless_papas", nombre:"Boneless con papas", categoria:"individual", precio:80, incluyePapas:true, tieneAderezo:true},
+
+    {id:"tenders", nombre:"Tenders (5pz)", categoria:"individual", precio:65, incluyePapas:false, tieneAderezo:true},
+    {id:"tenders_papas", nombre:"Tenders (5pz) con papas", categoria:"individual", precio:80, incluyePapas:true, tieneAderezo:true},
+
+    {id:"alitas_ch", nombre:"Alitas chicas (6pz)", categoria:"individual", precio:70, incluyePapas:false, tieneAderezo:true},
+    {id:"alitas_ch_papas", nombre:"Alitas chicas (6pz) con papas", categoria:"individual", precio:85, incluyePapas:true, tieneAderezo:true},
+
+    {id:"alitas_gd", nombre:"Alitas grandes (14pz)", categoria:"individual", precio:140, incluyePapas:false, tieneAderezo:true},
+    {id:"alitas_gd_papas", nombre:"Alitas grandes (14pz) con papas", categoria:"individual", precio:170, incluyePapas:true, tieneAderezo:true},
+
+    {id:"palomitas", nombre:"Palomitas", categoria:"individual", precio:65, incluyePapas:false, tieneAderezo:true},
+    {id:"palomitas_papas", nombre:"Palomitas con papas", categoria:"individual", precio:80, incluyePapas:true, tieneAderezo:true},
+
+    {id:"dedos_ch", nombre:"Dedos de queso chicos (6pz)", categoria:"individual", precio:60, incluyePapas:false, tieneAderezo:true},
+    {id:"dedos_ch_papas", nombre:"Dedos de queso chicos (6pz) con papas", categoria:"individual", precio:75, incluyePapas:true, tieneAderezo:true},
+
+    {id:"dedos_gd", nombre:"Dedos de queso grandes (14pz)", categoria:"individual", precio:115, incluyePapas:false, tieneAderezo:true},
+    {id:"dedos_gd_papas", nombre:"Dedos de queso grandes (14pz) con papas", categoria:"individual", precio:140, incluyePapas:true, tieneAderezo:true},
+
+    // BANDERILLAS
+    {id:"band_salchicha", nombre:"Banderilla de salchicha", categoria:"banderillas", precio:25, incluyePapas:false, tieneAderezo:false},
+    {id:"band_queso", nombre:"Banderilla de queso", categoria:"banderillas", precio:30, incluyePapas:false, tieneAderezo:false},
+    {id:"band_combinada", nombre:"Banderilla combinada", categoria:"banderillas", precio:35, incluyePapas:false, tieneAderezo:false},
+
+    // MINI BANDERILLAS
+    {id:"mini_sal_sola", nombre:"Mini banderillas salchicha (6pz) solas", categoria:"mini", precio:50, incluyePapas:false, tieneAderezo:false},
+    {id:"mini_sal_papas", nombre:"Mini banderillas salchicha (6pz) con papas", categoria:"mini", precio:65, incluyePapas:true, tieneAderezo:false},
+
+    {id:"mini_queso_sola", nombre:"Mini banderillas queso (6pz) solas", categoria:"mini", precio:60, incluyePapas:false, tieneAderezo:false},
+    {id:"mini_queso_papas", nombre:"Mini banderillas queso (6pz) con papas", categoria:"mini", precio:75, incluyePapas:true, tieneAderezo:false},
+
+    {id:"mini_comb_sola", nombre:"Mini banderillas combinadas (6pz) solas", categoria:"mini", precio:65, incluyePapas:false, tieneAderezo:false},
+    {id:"mini_comb_papas", nombre:"Mini banderillas combinadas (6pz) con papas", categoria:"mini", precio:80, incluyePapas:true, tieneAderezo:false},
+
+    // PAPAS SOLAS
+    {id:"papas_francesa", nombre:"Papas a la francesa", categoria:"papas", precio:50, incluyePapas:true, tieneAderezo:false},
+    {id:"papas_curly", nombre:"Papas curly", categoria:"papas", precio:60, incluyePapas:true, tieneAderezo:false},
+    {id:"papas_waffle", nombre:"Papas waffle", categoria:"papas", precio:60, incluyePapas:true, tieneAderezo:false},
+    {id:"papas_gajo", nombre:"Papas gajo", categoria:"papas", precio:60, incluyePapas:true, tieneAderezo:false},
+
+    // SUPER COMBOS
+    {id:"combo1", nombre:"Súper Combo 1 (Boneless + Alitas + papas)", categoria:"super", precio:145, incluyePapas:true, esCombo:true, alimentos:["Boneless","Alitas"]},
+    {id:"combo2", nombre:"Súper Combo 2 (Tenders + Boneless + papas)", categoria:"super", precio:135, incluyePapas:true, esCombo:true, alimentos:["Tenders","Boneless"]},
+    {id:"combo3", nombre:"Súper Combo 3 (Dedos de queso + Palomitas + papas)", categoria:"super", precio:115, incluyePapas:true, esCombo:true, alimentos:["Dedos de queso","Palomitas"]},
+    {id:"combo4", nombre:"Súper Combo 4 (Dedos de queso + Boneless + papas)", categoria:"super", precio:135, incluyePapas:true, esCombo:true, alimentos:["Dedos de queso","Boneless"]},
+    {id:"combo5", nombre:"Súper Combo 5 (Alitas + Palomitas + papas)", categoria:"super", precio:130, incluyePapas:true, esCombo:true, alimentos:["Alitas","Palomitas"]},
+    {id:"combo6", nombre:"Súper Combo 6 (Palomitas + Tenders + papas)", categoria:"super", precio:125, incluyePapas:true, esCombo:true, alimentos:["Palomitas","Tenders"]},
+
+    // MEGA COMBOS
+    {id:"mega1", nombre:"Mega 1 (Boneless + Alitas + Dedos de queso) - sin papas", categoria:"mega", precio:180, incluyePapas:false, esCombo:true, alimentos:["Boneless","Alitas","Dedos de queso"]},
+    {id:"mega2", nombre:"Mega 2 (Tenders + Palomitas + Boneless) - sin papas", categoria:"mega", precio:170, incluyePapas:false, esCombo:true, alimentos:["Tenders","Palomitas","Boneless"]},
+    {id:"supermega", nombre:"Súper Mega (Tenders + Dedos de queso + Boneless + papas)", categoria:"mega", precio:195, incluyePapas:true, esCombo:true, alimentos:["Tenders","Dedos de queso","Boneless"]},
+
+    // EXTRAS
+    {id:"extra_aderezo", nombre:"Vaso extra de aderezo (2 onzas)", categoria:"extra", precio:8, incluyePapas:false, tieneAderezo:false}
+  ];
+
+  let pasoActual = 1;
+  const carrito = [];
+  let itemPendiente = null;
+
+  function irPaso(n){
+    pasoActual = n;
+    document.querySelectorAll(".step").forEach(s=>{
+      s.classList.toggle("active", s.id === "step"+n);
+    });
+    document.querySelectorAll(".step-indicator").forEach(ind=>{
+      const num = parseInt(ind.getAttribute("data-step-ind"));
+      ind.classList.toggle("active", num === n);
+    });
+  }
+
+  function cargarAderezosEnSelect(select){
+    select.innerHTML = "";
+    ADEREZOS.forEach(a=>{
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.textContent = a;
+      select.appendChild(opt);
+    });
+  }
+
+  function filtrarProductosPorCategoria(cat){
+    return PRODUCTOS.filter(p=>p.categoria===cat);
+  }
+
+  function obtenerProductoPorId(id){
+    return PRODUCTOS.find(p=>p.id===id);
+  }
+
+  function actualizarProductos(){
+    const cat = document.getElementById("categoria").value;
+    const lista = filtrarProductosPorCategoria(cat);
+    const selectProducto = document.getElementById("producto");
+    selectProducto.innerHTML = "";
+    lista.forEach(p=>{
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = `${p.nombre} - $${p.precio}`;
+      selectProducto.appendChild(opt);
+    });
+    actualizarOpcionesSegunProducto();
+  }
+
+  function ocultarSeccionesOpciones(){
+    document.getElementById("seccionAderezoIndividual").style.display = "none";
+    document.getElementById("seccionDobleAderezo").style.display = "none";
+    document.getElementById("chkDobleAderezo").checked = false;
+
+    document.getElementById("seccionTipoPapas").style.display = "none";
+    document.getElementById("seccionCondimentosPapas").style.display = "none";
+    document.getElementById("seccionMiniBanderillas").style.display = "none";
+    document.getElementById("seccionAderezosCombo").style.display = "none";
+    document.getElementById("contenedorAderezosCombo").innerHTML = "";
+  }
+
+  function actualizarOpcionesSegunProducto(){
+    ocultarSeccionesOpciones();
+    const idProd = document.getElementById("producto").value;
+    const prod = obtenerProductoPorId(idProd);
+    if(!prod) return;
+
+    if(prod.tieneAderezo && !prod.esCombo){
+      document.getElementById("seccionAderezoIndividual").style.display = "block";
+    }
+
+    if(prod.incluyePapas){
+      if(prod.categoria === "papas"){
+        document.getElementById("seccionTipoPapas").style.display = "none";
+      }else{
+        document.getElementById("seccionTipoPapas").style.display = "block";
+      }
+      document.getElementById("seccionCondimentosPapas").style.display = "block";
+    }
+
+    if(prod.categoria==="mini" || prod.categoria==="banderillas"){
+      document.getElementById("seccionMiniBanderillas").style.display = "block";
+    }
+
+    if(prod.esCombo){
+      document.getElementById("seccionAderezosCombo").style.display = "block";
+      construirCamposAderezosCombo(prod);
+    }
+  }
+
+  function construirCamposAderezosCombo(prod){
+    const cont = document.getElementById("contenedorAderezosCombo");
+    cont.innerHTML = "";
+    prod.alimentos.forEach((alimento, index)=>{
+      const div = document.createElement("div");
+      div.style.borderBottom="1px dashed #e0e0e0";
+      div.style.paddingBottom="6px";
+      div.style.marginBottom="6px";
+
+      const t = document.createElement("div");
+      t.textContent = `• ${alimento}`;
+      t.style.fontSize="0.82rem";
+      t.style.fontWeight="600";
+      t.style.color="#5d4037";
+      div.appendChild(t);
+
+      const labelSel = document.createElement("label");
+      labelSel.textContent = "Aderezo incluido";
+      div.appendChild(labelSel);
+
+      const sel = document.createElement("select");
+      sel.id = `combo_aderezo_${index}`;
+      sel.style.width="100%";
+      ADEREZOS.forEach(a=>{
+        const opt = document.createElement("option");
+        opt.value=a;
+        opt.textContent=a;
+        sel.appendChild(opt);
+      });
+      div.appendChild(sel);
+
+      const rg = document.createElement("div");
+      rg.className="radio-group";
+      rg.style.marginTop="4px";
+      rg.innerHTML = `
+        <label><input type="radio" name="combo_modo_${index}" value="Untado" checked> Untado</label>
+        <label><input type="radio" name="combo_modo_${index}" value="Aparte"> Aparte</label>
+        <label><input type="radio" name="combo_modo_${index}" value="Sin"> Solo (sin aderezo)</label>
+      `;
+      div.appendChild(rg);
+
+      const chkDiv = document.createElement("div");
+      chkDiv.style.marginTop="4px";
+      chkDiv.innerHTML = `
+        <label style="font-size:0.78rem;">
+          <input type="checkbox" id="combo_doble_${index}"> Doble aderezo (+$${COSTO_DOBLE_ADEREZO})
+        </label>
+      `;
+      div.appendChild(chkDiv);
+
+      const extraDiv = document.createElement("div");
+      extraDiv.id = `combo_extra_container_${index}`;
+      extraDiv.style.display="none";
+      extraDiv.style.marginTop="4px";
+      extraDiv.innerHTML = `
+        <label style="font-size:0.78rem;">Segundo aderezo</label>
+        <select id="combo_aderezo_extra_${index}" style="width:100%;margin-top:2px;">
+          ${ADEREZOS.map(a=>`<option value="${a}">${a}</option>`).join("")}
+        </select>
+        <div class="radio-group" style="margin-top:4px;">
+          <label><input type="radio" name="combo_modo_extra_${index}" value="Untado" checked> Untado</label>
+          <label><input type="radio" name="combo_modo_extra_${index}" value="Aparte"> Aparte</label>
+        </div>
+      `;
+      div.appendChild(extraDiv);
+
+      cont.appendChild(div);
+
+      document.getElementById(`combo_doble_${index}`).addEventListener("change", e=>{
+        extraDiv.style.display = e.target.checked ? "block" : "none";
+      });
+    });
+  }
+
+  function descripcionPapas(prod){
+    if(!prod.incluyePapas) return "";
+    let texto = "";
+
+    if(prod.categoria === "papas"){
+      texto += " | Papas con ";
+    }else{
+      const selTipo = document.getElementById("tipoPapa");
+      const tipo = selTipo.value;
+      texto += ` | Papas tipo ${tipo} con `;
+    }
+
+    const queso = document.querySelector('input[name="quesoPapa"]:checked').value;
+    const catsup = document.querySelector('input[name="catsupPapa"]:checked').value;
+    const salsa = document.querySelector('input[name="salsaPapa"]:checked').value;
+
+    texto += `queso: ${queso}, catsup: ${catsup}, salsa: ${salsa}`;
+    return texto;
+  }
+
+  function descripcionMiniBanderillas(prod){
+    if(!(prod.categoria==="mini" || prod.categoria==="banderillas")) return "";
+    const queso = document.querySelector('input[name="quesoMini"]:checked').value;
+    const catsup = document.querySelector('input[name="catsupMini"]:checked').value;
+    const mayo = document.querySelector('input[name="mayoMini"]:checked').value;
+    const salsa = document.querySelector('input[name="salsaMini"]:checked').value;
+    return ` | Queso: ${queso}, Catsup: ${catsup}, Mayonesa: ${mayo}, Salsa: ${salsa}`;
+  }
+
+  function construirItemActual(){
+    const idProd = document.getElementById("producto").value;
+    const prod = obtenerProductoPorId(idProd);
+    if(!prod) return null;
+
+    let descripcion = prod.nombre;
+    let precio = prod.precio;
+    let extras = 0;
+
+    if(prod.tieneAderezo && !prod.esCombo){
+      const ad1 = document.getElementById("aderezoPrincipal").value;
+      const modo1 = document.querySelector('input[name="modoAderezoPrincipal"]:checked').value;
+      descripcion += ` | Aderezo: ${ad1} (${modo1})`;
+
+      if(document.getElementById("chkDobleAderezo").checked){
+        const ad2 = document.getElementById("aderezoExtra").value;
+        const modo2 = document.querySelector('input[name="modoAderezoExtra"]:checked').value;
+        descripcion += ` | Doble aderezo: ${ad2} (${modo2})`;
+        extras += COSTO_DOBLE_ADEREZO;
+      }
+    }
+
+    if(prod.esCombo){
+      prod.alimentos.forEach((alimento, index)=>{
+        const ad = document.getElementById(`combo_aderezo_${index}`).value;
+        const modo = document.querySelector(`input[name="combo_modo_${index}"]:checked`).value;
+        descripcion += ` | ${alimento} con aderezo ${ad} (${modo})`;
+
+        const chkDob = document.getElementById(`combo_doble_${index}`);
+        if(chkDob && chkDob.checked){
+          const adEx = document.getElementById(`combo_aderezo_extra_${index}`).value;
+          const modoEx = document.querySelector(`input[name="combo_modo_extra_${index}"]:checked`).value;
+          descripcion += ` | ${alimento} doble aderezo: ${adEx} (${modoEx})`;
+          extras += COSTO_DOBLE_ADEREZO;
+        }
+      });
+    }
+
+    descripcion += descripcionPapas(prod);
+    descripcion += descripcionMiniBanderillas(prod);
+
+    if(prod.incluyePapas && prod.categoria!=="papas"){
+      const selTipo = document.getElementById("tipoPapa");
+      const extra = parseFloat(selTipo.options[selTipo.selectedIndex].dataset.extra || "0");
+      extras += extra;
+    }
+
+    precio += extras;
+    return {descripcion, precio};
+  }
+
+  function refrescarTabla(){
+    const tbody = document.getElementById("detallePedido");
+    tbody.innerHTML = "";
+    carrito.forEach((item, idx)=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${idx+1}) ${item.descripcion}</td>
+        <td>$${item.precio.toFixed(2)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+    document.getElementById("badgeItems").textContent = `${carrito.length} alimento${carrito.length!==1?"s":""}`;
+
+    const subtotal = carrito.reduce((s,it)=>s+it.precio,0);
+    const envioActivado = document.getElementById("chkEnvio").checked;
+    const costoEnvio = envioActivado ? COSTO_ENVIO : 0;
+    const total = subtotal + costoEnvio;
+
+    document.getElementById("subtotal").textContent = "$"+subtotal.toFixed(2);
+    document.getElementById("costoEnvio").textContent = "$"+costoEnvio.toFixed(2);
+    document.getElementById("totalGeneral").textContent = "$"+total.toFixed(2);
+
+    actualizarCambio();
+  }
+
+  function actualizarCambio(){
+    const subtotal = carrito.reduce((s,it)=>s+it.precio,0);
+    const envioActivado = document.getElementById("chkEnvio").checked;
+    const costoEnvio = envioActivado ? COSTO_ENVIO : 0;
+    const total = subtotal + costoEnvio;
+
+    const pagaCon = parseFloat(document.getElementById("pagaCon").value);
+    const texto = document.getElementById("textoCambio");
+    if(isNaN(pagaCon) || pagaCon<=0){
+      texto.textContent = "";
+      return;
+    }
+    if(pagaCon < total){
+      const falta = (total - pagaCon).toFixed(2);
+      texto.textContent = `Faltan $${falta} para completar el total.`;
+    }else{
+      const cambio = (pagaCon - total).toFixed(2);
+      texto.textContent = `Cambio: $${cambio}`;
+    }
+  }
+
+  function limpiarPedido(){
+    carrito.length = 0;
+    document.getElementById("chkEnvio").checked = false;
+    document.getElementById("pagaCon").value = "";
+    document.getElementById("textoCambio").textContent = "";
+    refrescarTabla();
+  }
+
+  // Eventos de pasos
+  document.getElementById("categoria").addEventListener("change", actualizarProductos);
+  document.getElementById("producto").addEventListener("change", actualizarOpcionesSegunProducto);
+
+  document.getElementById("chkDobleAderezo").addEventListener("change", e=>{
+    document.getElementById("seccionDobleAderezo").style.display = e.target.checked ? "block" : "none";
+  });
+
+  document.getElementById("btnPaso1").addEventListener("click", ()=>{
+    if(!document.getElementById("producto").value){
+      alert("Selecciona un alimento.");
+      return;
+    }
+    actualizarOpcionesSegunProducto();
+    irPaso(2);
+  });
+
+  document.getElementById("btnBack2").addEventListener("click", ()=>irPaso(1));
+
+  document.getElementById("btnPaso2").addEventListener("click", ()=>{
+    const item = construirItemActual();
+    if(!item){alert("Selecciona un alimento.");return;}
+    itemPendiente = item;
+    const texto = `Alimento:\n• ${item.descripcion}\n\nPrecio:\n• $${item.precio.toFixed(2)}`;
+    document.getElementById("resumenItemActual").textContent = texto;
+    irPaso(3);
+  });
+
+  document.getElementById("btnBack3").addEventListener("click", ()=>irPaso(2));
+
+  document.getElementById("btnAgregar").addEventListener("click", ()=>{
+    if(!itemPendiente){alert("No hay alimento para agregar.");return;}
+    carrito.push({...itemPendiente});
+    refrescarTabla();
+    irPaso(4);
+  });
+
+  document.getElementById("btnAgregarOtro").addEventListener("click", ()=>{
+    itemPendiente = null;
+    irPaso(1);
+  });
+
+  document.getElementById("chkEnvio").addEventListener("change", refrescarTabla);
+  document.getElementById("pagaCon").addEventListener("input", actualizarCambio);
+
+  document.getElementById("btnLimpiar").addEventListener("click", ()=>{
+    if(confirm("¿Vaciar todo el pedido?")){
+      limpiarPedido();
+    }
+  });
+
+  document.getElementById("btnWhatsApp").addEventListener("click", ()=>{
+    if(carrito.length===0){
+      alert("Agrega al menos un alimento al pedido.");
+      return;
+    }
+    const subtotal = carrito.reduce((s,it)=>s+it.precio,0);
+    const envioActivado = document.getElementById("chkEnvio").checked;
+    const costoEnvio = envioActivado ? COSTO_ENVIO : 0;
+    const total = subtotal + costoEnvio;
+
+    const metodoPago = document.getElementById("metodoPago").value;
+    const pagaCon = document.getElementById("pagaCon").value;
+
+    let mensaje = "Nuevo pedido La Carpita%0A%0A";
+    carrito.forEach((item, idx)=>{
+      mensaje += `${idx+1}) ${item.descripcion} | $${item.precio.toFixed(2)}%0A`;
+    });
+
+    mensaje += `%0ASubtotal alimentos: $${subtotal.toFixed(2)}%0A`;
+    mensaje += `Envío a domicilio: ${envioActivado ? "$"+costoEnvio.toFixed(2) : "No"}%0A`;
+    mensaje += `Total a pagar: $${total.toFixed(2)}%0A`;
+    mensaje += `Método de pago: ${metodoPago}%0A`;
+    if(pagaCon){
+      mensaje += `Paga con: $${pagaCon}%0A`;
+    }
+
+    const nombre = document.getElementById("nombreCliente").value;
+    const tel = document.getElementById("telefonoCliente").value;
+    const direccion = document.getElementById("direccionCliente").value;
+    const referencia = document.getElementById("referenciaCliente").value;
+
+    if(nombre) mensaje += `%0ANombre: ${encodeURIComponent(nombre)}%0A`;
+    if(tel) mensaje += `Teléfono: ${encodeURIComponent(tel)}%0A`;
+    if(direccion) mensaje += `%0ADirección: ${encodeURIComponent(direccion)}%0A`;
+    if(referencia) mensaje += `Referencia: ${encodeURIComponent(referencia)}%0A`;
+
+    mensaje += "%0A¡Todo preparado al momento!";
+
+    const url = `https://wa.me/${NUM_WHATSAPP_LA_CARPITA}?text=${mensaje}`;
+    window.open(url,"_blank");
+  });
+
+  window.addEventListener("DOMContentLoaded", ()=>{
+    cargarAderezosEnSelect(document.getElementById("aderezoPrincipal"));
+    cargarAderezosEnSelect(document.getElementById("aderezoExtra"));
+    actualizarProductos();
+    refrescarTabla();
+  });
+</script>
+</body>
+</html>
