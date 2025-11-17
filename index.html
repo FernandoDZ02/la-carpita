@@ -1629,7 +1629,15 @@ if (prod.incluyePapas) {
     msg += `Subtotal: $${subtotal.toFixed(2)}\n`;
     msg += `Envío: ${envio ? "$10 🚚" : "No aplica"}\n`;
     msg += `TOTAL: $${total.toFixed(2)}\n\n`;
-    msg += "Gracias por tu pedido 😄";
+    // Dirección escrita o ubicación de Google Maps
+const direccion = document.getElementById("direccionCliente").value.trim();
+
+if (direccion !== "") {
+    msg += `📍 Ubicación / Dirección:\n${direccion}\n\n`;
+}
+
+msg += "Gracias por tu pedido 😄";
+
 
     window.open(`https://wa.me/${NUM_WHATSAPP_LA_CARPITA}?text=${encodeURIComponent(msg)}`);
 }
@@ -1733,3 +1741,4 @@ if (prod.incluyePapas) {
 </script>
 </body>
 </html>
+
