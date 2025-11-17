@@ -5,250 +5,705 @@
   <title>Pedidos La Carpita - Asistente</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:linear-gradient(135deg,#ffe082,#ffca28);
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      padding:20px 10px;
-    }
-    .app{
-      width:100%;
-      max-width:900px;
-      background:#ffffff;
-      border-radius:18px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.15);
-      overflow:hidden;
-    }
-    header{
-      padding:14px 18px;
-      background:#ffb300;
-      color:#3e2723;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-    header h1{
-      font-size:1.2rem;
-      font-weight:700;
-    }
-    header span{
-      font-size:0.8rem;
-      opacity:0.8;
-    }
-    main{padding:16px 18px 20px;}
+<style>
+/* =============== RESET =============== */
+*{box-sizing:border-box;margin:0;padding:0;}
 
-    .steps{
-      display:flex;
-      justify-content:space-between;
-      gap:6px;
-      margin-bottom:14px;
-    }
-    .step-indicator{
-      flex:1;
-      text-align:center;
-      font-size:0.75rem;
-      padding:4px 6px;
-      border-radius:999px;
-      background:#f5f5f5;
-      color:#777;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:4px;
-    }
-    .step-indicator span.circle{
-      width:18px;height:18px;border-radius:999px;
-      border:2px solid #bdbdbd;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-size:0.7rem;
-    }
-    .step-indicator.active{
-      background:#ffe082;
-      color:#e65100;
-      font-weight:600;
-    }
-    .step-indicator.active span.circle{
-      border-color:#ff8f00;
-      background:#ffb300;
-      color:#fff;
-    }
+/* =============== THEME VARIABLES =============== */
+:root{
+  --bg-body: linear-gradient(135deg,#ffe082,#ffca28);
+  --text-color:#3e2723;
+  --app-bg:#ffffff;
+  --header-bg:#ffb300;
+  --header-text:#3e2723;
+  --step-bg:#f5f5f5;
+  --step-bg-active:#ffe082;
+  --step-text:#777;
+  --step-text-active:#e65100;
+  --step-circle-border:#bdbdbd;
+  --step-circle-border-active:#ff8f00;
+  --step-circle-bg-active:#ffb300;
+  --card-bg:#fafafa;
+  --card-border:#eee;
+  --label-color:#555;
+  --input-bg:#ffffff;
+  --input-border:#ddd;
+  --input-border-focus:#ffb300;
+  --table-header-bg:#fffde7;
+  --table-header-text:#6d4c41;
+  --table-border:#eee;
+  --badge-bg:#e0f2f1;
+  --badge-text:#00695c;
+  --btn-primary-bg:#ff9800;
+  --btn-primary-bg-hover:#fb8c00;
+  --btn-primary-text:#ffffff;
+  --btn-secondary-bg:#eeeeee;
+  --btn-secondary-bg-hover:#e0e0e0;
+  --btn-secondary-text:#424242;
+  --total-final:#c62828;
+  --envio-bg:#fff8e1;
+  --envio-border:#ffb300;
+  --envio-text:#e65100;
+  --floating-bg:#ffffff;
+  --floating-text:#3e2723;
+  --floating-shadow:0 4px 12px rgba(0,0,0,0.18);
+}
 
-    .step{
-      display:none;
-      animation:fadeIn .25s ease-out;
-    }
-    .step.active{display:block;}
+/* Dark theme overrides via attribute on <html> */
+:root[data-theme="dark"]{
+  --bg-body: radial-gradient(circle at top,#4e342e,#212121);
+  --text-color:#f5f5f5;
+  --app-bg:#2b2620;
+  --header-bg:#ffb300;
+  --header-text:#3e2723;
+  --step-bg:#4e342e;
+  --step-bg-active:#ffb74d;
+  --step-text:#d7ccc8;
+  --step-text-active:#3e2723;
+  --step-circle-border:#ffcc80;
+  --step-circle-border-active:#ff6f00;
+  --step-circle-bg-active:#ff8f00;
+  --card-bg:#3a3029;
+  --card-border:#5d4037;
+  --label-color:#f5f5f5;
+  --input-bg:#4e342e;
+  --input-border:#8d6e63;
+  --input-border-focus:#ffb300;
+  --table-header-bg:#4e342e;
+  --table-header-text:#ffecb3;
+  --table-border:#5d4037;
+  --badge-bg:#004d40;
+  --badge-text:#e0f2f1;
+  --btn-primary-bg:#ff9800;
+  --btn-primary-bg-hover:#fb8c00;
+  --btn-primary-text:#212121;
+  --btn-secondary-bg:#5d4037;
+  --btn-secondary-bg-hover:#4e342e;
+  --btn-secondary-text:#ffe0b2;
+  --total-final:#ffcc80;
+  --envio-bg:#5d4037;
+  --envio-border:#ffb74d;
+  --envio-text:#ffe082;
+  --floating-bg:#3a3029;
+  --floating-text:#ffecb3;
+  --floating-shadow:0 4px 14px rgba(0,0,0,0.45);
+}
 
-    @keyframes fadeIn{
-      from{opacity:0;transform:translateY(4px);}
-      to{opacity:1;transform:translateY(0);}
-    }
+/* =============== GLOBAL =============== */
+body{
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg-body);
+  color:var(--text-color);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:20px 10px;
+  font-size:17px !important;
+  line-height:1.45;
+}
 
-    h2{
-      font-size:1rem;
-      margin-bottom:8px;
-      color:#424242;
-    }
-    p.helper{
-      font-size:0.8rem;
-      color:#757575;
-      margin-bottom:10px;
-    }
+/* =============== APP CONTAINER =============== */
+.app{
+  width:100%;
+  max-width:900px;
+  background:var(--app-bg);
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  overflow:hidden;
+}
 
-    .card{
-      background:#fafafa;
-      border-radius:14px;
-      padding:12px 14px;
-      border:1px solid #eee;
-      margin-bottom:10px;
-    }
+/* =============== HEADER =============== */
+header{
+  padding:14px 18px;
+  background:var(--header-bg);
+  color:var(--header-text);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+header h1{
+  font-size:1.6rem !important;
+  font-weight:800 !important;
+}
+header span{
+  font-size:1rem !important;
+  opacity:0.8;
+}
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:0.85rem;
+}
 
-    label{
-      display:block;
-      font-size:0.8rem;
-      margin-top:6px;
-      margin-bottom:2px;
-      color:#555;
-    }
-    select,input[type="text"],input[type="number"],textarea{
-      width:100%;
-      padding:7px 8px;
-      border-radius:10px;
-      border:1px solid #ddd;
-      font-size:0.85rem;
-      outline:none;
-      transition:border .15s,box-shadow .15s;
-      background:#fff;
-    }
-    select:focus,input:focus,textarea:focus{
-      border-color:#ffb300;
-      box-shadow:0 0 0 2px rgba(255,179,0,0.25);
-    }
-    textarea{
-      resize:vertical;
-      min-height:60px;
-    }
-    .row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-    }
-    .col{
-      flex:1 1 200px;
-    }
+/* =============== MAIN =============== */
+main{padding:16px 18px 20px;}
 
-    .radio-group{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      font-size:0.78rem;
-      margin-top:3px;
-    }
-    .radio-group label{
-      margin:0;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid #ddd;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:4px;
-      background:#fff;
-    }
-    .radio-group input{accent-color:#ff9800;}
+/* =============== STEPS TOP =============== */
+.steps{
+  display:flex;
+  justify-content:space-between;
+  gap:6px;
+  margin-bottom:8px;
+}
+.step-indicator{
+  flex:1;
+  text-align:center;
+  font-size:0.95rem !important;
+  padding:6px 8px;
+  border-radius:999px;
+  background:var(--step-bg);
+  color:var(--step-text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.step-indicator span.circle{
+  width:24px !important;
+  height:24px !important;
+  border-radius:999px;
+  border:2px solid var(--step-circle-border);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.9rem !important;
+}
+.step-indicator.active{
+  background:var(--step-bg-active);
+  color:var(--step-text-active);
+  font-weight:700;
+}
+.step-indicator.active span.circle{
+  border-color:var(--step-circle-border-active);
+  background:var(--step-circle-bg-active);
+  color:#fff;
+}
 
-    .option-title{
-      font-size:0.8rem;
-      font-weight:600;
-      color:#5d4037;
-      margin-top:4px;
-    }
-    .note{
-      font-size:0.75rem;
-      color:#9e9e9e;
-      margin-top:4px;
-    }
+/* =============== PROGRESS BAR =============== */
+.progress-wrapper{
+  margin-bottom:14px;
+}
+.progress-text{
+  font-size:0.9rem;
+  margin-bottom:4px;
+  color:var(--label-color);
+}
+.progress-bar{
+  width:100%;
+  height:8px;
+  border-radius:999px;
+  background:rgba(0,0,0,0.08);
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:25%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#ffca28,#ff9800);
+  transition:width .2s ease-out;
+}
 
-    button{
-      border:none;
-      border-radius:999px;
-      padding:9px 16px;
-      font-size:0.9rem;
-      font-weight:600;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-      transition:background .15s,transform .1s,box-shadow .15s;
-    }
-    button:active{transform:scale(0.98);}
-    .btn-primary{
-      background:#ff9800;
-      color:#fff;
-      box-shadow:0 3px 10px rgba(255,152,0,0.35);
-    }
-    .btn-primary:hover{background:#fb8c00;}
-    .btn-secondary{
-      background:#eeeeee;
-      color:#424242;
-    }
-    .btn-secondary:hover{background:#e0e0e0;}
+/* =============== ANIMACIÓN =============== */
+.step{display:none;animation:fadeIn .25s ease-out;}
+.step.active{display:block;}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(4px);}
+  to{opacity:1;transform:translateY(0);}
+}
 
-    .actions{
-      margin-top:12px;
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      flex-wrap:wrap;
-    }
+/* =============== TITULOS & TEXTOS =============== */
+h2{
+  font-size:1.4rem !important;
+  margin-bottom:12px;
+  color:#f5f5f5;
+  color:var(--text-color);
+  font-weight:700;
+}
+p.helper{
+  font-size:1rem !important;
+  color:#757575;
+  opacity:0.9;
+  margin-bottom:12px;
+}
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:0.8rem;
-      margin-top:6px;
-    }
-    th,td{
-      padding:5px 6px;
-      border-bottom:1px solid #eee;
-      vertical-align:top;
-    }
-    th{background:#fffde7;text-align:left;color:#6d4c41;}
-    tfoot td{
-      font-weight:700;
-      border-top:1px solid #ddd;
-    }
+/* =============== CARD =============== */
+.card{
+  background:var(--card-bg);
+  border-radius:14px;
+  padding:14px 16px;
+  border:1px solid var(--card-border);
+  margin-bottom:12px;
+}
 
-    .total-row{
-      font-size:0.95rem;
-    }
-    .total-final{
-      font-size:1rem;
-      color:#c62828;
-    }
-    .badge{
-      display:inline-block;
-      padding:2px 6px;
-      border-radius:999px;
-      background:#e0f2f1;
-      color:#00695c;
-      font-size:0.7rem;
-      margin-left:4px;
-    }
+/* =============== LABELS =============== */
+label{
+  display:block;
+  font-size:1rem !important;
+  margin-top:8px;
+  margin-bottom:4px;
+  color:var(--label-color);
+}
 
-    @media (max-width:600px){
-      header h1{font-size:1rem;}
-      .step-indicator{font-size:0.7rem;}
-    }
-  </style>
+/* =============== INPUTS & SELECTS =============== */
+select,input[type="text"],input[type="number"],textarea{
+  width:100%;
+  padding:11px 14px !important;
+  border-radius:10px;
+  border:1px solid var(--input-border);
+  font-size:1rem !important;
+  outline:none;
+  transition:border .15s,box-shadow .15s,background .15s;
+  background:var(--input-bg);
+  color:var(--text-color);
+}
+select:focus,input:focus,textarea:focus{
+  border-color:var(--input-border-focus);
+  box-shadow:0 0 0 2px rgba(255,179,0,0.25);
+}
+textarea{
+  resize:vertical;
+  min-height:70px;
+}
+
+/* =============== GRID =============== */
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.col{
+  flex:1 1 200px;
+}
+
+/* =============== RADIO BUTTONS =============== */
+.radio-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  font-size:1rem !important;
+  margin-top:6px;
+}
+.radio-group label{
+  margin:0;
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid var(--input-border);
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--input-bg);
+  font-size:0.95rem !important;
+}
+.radio-group input{
+  accent-color:#ff9800;
+}
+
+/* =============== TITULITOS DE OPCIONES =============== */
+.option-title{
+  font-size:1rem !important;
+  font-weight:600;
+  color:#5d4037;
+}
+:root[data-theme="dark"] .option-title{
+  color:#ffecb3;
+}
+.note{
+  font-size:0.9rem !important;
+  color:#9e9e9e;
+  margin-top:4px;
+}
+
+/* =============== BOTONES =============== */
+button{
+  border:none;
+  border-radius:999px;
+  padding:12px 22px !important;
+  font-size:1rem !important;
+  font-weight:700 !important;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:background .15s,transform .1s,box-shadow .15s;
+}
+button:active{transform:scale(0.97);}
+.btn-primary{
+  background:var(--btn-primary-bg);
+  color:var(--btn-primary-text);
+  box-shadow:0 3px 10px rgba(255,152,0,0.35);
+}
+.btn-primary:hover{background:var(--btn-primary-bg-hover);}
+.btn-secondary{
+  background:var(--btn-secondary-bg);
+  color:var(--btn-secondary-text);
+}
+.btn-secondary:hover{background:var(--btn-secondary-bg-hover);}
+
+.actions{
+  margin-top:14px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn-theme{
+  padding:8px 14px !important;
+  font-size:0.9rem !important;
+}
+
+/* =============== TABLAS =============== */
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:1rem !important;
+  margin-top:10px;
+}
+th,td{
+  padding:8px 10px;
+  border-bottom:1px solid var(--table-border);
+  vertical-align:top;
+}
+th{
+  background:var(--table-header-bg);
+  text-align:left;
+  color:var(--table-header-text);
+}
+tfoot td{
+  font-weight:700;
+  border-top:1px solid var(--table-border);
+}
+
+.total-row{font-size:1.1rem !important;}
+.total-final{
+  font-size:1.3rem !important;
+  color:var(--total-final);
+  font-weight:800;
+}
+
+/* Badges */
+.badge{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:999px;
+  background:var(--badge-bg);
+  color:var(--badge-text);
+  font-size:0.9rem !important;
+}
+
+/* --- SEPARACIÓN ENTRE TABLA Y TOTAL --- */
+table tfoot tr.total-row td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* === ENVÍO A DOMICILIO SUPER DESTACADO === */
+#rowEnvio {
+    background: #ffe9b3 !important;                       /* Amarillo más fuerte */
+    border: 3px solid #ffb300 !important;                 /* Borde grueso */
+    color: #d35400 !important;                            /* Texto más visible */
+    box-shadow: 0 4px 12px rgba(255, 157, 0, 0.25) !important;
+    transition: 0.25s ease !important;
+}
+
+/* Hover bonito */
+#rowEnvio:hover {
+    background: #ffd480 !important;
+    transform: scale(1.01);
+    box-shadow: 0 6px 16px rgba(255, 140, 0, 0.35) !important;
+}
+
+/* Icono del camión más grande */
+#rowEnvio .envio-icon {
+    font-size: 1.6rem !important;
+    margin-right: 10px;
+}
+
+/* Texto del label más grande */
+#rowEnvio label {
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    color: #e65100 !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Checkbox más grande */
+#chkEnvio {
+    transform: scale(1.4);
+    accent-color: #ff6f00 !important;
+}
+
+/* Precio del envío a la derecha destacado */
+#costoEnvio {
+    color: #e65100 !important;
+    font-size: 1.2rem !important;
+    font-weight: 900 !important;
+}
+
+
+/* --- BOTÓN “AGREGAR OTRO ALIMENTO” --- */
+#btnAgregarOtro {
+  background: #ffe0b2 !important;
+  color: #e65100 !important;
+  font-weight: 700 !important;
+  padding: 12px 20px !important;
+  border-radius: 18px !important;
+  border: 2px solid #ffb74d !important;
+  box-shadow: 0 3px 8px rgba(255, 152, 0, 0.25) !important;
+  transition: 0.2s ease !important;
+}
+#btnAgregarOtro:hover {
+  background: #ffcc80 !important;
+  border-color: #ffa726 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 12px rgba(255, 152, 0, 0.35) !important;
+}
+#btnAgregarOtro:active {
+  transform: scale(0.96);
+}
+
+/* === CARRITO FLOTANTE MÁS LLAMATIVO === */
+.floating-cart{
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    padding: 14px 20px !important;
+    border-radius: 25px !important;
+    background: linear-gradient(135deg, #ffb300, #ff6f00) !important;
+    color: #ffffff !important;
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity .25s ease, transform .25s ease, box-shadow .25s ease;
+    box-shadow: 0 6px 18px rgba(255, 152, 0, 0.55) !important;
+}
+
+/* visible */
+.floating-cart.visible{
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* Icono más grande */
+.floating-cart span:first-child{
+    font-size: 1.4rem !important;
+}
+
+/* Efecto hover */
+.floating-cart:hover{
+    box-shadow: 0 10px 22px rgba(255, 152, 0, 0.75) !important;
+    transform: translateY(-3px);
+}
+
+/* Efecto “latidos” para llamar la atención */
+@keyframes pulseCart{
+    0% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+}
+
+.floating-cart.visible{
+    animation: pulseCart 1.8s infinite ease-in-out;
+}
+
+/* =============== RESPONSIVE =============== */
+@media (max-width:600px){
+  header h1{font-size:1.3rem !important;}
+  .step-indicator{font-size:0.8rem !important;}
+}
+
+/* AUMENTAR LETRA DE ALIMENTOS (selects y textos de productos) */
+#categoria,
+#producto,
+#producto option,
+#categoria option {
+    font-size: 1.25rem !important;  /* Ajusta si quieres más grande */
+    font-weight: 700 !important;
+}
+
+/* Títulos de alimentos en paso final */
+#detallePedido td:first-child {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    line-height: 1.35;
+}
+
+/* Títulos dentro de tarjetas (aderezos, papas, combos, etc.) */
+.option-title {
+    font-size: 1.2rem !important;
+    font-weight: 800 !important;
+}
+
+/* Cuando muestras el alimento en la confirmación */
+#resumenItemActual {
+    font-size: 1.2rem !important;
+    font-weight: 700;
+}
+/* Aumentar tamaño SOLO para los nombres del combo: Boneless, Alitas, Dedos */
+#contenedorAderezosCombo > div > div:first-child {
+    font-size: 1.4rem !important;      /* Más grande */
+    font-weight: 900 !important;       /* Super negrita */
+    color: #3e2723 !important;         /* Color más fuerte */
+    margin-bottom: 6px;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+/* ===== RADIO BUTTONS MODERNOS TIPO CHIPS ===== */
+.radio-group label {
+    padding: 10px 16px !important;
+    border: 2px solid #e0e0e0 !important;
+    border-radius: 25px !important;
+    background: #ffffff !important;
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
+    color: #5d4037 !important;
+    transition: 0.25s ease !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+}
+
+/* Hover bonito */
+.radio-group label:hover {
+    border-color: #ffb300 !important;
+    background: #fff3cd !important; /* Amarillo suave */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255,180,0,0.25) !important;
+}
+
+/* Ocultar radio nativo */
+.radio-group input[type="radio"] {
+    display: none !important;
+}
+
+/* Estado seleccionado */
+.radio-group input[type="radio"]:checked + label,
+.radio-group label:has(input[type="radio"]:checked) {
+    background: #ffb300 !important;
+    color: white !important;
+    border-color: #ff8f00 !important;
+    box-shadow: 0 4px 12px rgba(255,150,0,0.35) !important;
+    transform: translateY(-2px);
+}
+
+/* Punto circular dentro del botón */
+.radio-group label::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #ff9800;
+    background: white;
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+    transition: 0.25s ease;
+}
+
+/* Cuando está seleccionado, el circulito se pinta */
+.radio-group input[type="radio"]:checked + label::before,
+.radio-group label:has(input[type="radio"]:checked)::before {
+    background: white;
+    border-color: white;
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.4) inset;
+}
+
+/* Ajuste para modo oscuro */
+:root[data-theme="dark"] .radio-group label {
+    background: #4e342e !important;
+    color: #ffe0b2 !important;
+    border-color: #6d4c41 !important;
+}
+
+:root[data-theme="dark"] .radio-group label:hover {
+    background: #795548 !important;
+    border-color: #ffb300 !important;
+}
+
+:root[data-theme="dark"] .radio-group input[type="radio"]:checked + label,
+:root[data-theme="dark"] .radio-group label:has(input[type="radio"]:checked) {
+    background: #ff9800 !important;
+    color: #212121 !important;
+}
+/* ==== FORMULARIO DE CLIENTE MÁS LLAMATIVO ==== */
+
+/* Fondo de cada card */
+.card {
+    background: #fffdf5 !important; /* Amarillo súper suave */
+    border: 2px solid #ffe29f !important;
+    box-shadow: 0 4px 12px rgba(255, 185, 0, 0.18) !important;
+    border-radius: 16px !important;
+}
+
+/* Títulos de los labels */
+.card label {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: #8a5200 !important; /* Café cálido */
+    margin-bottom: 6px;
+}
+
+/* Inputs */
+.card input,
+.card select,
+.card textarea {
+    background: #ffffff !important;
+    border: 2px solid #e0c48a !important;
+    border-radius: 12px !important;
+    font-size: 1.1rem !important;
+    padding: 12px 16px !important;
+    transition: 0.2s ease !important;
+}
+
+/* Focus con glow amarillo */
+.card input:focus,
+.card select:focus,
+.card textarea:focus {
+    border-color: #ffb300 !important;
+    box-shadow: 0 0 0 4px rgba(255, 179, 0, 0.3) !important;
+    background: #fff9e6 !important;
+}
+
+/* Placeholder más visible */
+.card input::placeholder,
+.card textarea::placeholder {
+    color: #b57a00 !important;
+    opacity: 0.7;
+    font-weight: 500;
+}
+
+/* Inputs grandes en filas */
+.card .row .col {
+    margin-bottom: 12px;
+}
+
+/* Área de texto más redondeada */
+.card textarea {
+    border-radius: 14px !important;
+}
+
+/* Subtítulos */
+.card .note {
+    font-size: 0.95rem !important;
+    color: #a16c00 !important;
+}
+
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -257,8 +712,13 @@
       <h1>Pedidos La Carpita</h1>
       <span>Asistente paso a paso</span>
     </div>
-    <div style="font-size:0.75rem;text-align:right;">
-      Envío: <strong>$10</strong> (opcional)
+    <div class="header-right">
+      <div>
+        Envío: <strong>$10</strong> (opcional)
+      </div>
+      <button type="button" class="btn-secondary btn-theme" id="btnTheme" title="Cambiar tema">
+        🌙
+      </button>
     </div>
   </header>
 
@@ -276,6 +736,14 @@
       </div>
       <div class="step-indicator" data-step-ind="4">
         <span class="circle">4</span> Total y envío
+      </div>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="progress-wrapper">
+      <div class="progress-text" id="progressText">Paso 1 de 4</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
     </div>
 
@@ -478,8 +946,9 @@
       <h2>Paso 4 · Total, envío y pago</h2>
       <p class="helper">Aquí ves todo el pedido. Puedes agregar más alimentos o enviar directo a WhatsApp.</p>
 
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+      <div class="card" style="margin-bottom: 18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap; margin-bottom: 10px;">
+
           <div style="font-size:0.85rem;">
             Pedido actual <span class="badge" id="badgeItems">0 alimentos</span>
           </div>
@@ -499,14 +968,15 @@
             <td>Subtotal alimentos</td>
             <td id="subtotal">$0.00</td>
           </tr>
-          <tr class="total-row">
+          <tr class="total-row" id="rowEnvio">
             <td>
-              <label style="font-size:0.8rem;">
+              <label style="font-size:0.9rem; font-weight:700; display:flex; align-items:center; gap:6px;">
+                <span class="envio-icon">🚚</span>
                 <input type="checkbox" id="chkEnvio">
                 Envío a domicilio (+$10)
               </label>
             </td>
-            <td id="costoEnvio">$0.00</td>
+            <td id="costoEnvio" style="font-size:1rem; font-weight:700;">$0.00</td>
           </tr>
           <tr class="total-row">
             <td>Total a pagar</td>
@@ -545,8 +1015,15 @@
             <input type="text" id="telefonoCliente" placeholder="">
           </div>
         </div>
+
         <label for="direccionCliente">Dirección / punto de entrega</label>
-        <textarea id="direccionCliente" placeholder="Calle, número, colonia..."></textarea>
+<textarea id="direccionCliente" placeholder="Calle, número, colonia..."></textarea>
+
+<button type="button" id="btnUbicacion" class="btn-secondary" style="margin-top:8px;">
+  📍 Usar mi ubicación de Google Maps
+</button>
+
+<div id="ubicacionTexto" class="note" style="margin-top:6px;"></div>
 
         <label for="referenciaCliente">Referencias adicionales</label>
         <textarea id="referenciaCliente" placeholder="Color de casa, entre calles, piso, etc."></textarea>
@@ -559,11 +1036,51 @@
     </section>
   </main>
 </div>
+<script>
+/* === UBICACIÓN DESDE GOOGLE MAPS === */
+let enlaceMaps = "";
+
+document.getElementById("btnUbicacion").addEventListener("click", ()=>{
+    if (!navigator.geolocation) {
+        alert("Tu dispositivo no permite obtener la ubicación.");
+        return;
+    }
+
+    document.getElementById("ubicacionTexto").textContent = "Obteniendo ubicación...";
+
+    navigator.geolocation.getCurrentPosition(
+        (pos)=>{
+            const lat = pos.coords.latitude.toFixed(6);
+            const lng = pos.coords.longitude.toFixed(6);
+
+            enlaceMaps = `https://www.google.com/maps?q=${lat},${lng}`;
+
+            document.getElementById("ubicacionTexto").innerHTML = `
+                📍 Ubicación detectada:<br>
+                <a href="${enlaceMaps}" target="_blank">${enlaceMaps}</a>
+            `;
+
+            // También la ponemos en el textarea
+            document.getElementById("direccionCliente").value = `Ubicación en Maps: ${enlaceMaps}`;
+        },
+        (err)=>{
+            alert("No se pudo obtener la ubicación. Activa el GPS o permisos.");
+        }
+    );
+});
+
+</script>
+<!-- Carrito flotante -->
+<div class="floating-cart" id="floatingCart">
+  <span>🛒</span>
+  <span id="floatingCartText">0 alimentos · $0.00</span>
+</div>
 
 <script>
+  /* ========= CONSTANTES ========= */
   const COSTO_DOBLE_ADEREZO = 8;
   const COSTO_ENVIO = 10;
-  const NUM_WHATSAPP_LA_CARPITA = "525561375307"; // 52 + 10 dígitos
+  const NUM_WHATSAPP_LA_CARPITA = "525657861068"; // 52 + 10 dígitos
 
   const ADEREZOS = [
     "Ranch",
@@ -636,10 +1153,41 @@
     {id:"extra_aderezo", nombre:"Vaso extra de aderezo (2 onzas)", categoria:"extra", precio:8, incluyePapas:false, tieneAderezo:false}
   ];
 
+  /* ========= ESTADO ========= */
   let pasoActual = 1;
   const carrito = [];
   let itemPendiente = null;
 
+  /* ========= FUNCIONES DE TEMA ========= */
+  function aplicarTemaInicial(){
+    const guardado = localStorage.getItem("tema_lacarpita");
+    let tema = "light";
+
+    if(guardado){
+      tema = guardado;
+    }else if(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches){
+      tema = "dark";
+    }
+
+    document.documentElement.setAttribute("data-theme", tema);
+    actualizarIconoTema(tema);
+  }
+
+  function alternarTema(){
+    const actual = document.documentElement.getAttribute("data-theme") || "light";
+    const nuevo = actual === "light" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", nuevo);
+    localStorage.setItem("tema_lacarpita", nuevo);
+    actualizarIconoTema(nuevo);
+  }
+
+  function actualizarIconoTema(tema){
+    const btn = document.getElementById("btnTheme");
+    if(!btn) return;
+    btn.textContent = tema === "dark" ? "☀️" : "🌙";
+  }
+
+  /* ========= UI PASOS / PROGRESO ========= */
   function irPaso(n){
     pasoActual = n;
     document.querySelectorAll(".step").forEach(s=>{
@@ -649,8 +1197,19 @@
       const num = parseInt(ind.getAttribute("data-step-ind"));
       ind.classList.toggle("active", num === n);
     });
+    actualizarProgreso();
   }
 
+  function actualizarProgreso(){
+    const totalPasos = 4;
+    const texto = document.getElementById("progressText");
+    const barra = document.getElementById("progressFill");
+    const porcentaje = (pasoActual / totalPasos) * 100;
+    if(texto) texto.textContent = `Paso ${pasoActual} de ${totalPasos}`;
+    if(barra) barra.style.width = `${porcentaje}%`;
+  }
+
+  /* ========= UTILIDADES ========= */
   function cargarAderezosEnSelect(select){
     select.innerHTML = "";
     ADEREZOS.forEach(a=>{
@@ -798,6 +1357,7 @@
     });
   }
 
+  /* ========= DESCRIPCIÓN DE OPCIONES ========= */
   function descripcionPapas(prod){
     if(!prod.incluyePapas) return "";
     let texto = "";
@@ -827,57 +1387,132 @@
     return ` | Queso: ${queso}, Catsup: ${catsup}, Mayonesa: ${mayo}, Salsa: ${salsa}`;
   }
 
+  /* ========= CONSTRUCCIÓN DE ITEM ========= */
   function construirItemActual(){
     const idProd = document.getElementById("producto").value;
     const prod = obtenerProductoPorId(idProd);
     if(!prod) return null;
 
-    let descripcion = prod.nombre;
+    let nombre = prod.nombre;
+    let lineas = [];
     let precio = prod.precio;
     let extras = 0;
 
+    /* ==== INDIVIDUALES ==== */
     if(prod.tieneAderezo && !prod.esCombo){
-      const ad1 = document.getElementById("aderezoPrincipal").value;
-      const modo1 = document.querySelector('input[name="modoAderezoPrincipal"]:checked').value;
-      descripcion += ` | Aderezo: ${ad1} (${modo1})`;
+        const modo1 = document.querySelector('input[name="modoAderezoPrincipal"]:checked').value;
 
-      if(document.getElementById("chkDobleAderezo").checked){
-        const ad2 = document.getElementById("aderezoExtra").value;
-        const modo2 = document.querySelector('input[name="modoAderezoExtra"]:checked').value;
-        descripcion += ` | Doble aderezo: ${ad2} (${modo2})`;
-        extras += COSTO_DOBLE_ADEREZO;
-      }
-    }
-
-    if(prod.esCombo){
-      prod.alimentos.forEach((alimento, index)=>{
-        const ad = document.getElementById(`combo_aderezo_${index}`).value;
-        const modo = document.querySelector(`input[name="combo_modo_${index}"]:checked`).value;
-        descripcion += ` | ${alimento} con aderezo ${ad} (${modo})`;
-
-        const chkDob = document.getElementById(`combo_doble_${index}`);
-        if(chkDob && chkDob.checked){
-          const adEx = document.getElementById(`combo_aderezo_extra_${index}`).value;
-          const modoEx = document.querySelector(`input[name="combo_modo_extra_${index}"]:checked`).value;
-          descripcion += ` | ${alimento} doble aderezo: ${adEx} (${modoEx})`;
-          extras += COSTO_DOBLE_ADEREZO;
+        if(modo1 === "Sin"){
+            lineas.push(`• Sin aderezo`);
+        } else {
+            const ad1 = document.getElementById("aderezoPrincipal").value;
+            lineas.push(`• ${ad1} ${modo1.toLowerCase()}`);
         }
-      });
+
+        if(document.getElementById("chkDobleAderezo").checked){
+            const ad2 = document.getElementById("aderezoExtra").value;
+            const modo2 = document.querySelector('input[name="modoAderezoExtra"]:checked').value;
+            lineas.push(`• ${ad2} ${modo2.toLowerCase()}`);
+            extras += COSTO_DOBLE_ADEREZO;
+        }
     }
 
-    descripcion += descripcionPapas(prod);
-    descripcion += descripcionMiniBanderillas(prod);
+    /* ==== COMBOS ==== */
+    if(prod.esCombo){
+        prod.alimentos.forEach((alimento, index)=>{
+            const modo = document.querySelector(`input[name="combo_modo_${index}"]:checked`).value;
 
-    if(prod.incluyePapas && prod.categoria!=="papas"){
-      const selTipo = document.getElementById("tipoPapa");
-      const extra = parseFloat(selTipo.options[selTipo.selectedIndex].dataset.extra || "0");
-      extras += extra;
+            if(modo === "Sin"){
+                lineas.push(`• ${alimento}: sin aderezo`);
+            } else {
+                const ad = document.getElementById(`combo_aderezo_${index}`).value;
+                lineas.push(`• ${alimento}: ${ad} ${modo.toLowerCase()}`);
+            }
+
+            const chkDob = document.getElementById(`combo_doble_${index}`);
+            if(chkDob && chkDob.checked){
+                const adEx = document.getElementById(`combo_aderezo_extra_${index}`).value;
+                const modoEx = document.querySelector(`input[name="combo_modo_extra_${index}"]:checked`).value;
+                lineas.push(`• ${alimento}: ${adEx} ${modoEx.toLowerCase()}`);
+                extras += COSTO_DOBLE_ADEREZO;
+            }
+        });
     }
+
+    /* ==== MINIS Y BANDERILLAS ==== */
+    if(prod.categoria === "mini" || prod.categoria === "banderillas"){
+        const queso = document.querySelector('input[name="quesoMini"]:checked').value;
+        const catsup = document.querySelector('input[name="catsupMini"]:checked').value;
+        const mayo = document.querySelector('input[name="mayoMini"]:checked').value;
+        const salsa = document.querySelector('input[name="salsaMini"]:checked').value;
+
+        lineas.push(`• Queso ${queso.toLowerCase()}`);
+        lineas.push(`• Catsup ${catsup.toLowerCase()}`);
+        lineas.push(`• Mayonesa ${mayo.toLowerCase()}`);
+        lineas.push(`• Salsa ${salsa.toLowerCase()}`);
+    }
+/* ==== PAPAS (CORREGIDO – MUESTRA TODOS LOS “SIN”) ==== */
+if (prod.incluyePapas) {
+
+    // Tipo de papa si aplica
+    let tipoPapa = null;
+    let costoPapaExtra = 0;
+
+    if (prod.categoria !== "papas") {
+        const selTipo = document.getElementById("tipoPapa");
+        tipoPapa = selTipo.value;
+        costoPapaExtra = parseFloat(selTipo.options[selTipo.selectedIndex].dataset.extra || "0");
+    }
+
+    // Condimentos seleccionados
+    const queso = document.querySelector('input[name="quesoPapa"]:checked').value;
+    const catsup = document.querySelector('input[name="catsupPapa"]:checked').value;
+    const salsa = document.querySelector('input[name="salsaPapa"]:checked').value;
+
+    /* Creamos lista de condimentos */
+    let condimentos = [];
+
+    // SALSA
+    if (salsa === "Sin") condimentos.push("sin salsa");
+    else if (salsa === "Aparte") condimentos.push("salsa aparte");
+
+    // CATSUP
+    if (catsup === "Sin") condimentos.push("sin catsup");
+    else if (catsup === "Aparte") condimentos.push("catsup aparte");
+
+    // QUESO
+    if (queso === "Sin") condimentos.push("sin queso");
+    else if (queso === "Aparte") condimentos.push("queso aparte");
+
+    /* Unir condimentos en una sola frase */
+    let textoCondimentos = "";
+    if (condimentos.length === 1) {
+        textoCondimentos = condimentos[0];
+    } else if (condimentos.length > 1) {
+        textoCondimentos = condimentos.join(" y ");
+    }
+
+    /* Construcción final */
+    let linea = "• Papas";
+
+    if (tipoPapa) linea += ` ${tipoPapa}`;
+    if (textoCondimentos) linea += ` ${textoCondimentos}`;
+    if (costoPapaExtra > 0) linea += " (+$8)";
+
+    lineas.push(linea);
+    extras += costoPapaExtra;
+}
 
     precio += extras;
-    return {descripcion, precio};
-  }
 
+    return {
+        descripcion: `${nombre}\n${lineas.join("\n")}`,
+        precio
+    };
+}
+
+
+  /* ========= CARRITO, TOTAL Y CAMBIO ========= */
   function refrescarTabla(){
     const tbody = document.getElementById("detallePedido");
     tbody.innerHTML = "";
@@ -889,7 +1524,8 @@
       `;
       tbody.appendChild(tr);
     });
-    document.getElementById("badgeItems").textContent = `${carrito.length} alimento${carrito.length!==1?"s":""}`;
+    document.getElementById("badgeItems").textContent =
+      `${carrito.length} alimento${carrito.length!==1?"s":""}`;
 
     const subtotal = carrito.reduce((s,it)=>s+it.precio,0);
     const envioActivado = document.getElementById("chkEnvio").checked;
@@ -901,6 +1537,7 @@
     document.getElementById("totalGeneral").textContent = "$"+total.toFixed(2);
 
     actualizarCambio();
+    actualizarCarritoFlotante();
   }
 
   function actualizarCambio(){
@@ -932,104 +1569,166 @@
     refrescarTabla();
   }
 
-  // Eventos de pasos
-  document.getElementById("categoria").addEventListener("change", actualizarProductos);
-  document.getElementById("producto").addEventListener("change", actualizarOpcionesSegunProducto);
-
-  document.getElementById("chkDobleAderezo").addEventListener("change", e=>{
-    document.getElementById("seccionDobleAderezo").style.display = e.target.checked ? "block" : "none";
-  });
-
-  document.getElementById("btnPaso1").addEventListener("click", ()=>{
-    if(!document.getElementById("producto").value){
-      alert("Selecciona un alimento.");
-      return;
-    }
-    actualizarOpcionesSegunProducto();
-    irPaso(2);
-  });
-
-  document.getElementById("btnBack2").addEventListener("click", ()=>irPaso(1));
-
-  document.getElementById("btnPaso2").addEventListener("click", ()=>{
-    const item = construirItemActual();
-    if(!item){alert("Selecciona un alimento.");return;}
-    itemPendiente = item;
-    const texto = `Alimento:\n• ${item.descripcion}\n\nPrecio:\n• $${item.precio.toFixed(2)}`;
-    document.getElementById("resumenItemActual").textContent = texto;
-    irPaso(3);
-  });
-
-  document.getElementById("btnBack3").addEventListener("click", ()=>irPaso(2));
-
-  document.getElementById("btnAgregar").addEventListener("click", ()=>{
-    if(!itemPendiente){alert("No hay alimento para agregar.");return;}
-    carrito.push({...itemPendiente});
-    refrescarTabla();
-    irPaso(4);
-  });
-
-  document.getElementById("btnAgregarOtro").addEventListener("click", ()=>{
-    itemPendiente = null;
-    irPaso(1);
-  });
-
-  document.getElementById("chkEnvio").addEventListener("change", refrescarTabla);
-  document.getElementById("pagaCon").addEventListener("input", actualizarCambio);
-
-  document.getElementById("btnLimpiar").addEventListener("click", ()=>{
-    if(confirm("¿Vaciar todo el pedido?")){
-      limpiarPedido();
-    }
-  });
-
-  document.getElementById("btnWhatsApp").addEventListener("click", ()=>{
-    if(carrito.length===0){
-      alert("Agrega al menos un alimento al pedido.");
-      return;
-    }
+  /* ========= CARRITO FLOTANTE ========= */
+  function actualizarCarritoFlotante(){
+    const cart = document.getElementById("floatingCart");
+    const text = document.getElementById("floatingCartText");
     const subtotal = carrito.reduce((s,it)=>s+it.precio,0);
-    const envioActivado = document.getElementById("chkEnvio").checked;
-    const costoEnvio = envioActivado ? COSTO_ENVIO : 0;
-    const total = subtotal + costoEnvio;
+    if(carrito.length === 0){
+      cart.classList.remove("visible");
+      return;
+    }
+    text.textContent = `${carrito.length} alimento${carrito.length!==1?"s":""} · $${subtotal.toFixed(2)}`;
+    cart.classList.add("visible");
+  }
 
-    const metodoPago = document.getElementById("metodoPago").value;
-    const pagaCon = document.getElementById("pagaCon").value;
+  /* ========= VALIDACIONES EXTRA ========= */
+  function validarPaso1(){
+    const prod = document.getElementById("producto").value;
+    if(!prod){
+      alert("Selecciona un alimento.");
+      return false;
+    }
+    return true;
+  }
 
-    let mensaje = "Nuevo pedido La Carpita%0A%0A";
-    carrito.forEach((item, idx)=>{
-      mensaje += `${idx+1}) ${item.descripcion} | $${item.precio.toFixed(2)}%0A`;
+  function validarAderezoSinDoble(){
+    const modo1 = document.querySelector('input[name="modoAderezoPrincipal"]:checked');
+    const chkDoble = document.getElementById("chkDobleAderezo");
+    if(!modo1 || !chkDoble) return true;
+
+    if(modo1.value === "Sin" && chkDoble.checked){
+      alert("Elegiste 'Sin aderezo', no puedes marcar doble aderezo en este caso.");
+      chkDoble.checked = false;
+      document.getElementById("seccionDobleAderezo").style.display = "none";
+      return false;
+    }
+    return true;
+  }
+
+  /* ========= WHATSAPP ========= */
+  function enviarWhatsApp(){
+    if (carrito.length === 0) {
+        alert("Agrega al menos un alimento al pedido.");
+        return;
+    }
+
+    let msg = "🍗 PEDIDO NUEVO - LA CARPITA 🍗\n";
+    msg += "──────────────────────────\n\n";
+
+    carrito.forEach((item, i)=>{
+        msg += `${i+1}) ${item.descripcion}\n`;
+        msg += `💲 ${item.precio.toFixed(2)}\n`;
+        msg += "──────────────────────────\n\n";
     });
 
-    mensaje += `%0ASubtotal alimentos: $${subtotal.toFixed(2)}%0A`;
-    mensaje += `Envío a domicilio: ${envioActivado ? "$"+costoEnvio.toFixed(2) : "No"}%0A`;
-    mensaje += `Total a pagar: $${total.toFixed(2)}%0A`;
-    mensaje += `Método de pago: ${metodoPago}%0A`;
-    if(pagaCon){
-      mensaje += `Paga con: $${pagaCon}%0A`;
-    }
+    const subtotal = carrito.reduce((s,it)=>s+it.precio,0);
+    const envio = document.getElementById("chkEnvio").checked ? COSTO_ENVIO : 0;
+    const total = subtotal + envio;
 
-    const nombre = document.getElementById("nombreCliente").value;
-    const tel = document.getElementById("telefonoCliente").value;
-    const direccion = document.getElementById("direccionCliente").value;
-    const referencia = document.getElementById("referenciaCliente").value;
+    msg += `Subtotal: $${subtotal.toFixed(2)}\n`;
+    msg += `Envío: ${envio ? "$10 🚚" : "No aplica"}\n`;
+    msg += `TOTAL: $${total.toFixed(2)}\n\n`;
+    msg += "Gracias por tu pedido 😄";
 
-    if(nombre) mensaje += `%0ANombre: ${encodeURIComponent(nombre)}%0A`;
-    if(tel) mensaje += `Teléfono: ${encodeURIComponent(tel)}%0A`;
-    if(direccion) mensaje += `%0ADirección: ${encodeURIComponent(direccion)}%0A`;
-    if(referencia) mensaje += `Referencia: ${encodeURIComponent(referencia)}%0A`;
+    window.open(`https://wa.me/${NUM_WHATSAPP_LA_CARPITA}?text=${encodeURIComponent(msg)}`);
+}
 
-    mensaje += "%0A¡Todo preparado al momento!";
 
-    const url = `https://wa.me/${NUM_WHATSAPP_LA_CARPITA}?text=${mensaje}`;
-    window.open(url,"_blank");
-  });
-
+  /* ========= EVENTOS ========= */
   window.addEventListener("DOMContentLoaded", ()=>{
+    // Tema
+    aplicarTemaInicial();
+    document.getElementById("btnTheme").addEventListener("click", alternarTema);
+
+    // Aderezos iniciales
     cargarAderezosEnSelect(document.getElementById("aderezoPrincipal"));
     cargarAderezosEnSelect(document.getElementById("aderezoExtra"));
+
+    // Productos
     actualizarProductos();
     refrescarTabla();
+    actualizarProgreso();
+
+    // Eventos de selects
+    document.getElementById("categoria").addEventListener("change", actualizarProductos);
+    document.getElementById("producto").addEventListener("change", actualizarOpcionesSegunProducto);
+
+    // Doble aderezo
+    document.getElementById("chkDobleAderezo").addEventListener("change", e=>{
+      document.getElementById("seccionDobleAderezo").style.display = e.target.checked ? "block" : "none";
+    });
+
+    // Si el usuario elige "Sin" aderezo principal, desactiva el doble
+    document.querySelectorAll('input[name="modoAderezoPrincipal"]').forEach(radio=>{
+      radio.addEventListener("change", ()=>{
+        const modo = document.querySelector('input[name="modoAderezoPrincipal"]:checked').value;
+        if(modo === "Sin"){
+          const chk = document.getElementById("chkDobleAderezo");
+          chk.checked = false;
+          document.getElementById("seccionDobleAderezo").style.display = "none";
+        }
+      });
+    });
+
+    // Pasos
+    document.getElementById("btnPaso1").addEventListener("click", ()=>{
+      if(!validarPaso1()) return;
+      actualizarOpcionesSegunProducto();
+      irPaso(2);
+    });
+
+    document.getElementById("btnBack2").addEventListener("click", ()=>irPaso(1));
+
+    document.getElementById("btnPaso2").addEventListener("click", ()=>{
+      if(!validarAderezoSinDoble()) return;
+      const item = construirItemActual();
+      if(!item){alert("Selecciona un alimento.");return;}
+      itemPendiente = item;
+      const texto = `Alimento:\n• ${item.descripcion}\n\nPrecio:\n• $${item.precio.toFixed(2)}`;
+      document.getElementById("resumenItemActual").textContent = texto;
+      irPaso(3);
+    });
+
+    document.getElementById("btnBack3").addEventListener("click", ()=>irPaso(2));
+
+    document.getElementById("btnAgregar").addEventListener("click", ()=>{
+      if(!itemPendiente){alert("No hay alimento para agregar.");return;}
+      carrito.push({...itemPendiente});
+      refrescarTabla();
+      irPaso(4);
+    });
+
+    document.getElementById("btnAgregarOtro").addEventListener("click", ()=>{
+      itemPendiente = null;
+      irPaso(1);
+    });
+
+    document.getElementById("chkEnvio").addEventListener("change", refrescarTabla);
+    document.getElementById("pagaCon").addEventListener("input", actualizarCambio);
+
+    document.getElementById("btnLimpiar").addEventListener("click", ()=>{
+      if(confirm("¿Vaciar todo el pedido?")){
+        limpiarPedido();
+      }
+    });
+
+    document.getElementById("btnWhatsApp").addEventListener("click", enviarWhatsApp);
+
+    // Carrito flotante
+    document.getElementById("floatingCart").addEventListener("click", ()=>{
+      if(carrito.length === 0) return;
+      irPaso(4);
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
+
+    // Enter para avanzar de paso 1 a 2 más rápido
+    document.getElementById("producto").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter"){
+        e.preventDefault();
+        document.getElementById("btnPaso1").click();
+      }
+    });
   });
 </script>
 </body>
