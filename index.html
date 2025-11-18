@@ -1506,14 +1506,22 @@ if (prod.incluyePapas) {
 
     if (prod.categoria !== "papas") {
         const selTipo = document.getElementById("tipoPapa");
-        tipoPapa = selTipo.value;
-        costoPapaExtra = parseFloat(selTipo.options[selTipo.selectedIndex].dataset.extra || "0");
+        if (selTipo) {
+            tipoPapa = selTipo.value;
+            costoPapaExtra = parseFloat(
+                selTipo.options[selTipo.selectedIndex].dataset.extra || "0"
+            );
+        }
     }
 
     // Condimentos seleccionados
-    const queso = document.querySelector('input[name="quesoPapa"]:checked').value;
-    const catsup = document.querySelector('input[name="catsupPapa"]:checked').value;
-    const salsa = document.querySelector('input[name="salsaPapa"]:checked').value;
+    const quesoInput  = document.querySelector('input[name="quesoPapa"]:checked');
+    const catsupInput = document.querySelector('input[name="catsupPapa"]:checked');
+    const salsaInput  = document.querySelector('input[name="salsaPapa"]:checked');
+
+    const queso  = quesoInput  ? quesoInput.value  : "Sin";
+    const catsup = catsupInput ? catsupInput.value : "Sin";
+    const salsa  = salsaInput  ? salsaInput.value  : "Sin";
 
     /* Creamos lista de condimentos */
     let condimentos = [];
@@ -1534,7 +1542,12 @@ if (prod.incluyePapas) {
     else if (queso === "Untado") condimentos.push("queso untado");
 
     /* Unir condimentos en una sola frase */
-    let textoCondimentos = condimentos.join(" y ");
+    let textoCondimentos = "";
+    if (condimentos.length === 1) {
+        textoCondimentos = condimentos[0];
+    } else if (condimentos.length > 1) {
+        textoCondimentos = condimentos.join(" y ");
+    }
 
     /* Construcción final */
     let linea = "• Papas";
@@ -1545,13 +1558,16 @@ if (prod.incluyePapas) {
 
     lineas.push(linea);
 
-    // 🔥 SUMAR SOLO 1 VEZ EL EXTRA
+    // ✅ SOLO SUMAMOS AQUÍ EL EXTRA DE PAPA UNA VEZ
     precio += costoPapaExtra;
 }
 
-// ❌ ELIMINADO: precio += extras (evita suma doble)
+/* Aquí debe ir todo lo demás que suma a "extras" (doble aderezo, etc.) */
+/* ...otras lógicas de extras... */
 
-// Mantén tu return igual
+/* ✅ Al final sigues usando "extras" como antes */
+precio += extras;
+
 return {
     descripcion: `${nombre}\n${lineas.join("\n")}`,
     precio
