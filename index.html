@@ -1493,81 +1493,59 @@ document.getElementById("btnUbicacion").addEventListener("click", ()=>{
         lineas.push(`• Mayonesa ${mayo.toLowerCase()}`);
         lineas.push(`• Salsa ${salsa.toLowerCase()}`);
     }
-/* ==== PAPAS (CORREGIDO Y COMPLETO: incluye untado, aparte y sin) ==== */
-if (prod.incluyePapas) {
+/* ==== PAPAS (SEGURO · NO ROMPE PASO 1) ==== */
+if (prod.incluyePapas && document.getElementById("seccionCondimentosPapas").style.display !== "none") {
 
     // Tipo de papa si aplica
     let tipoPapa = null;
     let costoPapaExtra = 0;
 
-    if (prod.categoria !== "papas") {
-        const selTipo = document.getElementById("tipoPapa");
-        if (selTipo) {
-            tipoPapa = selTipo.value;
-            costoPapaExtra = parseFloat(
-                selTipo.options[selTipo.selectedIndex].dataset.extra || "0"
-            );
-        }
+    const selTipo = document.getElementById("tipoPapa");
+    if (selTipo && prod.categoria !== "papas") {
+        tipoPapa = selTipo.value;
+        costoPapaExtra = parseFloat(selTipo.options[selTipo.selectedIndex].dataset.extra || "0");
     }
 
-    // Condimentos seleccionados
+    // Condimentos - SOLO si existen (no existen en Paso 1)
     const quesoInput  = document.querySelector('input[name="quesoPapa"]:checked');
     const catsupInput = document.querySelector('input[name="catsupPapa"]:checked');
     const salsaInput  = document.querySelector('input[name="salsaPapa"]:checked');
 
-    const queso  = quesoInput  ? quesoInput.value  : "Sin";
-    const catsup = catsupInput ? catsupInput.value : "Sin";
-    const salsa  = salsaInput  ? salsaInput.value  : "Sin";
+    const queso  = quesoInput  ? quesoInput.value  : null;
+    const catsup = catsupInput ? catsupInput.value : null;
+    const salsa  = salsaInput  ? salsaInput.value  : null;
 
-    /* Creamos lista de condimentos */
     let condimentos = [];
 
-    // === SALSA ===
-    if (salsa === "Sin") condimentos.push("sin salsa");
-    else if (salsa === "Aparte") condimentos.push("salsa aparte");
-    else if (salsa === "Untado") condimentos.push("salsa untada");
-
-    // === CATSUP ===
-    if (catsup === "Sin") condimentos.push("sin catsup");
-    else if (catsup === "Aparte") condimentos.push("catsup aparte");
-    else if (catsup === "Untado") condimentos.push("catsup untada");
-
-    // === QUESO ===
-    if (queso === "Sin") condimentos.push("sin queso");
-    else if (queso === "Aparte") condimentos.push("queso aparte");
-    else if (queso === "Untado") condimentos.push("queso untado");
-
-    /* Unir condimentos en una sola frase */
-    let textoCondimentos = "";
-    if (condimentos.length === 1) {
-        textoCondimentos = condimentos[0];
-    } else if (condimentos.length > 1) {
-        textoCondimentos = condimentos.join(" y ");
+    if (salsa) {
+        if (salsa === "Sin") condimentos.push("sin salsa");
+        else if (salsa === "Aparte") condimentos.push("salsa aparte");
+        else condimentos.push("salsa untada");
     }
 
-    /* Construcción final */
-    let linea = "• Papas";
+    if (catsup) {
+        if (catsup === "Sin") condimentos.push("sin catsup");
+        else if (catsup === "Aparte") condimentos.push("catsup aparte");
+        else condimentos.push("catsup untada");
+    }
 
+    if (queso) {
+        if (queso === "Sin") condimentos.push("sin queso");
+        else if (queso === "Aparte") condimentos.push("queso aparte");
+        else condimentos.push("queso untado");
+    }
+
+    let textoCondimentos = condimentos.join(" y ");
+
+    let linea = "• Papas";
     if (tipoPapa) linea += ` ${tipoPapa}`;
     if (textoCondimentos) linea += ` ${textoCondimentos}`;
     if (costoPapaExtra > 0) linea += " (+$8)";
 
     lineas.push(linea);
 
-    // ✅ SOLO SUMAMOS AQUÍ EL EXTRA DE PAPA UNA VEZ
     precio += costoPapaExtra;
 }
-
-/* Aquí debe ir todo lo demás que suma a "extras" (doble aderezo, etc.) */
-/* ...otras lógicas de extras... */
-
-/* ✅ Al final sigues usando "extras" como antes */
-precio += extras;
-
-return {
-    descripcion: `${nombre}\n${lineas.join("\n")}`,
-    precio
-};
 
   /* ========= CARRITO, TOTAL Y CAMBIO ========= */
   function refrescarTabla(){
