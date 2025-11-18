@@ -642,12 +642,7 @@ table tfoot tr.total-row td {
 /* ==== FORMULARIO DE CLIENTE MÁS LLAMATIVO ==== */
 
 /* Fondo de cada card */
-.card {
-    background: #fffdf5 !important; /* Amarillo súper suave */
-    border: 2px solid #ffe29f !important;
-    box-shadow: 0 4px 12px rgba(255, 185, 0, 0.18) !important;
-    border-radius: 16px !important;
-}
+
 
 /* Títulos de los labels */
 .card label {
@@ -657,26 +652,7 @@ table tfoot tr.total-row td {
     margin-bottom: 6px;
 }
 
-/* Inputs */
-.card input,
-.card select,
-.card textarea {
-    background: #ffffff !important;
-    border: 2px solid #e0c48a !important;
-    border-radius: 12px !important;
-    font-size: 1.1rem !important;
-    padding: 12px 16px !important;
-    transition: 0.2s ease !important;
-}
 
-/* Focus con glow amarillo */
-.card input:focus,
-.card select:focus,
-.card textarea:focus {
-    border-color: #ffb300 !important;
-    box-shadow: 0 0 0 4px rgba(255, 179, 0, 0.3) !important;
-    background: #fff9e6 !important;
-}
 
 /* Placeholder más visible */
 .card input::placeholder,
@@ -700,6 +676,38 @@ table tfoot tr.total-row td {
 .card .note {
     font-size: 0.95rem !important;
     color: #a16c00 !important;
+}
+#listaSugerencias {
+    background: var(--card-bg) !important;
+    border: 2px solid var(--card-border) !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+}
+
+#listaSugerencias div {
+    color: var(--text-color) !important;
+    border-bottom: 1px solid var(--card-border) !important;
+    background: var(--card-bg) !important;
+}
+
+#listaSugerencias div:hover {
+    background: var(--step-bg-active) !important;
+}
+
+/* ==== ARREGLA EL BUSCADOR EN MODO OSCURO ==== */
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+    background: #3b2a23 !important; 
+    color: #ffecb3 !important;
+    border-color: #8d6e63 !important;
+}
+
+:root[data-theme="dark"] input:focus,
+:root[data-theme="dark"] select:focus,
+:root[data-theme="dark"] textarea:focus {
+    background: #4a352d !important;
+    box-shadow: 0 0 0 3px rgba(255,179,0,0.3) !important;
 }
 
 </style>
@@ -750,6 +758,43 @@ table tfoot tr.total-row td {
     <!-- PASO 1 -->
     <section class="step active" id="step1">
       <h2>Paso 1 · Elige el alimento</h2>
+<!-- Buscador global con autocomplete -->
+<div class="card" style="margin-bottom:12px; position:relative;">
+  <label for="buscadorGlobal" style="font-weight:800; font-size:1.1rem;">
+    🔍 Buscar alimento (global)
+  </label>
+  <input 
+    type="text" 
+    id="buscadorGlobal" 
+    placeholder="Escribe: boneless, combo, papas, dedos, alitas..."
+    style="font-size:1.2rem; padding:12px; border-radius:14px;"
+  >
+
+  <!-- Contenedor de sugerencias -->
+  <div id="listaSugerencias" 
+       style="#buscadorGlobal {
+    background: var(--input-bg) !important;
+    border: 2px solid var(--input-border) !important;
+    color: var(--text-color) !important;
+    padding: 12px 16px !important;
+    border-radius: 12px !important;
+    font-size: 1.15rem !important;
+    transition: 0.2s ease;
+}
+
+#buscadorGlobal::placeholder {
+    color: var(--label-color) !important;
+    opacity: 0.7 !important;
+}
+
+#buscadorGlobal:focus {
+    border-color: var(--input-border-focus) !important;
+    box-shadow: 0 0 0 3px rgba(255,179,0,0.3) !important;
+}
+">
+  </div>
+</div>
+
       <p class="helper">Selecciona la categoría y el alimento que vas a agregar al pedido.</p>
 
       <div class="card">
@@ -829,12 +874,12 @@ table tfoot tr.total-row td {
           <div class="option-title">Papas del alimento</div>
           <label for="tipoPapa">Tipo de papa</label>
           <select id="tipoPapa">
-            <option value="Francesa" data-extra="0">Francesa (incluida)</option>
-            <option value="Curly" data-extra="8">Curly (+$8)</option>
-            <option value="Waffle" data-extra="8">Waffle (+$8)</option>
-            <option value="Gajo" data-extra="8">Gajo (+$8)</option>
-          </select>
-          <p class="note">Cambio de tipo de papa tiene costo adicional de $8.</p>
+    <option value="Francesa" data-extra="8">Francesa</option>
+    <option value="Curly" data-extra="8">Curly</option>
+    <option value="Waffle" data-extra="8">Waffle</option>
+    <option value="Gajo" data-extra="8">Gajo</option>
+</select>
+          <p class="note">Cambio de tipo de papa tiene costo adicional de $5 y $10.</p>
         </div>
 
         <div id="seccionCondimentosPapas" style="margin-top:8px;">
@@ -1240,6 +1285,7 @@ document.getElementById("btnUbicacion").addEventListener("click", ()=>{
       selectProducto.appendChild(opt);
     });
     actualizarOpcionesSegunProducto();
+
   }
 
   function ocultarSeccionesOpciones(){
@@ -1451,7 +1497,7 @@ document.getElementById("btnUbicacion").addEventListener("click", ()=>{
         lineas.push(`• Mayonesa ${mayo.toLowerCase()}`);
         lineas.push(`• Salsa ${salsa.toLowerCase()}`);
     }
-/* ==== PAPAS (CORREGIDO – MUESTRA TODOS LOS “SIN”) ==== */
+/* ==== PAPAS (CORREGIDO Y COMPLETO: incluye untado, aparte y sin) ==== */
 if (prod.incluyePapas) {
 
     // Tipo de papa si aplica
@@ -1472,17 +1518,21 @@ if (prod.incluyePapas) {
     /* Creamos lista de condimentos */
     let condimentos = [];
 
-    // SALSA
+    // === SALSA ===
     if (salsa === "Sin") condimentos.push("sin salsa");
     else if (salsa === "Aparte") condimentos.push("salsa aparte");
+    else if (salsa === "Untado") condimentos.push("salsa untada");
 
-    // CATSUP
+    // === CATSUP ===
     if (catsup === "Sin") condimentos.push("sin catsup");
     else if (catsup === "Aparte") condimentos.push("catsup aparte");
+    else if (catsup === "Untado") condimentos.push("catsup untada");
 
-    // QUESO
+    // === QUESO ===
     if (queso === "Sin") condimentos.push("sin queso");
     else if (queso === "Aparte") condimentos.push("queso aparte");
+    else if (queso === "Untado") condimentos.push("queso untado");
+
 
     /* Unir condimentos en una sola frase */
     let textoCondimentos = "";
@@ -1502,6 +1552,7 @@ if (prod.incluyePapas) {
     lineas.push(linea);
     extras += costoPapaExtra;
 }
+
 
     precio += extras;
 
@@ -1738,7 +1789,99 @@ msg += "Gracias por tu pedido 😄";
       }
     });
   });
+
+/* ==================================================
+   🔍 BUSCADOR GLOBAL + AUTOCOMPLETE PROFESIONAL
+================================================== */
+
+const buscadorGlobal = document.getElementById("buscadorGlobal");
+const listaSugerencias = document.getElementById("listaSugerencias");
+
+/* Iconos por categoría */
+function iconoCategoria(cat){
+  switch(cat){
+    case "individual": return "🍗";
+    case "papas": return "🍟";
+    case "banderillas": return "🌭";
+    case "mini": return "🧀";
+    case "super": return "🔥";
+    case "mega": return "💥";
+    case "extra": return "➕";
+    default: return "🍽️";
+  }
+}
+
+/* Mostrar sugerencias */
+buscadorGlobal.addEventListener("input", function(){
+  const texto = buscadorGlobal.value.toLowerCase().trim();
+  listaSugerencias.innerHTML = "";
+
+  if(texto === ""){
+    listaSugerencias.style.display = "none";
+    return;
+  }
+
+  const resultados = PRODUCTOS.filter(p =>
+    p.nombre.toLowerCase().includes(texto)
+  );
+
+  if(resultados.length === 0){
+    listaSugerencias.style.display = "none";
+    return;
+  }
+
+  resultados.forEach(prod=>{
+    const item = document.createElement("div");
+
+    item.innerHTML = `
+      <span class="icon">${iconoCategoria(prod.categoria)}</span>
+      ${prod.nombre} - $${prod.precio}
+    `;
+
+    item.addEventListener("click", ()=>{
+      seleccionarProductoGlobal(prod);
+    });
+
+    listaSugerencias.appendChild(item);
+  });
+
+  listaSugerencias.style.display = "block";
+});
+
+/* Selección automática de categoría + producto */
+function seleccionarProductoGlobal(prod){
+  // Selecciona categoría correcta
+  document.getElementById("categoria").value = prod.categoria;
+
+  // Actualiza lista de productos visibles
+  actualizarProductos();
+
+  // Selecciona el producto correcto
+  document.getElementById("producto").value = prod.id;
+
+  // Cargar sus opciones
+  actualizarOpcionesSegunProducto();
+
+  // Colocar en buscador
+  buscadorGlobal.value = prod.nombre;
+
+  // Ocultar sugerencias
+  listaSugerencias.style.display = "none";
+
+  // Scroll suave a producto
+  document.getElementById("producto").scrollIntoView({behavior:"smooth"});
+}
+
+/* Cerrar sugerencias si se hace clic afuera */
+document.addEventListener("click", (e)=>{
+  if(!buscadorGlobal.contains(e.target)){
+    listaSugerencias.style.display = "none";
+  }
+});
+
+
 </script>
 </body>
 </html>
+
 
