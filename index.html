@@ -1493,58 +1493,44 @@ document.getElementById("btnUbicacion").addEventListener("click", ()=>{
         lineas.push(`• Mayonesa ${mayo.toLowerCase()}`);
         lineas.push(`• Salsa ${salsa.toLowerCase()}`);
     }
-/* ==== PAPAS (SEGURO · NO ROMPE PASO 1) ==== */
-if (prod.incluyePapas && document.getElementById("seccionCondimentosPapas").style.display !== "none") {
 
-    // Tipo de papa si aplica
-    let tipoPapa = null;
-    let costoPapaExtra = 0;
+    /* ==== PAPAS ==== */
+    if (prod.incluyePapas && document.getElementById("seccionCondimentosPapas").style.display !== "none") {
 
-    const selTipo = document.getElementById("tipoPapa");
-    if (selTipo && prod.categoria !== "papas") {
-        tipoPapa = selTipo.value;
-        costoPapaExtra = parseFloat(selTipo.options[selTipo.selectedIndex].dataset.extra || "0");
+        let tipoPapa = null;
+        let costoPapaExtra = 0;
+
+        const selTipo = document.getElementById("tipoPapa");
+        if (selTipo && prod.categoria !== "papas") {
+            tipoPapa = selTipo.value;
+            costoPapaExtra = parseFloat(selTipo.options[selTipo.selectedIndex].dataset.extra || "0");
+        }
+
+        const queso  = document.querySelector('input[name="quesoPapa"]:checked')?.value;
+        const catsup = document.querySelector('input[name="catsupPapa"]:checked')?.value;
+        const salsa  = document.querySelector('input[name="salsaPapa"]:checked')?.value;
+
+        let condimentos = [];
+
+        if (salsa) condimentos.push(salsa === "Sin" ? "sin salsa" : salsa === "Aparte" ? "salsa aparte" : "salsa untada");
+        if (catsup) condimentos.push(catsup === "Sin" ? "sin catsup" : catsup === "Aparte" ? "catsup aparte" : "catsup untado");
+        if (queso) condimentos.push(queso === "Sin" ? "sin queso" : queso === "Aparte" ? "queso aparte" : "queso untado");
+
+        let linea = "• Papas";
+        if (tipoPapa) linea += ` ${tipoPapa}`;
+        if (condimentos.length > 0) linea += " " + condimentos.join(" y ");
+        if (costoPapaExtra > 0) linea += " (+$8)";
+
+        lineas.push(linea);
+
+        precio += costoPapaExtra;
     }
 
-    // Condimentos - SOLO si existen (no existen en Paso 1)
-    const quesoInput  = document.querySelector('input[name="quesoPapa"]:checked');
-    const catsupInput = document.querySelector('input[name="catsupPapa"]:checked');
-    const salsaInput  = document.querySelector('input[name="salsaPapa"]:checked');
-
-    const queso  = quesoInput  ? quesoInput.value  : null;
-    const catsup = catsupInput ? catsupInput.value : null;
-    const salsa  = salsaInput  ? salsaInput.value  : null;
-
-    let condimentos = [];
-
-    if (salsa) {
-        if (salsa === "Sin") condimentos.push("sin salsa");
-        else if (salsa === "Aparte") condimentos.push("salsa aparte");
-        else condimentos.push("salsa untada");
-    }
-
-    if (catsup) {
-        if (catsup === "Sin") condimentos.push("sin catsup");
-        else if (catsup === "Aparte") condimentos.push("catsup aparte");
-        else condimentos.push("catsup untada");
-    }
-
-    if (queso) {
-        if (queso === "Sin") condimentos.push("sin queso");
-        else if (queso === "Aparte") condimentos.push("queso aparte");
-        else condimentos.push("queso untado");
-    }
-
-    let textoCondimentos = condimentos.join(" y ");
-
-    let linea = "• Papas";
-    if (tipoPapa) linea += ` ${tipoPapa}`;
-    if (textoCondimentos) linea += ` ${textoCondimentos}`;
-    if (costoPapaExtra > 0) linea += " (+$8)";
-
-    lineas.push(linea);
-
-    precio += costoPapaExtra;
+    /* ===== RETURN FINAL ===== */
+    return {
+        descripcion: `${nombre}\n${lineas.join("\n")}`,
+        precio: precio + extras
+    };
 }
 
   /* ========= CARRITO, TOTAL Y CAMBIO ========= */
