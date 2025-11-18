@@ -709,7 +709,17 @@ table tfoot tr.total-row td {
     background: #4a352d !important;
     box-shadow: 0 0 0 3px rgba(255,179,0,0.3) !important;
 }
+/* ===== FIX: evitar que el carrito tape botones ===== */
+.floating-cart {
+    bottom: 70px !important;   /* LO BAJA MÁS ABAJO */
+    right: 16px !important;
+}
 
+@media (max-width: 600px) {
+    .floating-cart {
+        bottom: 85px !important;   /* AÚN MÁS ABAJO EN CELULARES */
+    }
+}
 </style>
 
 </head>
