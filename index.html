@@ -1533,14 +1533,8 @@ if (prod.incluyePapas) {
     else if (queso === "Aparte") condimentos.push("queso aparte");
     else if (queso === "Untado") condimentos.push("queso untado");
 
-
     /* Unir condimentos en una sola frase */
-    let textoCondimentos = "";
-    if (condimentos.length === 1) {
-        textoCondimentos = condimentos[0];
-    } else if (condimentos.length > 1) {
-        textoCondimentos = condimentos.join(" y ");
-    }
+    let textoCondimentos = condimentos.join(" y ");
 
     /* Construcción final */
     let linea = "• Papas";
@@ -1550,18 +1544,18 @@ if (prod.incluyePapas) {
     if (costoPapaExtra > 0) linea += " (+$8)";
 
     lineas.push(linea);
-    extras += costoPapaExtra;
+
+    // 🔥 SUMAR SOLO 1 VEZ EL EXTRA
+    precio += costoPapaExtra;
 }
 
+// ❌ ELIMINADO: precio += extras (evita suma doble)
 
-    precio += extras;
-
-    return {
-        descripcion: `${nombre}\n${lineas.join("\n")}`,
-        precio
-    };
-}
-
+// Mantén tu return igual
+return {
+    descripcion: `${nombre}\n${lineas.join("\n")}`,
+    precio
+};
 
   /* ========= CARRITO, TOTAL Y CAMBIO ========= */
   function refrescarTabla(){
