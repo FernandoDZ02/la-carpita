@@ -639,6 +639,13 @@ table tfoot tr.total-row td {
     background: #ff9800 !important;
     color: #212121 !important;
 }
+/* Fix para textos de alimentos del combo EN MODO OSCURO */
+:root[data-theme="dark"] #contenedorAderezosCombo > div > div:first-child {
+    color: #ffcc5c !important;
+    font-weight: 900 !important;
+}
+
+
 /* ==== FORMULARIO DE CLIENTE MÁS LLAMATIVO ==== */
 
 /* Fondo de cada card */
@@ -709,17 +716,7 @@ table tfoot tr.total-row td {
     background: #4a352d !important;
     box-shadow: 0 0 0 3px rgba(255,179,0,0.3) !important;
 }
-/* ===== FIX: evitar que el carrito tape botones ===== */
-.floating-cart {
-    bottom: 70px !important;   /* LO BAJA MÁS ABAJO */
-    right: 16px !important;
-}
 
-@media (max-width: 600px) {
-    .floating-cart {
-        bottom: 85px !important;   /* AÚN MÁS ABAJO EN CELULARES */
-    }
-}
 </style>
 
 </head>
@@ -773,7 +770,6 @@ table tfoot tr.total-row td {
   <label for="buscadorGlobal" style="font-weight:800; font-size:1.1rem;">
     🔍 Buscar alimento (global)
   </label>
-
   <input 
     type="text" 
     id="buscadorGlobal" 
@@ -781,23 +777,28 @@ table tfoot tr.total-row td {
     style="font-size:1.2rem; padding:12px; border-radius:14px;"
   >
 
-  <!-- Contenedor de sugerencias CORREGIDO -->
-  <div id="listaSugerencias"
-       style="
-        position:absolute;
-        top:100%;
-        left:0;
-        right:0;
-        background:var(--app-bg);
-        border:1px solid var(--card-border);
-        border-radius:12px;
-        margin-top:4px;
-        display:none;
-        z-index:999;
-        max-height:250px;
-        overflow-y:auto;
-        box-shadow:0 4px 14px rgba(0,0,0,0.2);
-       ">
+  <!-- Contenedor de sugerencias -->
+  <div id="listaSugerencias" 
+       style="#buscadorGlobal {
+    background: var(--input-bg) !important;
+    border: 2px solid var(--input-border) !important;
+    color: var(--text-color) !important;
+    padding: 12px 16px !important;
+    border-radius: 12px !important;
+    font-size: 1.15rem !important;
+    transition: 0.2s ease;
+}
+
+#buscadorGlobal::placeholder {
+    color: var(--label-color) !important;
+    opacity: 0.7 !important;
+}
+
+#buscadorGlobal:focus {
+    border-color: var(--input-border-focus) !important;
+    box-shadow: 0 0 0 3px rgba(255,179,0,0.3) !important;
+}
+">
   </div>
 </div>
 
@@ -885,7 +886,7 @@ table tfoot tr.total-row td {
     <option value="Waffle" data-extra="8">Waffle</option>
     <option value="Gajo" data-extra="8">Gajo</option>
 </select>
-          <p class="note">Cambio de tipo de papa tiene costo adicional de $8.</p>
+          <p class="note">Cambio de tipo de papa tiene costo adicional.</p>
         </div>
 
         <div id="seccionCondimentosPapas" style="margin-top:8px;">
@@ -1140,8 +1141,8 @@ document.getElementById("btnUbicacion").addEventListener("click", ()=>{
     "Miel habanero",
     "Koreana",
     "BBQ",
-    "Ranch habanero",
-"Adobadas"
+    "Ranch habanero", 
+    "Adobadas"
   ];
 
   const PRODUCTOS = [
@@ -1504,45 +1505,71 @@ document.getElementById("btnUbicacion").addEventListener("click", ()=>{
         lineas.push(`• Mayonesa ${mayo.toLowerCase()}`);
         lineas.push(`• Salsa ${salsa.toLowerCase()}`);
     }
+/* ==== PAPAS (CORREGIDO Y COMPLETO: incluye untado, aparte y sin) ==== */
+if (prod.incluyePapas) {
 
-    /* ==== PAPAS ==== */
-    if (prod.incluyePapas && document.getElementById("seccionCondimentosPapas").style.display !== "none") {
+    // Tipo de papa si aplica
+    let tipoPapa = null;
+    let costoPapaExtra = 0;
 
-        let tipoPapa = null;
-        let costoPapaExtra = 0;
-
+    if (prod.categoria !== "papas") {
         const selTipo = document.getElementById("tipoPapa");
-        if (selTipo && prod.categoria !== "papas") {
-            tipoPapa = selTipo.value;
-            costoPapaExtra = parseFloat(selTipo.options[selTipo.selectedIndex].dataset.extra || "0");
-        }
-
-        const queso  = document.querySelector('input[name="quesoPapa"]:checked')?.value;
-        const catsup = document.querySelector('input[name="catsupPapa"]:checked')?.value;
-        const salsa  = document.querySelector('input[name="salsaPapa"]:checked')?.value;
-
-        let condimentos = [];
-
-        if (salsa) condimentos.push(salsa === "Sin" ? "sin salsa" : salsa === "Aparte" ? "salsa aparte" : "salsa untada");
-        if (catsup) condimentos.push(catsup === "Sin" ? "sin catsup" : catsup === "Aparte" ? "catsup aparte" : "catsup untado");
-        if (queso) condimentos.push(queso === "Sin" ? "sin queso" : queso === "Aparte" ? "queso aparte" : "queso untado");
-
-        let linea = "• Papas";
-        if (tipoPapa) linea += ` ${tipoPapa}`;
-        if (condimentos.length > 0) linea += " " + condimentos.join(" y ");
-        if (costoPapaExtra > 0) linea += " (+$8)";
-
-        lineas.push(linea);
-
-        precio += costoPapaExtra;
+        tipoPapa = selTipo.value;
+        costoPapaExtra = parseFloat(selTipo.options[selTipo.selectedIndex].dataset.extra || "0");
     }
 
-    /* ===== RETURN FINAL ===== */
+    // Condimentos seleccionados
+    const queso = document.querySelector('input[name="quesoPapa"]:checked').value;
+    const catsup = document.querySelector('input[name="catsupPapa"]:checked').value;
+    const salsa = document.querySelector('input[name="salsaPapa"]:checked').value;
+
+    /* Creamos lista de condimentos */
+    let condimentos = [];
+
+    // === SALSA ===
+    if (salsa === "Sin") condimentos.push("sin salsa");
+    else if (salsa === "Aparte") condimentos.push("salsa aparte");
+    else if (salsa === "Untado") condimentos.push("salsa untada");
+
+    // === CATSUP ===
+    if (catsup === "Sin") condimentos.push("sin catsup");
+    else if (catsup === "Aparte") condimentos.push("catsup aparte");
+    else if (catsup === "Untado") condimentos.push("catsup untada");
+
+    // === QUESO ===
+    if (queso === "Sin") condimentos.push("sin queso");
+    else if (queso === "Aparte") condimentos.push("queso aparte");
+    else if (queso === "Untado") condimentos.push("queso untado");
+
+
+    /* Unir condimentos en una sola frase */
+    let textoCondimentos = "";
+    if (condimentos.length === 1) {
+        textoCondimentos = condimentos[0];
+    } else if (condimentos.length > 1) {
+        textoCondimentos = condimentos.join(" y ");
+    }
+
+    /* Construcción final */
+    let linea = "• Papas";
+
+    if (tipoPapa) linea += ` ${tipoPapa}`;
+    if (textoCondimentos) linea += ` ${textoCondimentos}`;
+    if (costoPapaExtra > 0) linea += " (+$8)";
+
+    lineas.push(linea);
+    extras += costoPapaExtra;
+}
+
+
+    precio += extras;
+
     return {
         descripcion: `${nombre}\n${lineas.join("\n")}`,
-        precio: precio + extras
+        precio
     };
 }
+
 
   /* ========= CARRITO, TOTAL Y CAMBIO ========= */
   function refrescarTabla(){
@@ -1637,6 +1664,17 @@ document.getElementById("btnUbicacion").addEventListener("click", ()=>{
     }
     return true;
   }
+// ===== CÓDIGO VERIFICADOR =====
+function generarCodigoVerificadorPedido(subtotal, envio, total) {
+    let base = `subtotal:${subtotal}|envio:${envio}|total:${total}`;
+    let hash = 0;
+
+    for (let i = 0; i < base.length; i++) {
+        hash = (hash * 31 + base.charCodeAt(i)) % 1000000;
+    }
+
+    return hash.toString().padStart(6, "0");
+}
 
   /* ========= WHATSAPP ========= */
   function enviarWhatsApp(){
@@ -1644,7 +1682,12 @@ document.getElementById("btnUbicacion").addEventListener("click", ()=>{
         alert("Agrega al menos un alimento al pedido.");
         return;
     }
-
+     // 🔍 VALIDAR SI NO MARCÓ ENVÍO A DOMICILIO
+    const envioMarcado = document.getElementById("chkEnvio").checked;
+    if (!envioMarcado) {
+        alert("⚠ No seleccionaste envío a domicilio.\nSi quieres envío, marca la casilla antes de enviar el pedido.");
+        return;
+    }
     let msg = "🍗 PEDIDO NUEVO - LA CARPITA 🍗\n";
     msg += "──────────────────────────\n\n";
 
@@ -1654,22 +1697,89 @@ document.getElementById("btnUbicacion").addEventListener("click", ()=>{
         msg += "──────────────────────────\n\n";
     });
 
-    const subtotal = carrito.reduce((s,it)=>s+it.precio,0);
-    const envio = document.getElementById("chkEnvio").checked ? COSTO_ENVIO : 0;
-    const total = subtotal + envio;
+   // Calcular totales
+   const CTA_NOMBRE = "Fernando Gael Duran Zamora";
+const CTA_BANCO = "Nu";
+const CTA_NUMERO = "638180000136730578";
+const COMISION_TARJETA = 0.035;
 
-    msg += `Subtotal: $${subtotal.toFixed(2)}\n`;
-    msg += `Envío: ${envio ? "$10 🚚" : "No aplica"}\n`;
-    msg += `TOTAL: $${total.toFixed(2)}\n\n`;
-    // Dirección escrita o ubicación de Google Maps
-const direccion = document.getElementById("direccionCliente").value.trim();
 
-if (direccion !== "") {
-    msg += `📍 Ubicación / Dirección:\n${direccion}\n\n`;
+const subtotal = carrito.reduce((s,it)=>s+it.precio,0);
+const envio = document.getElementById("chkEnvio").checked ? COSTO_ENVIO : 0;
+const total = subtotal + envio;
+
+// Método de pago
+const metodo = document.getElementById("metodoPago").value;
+const pagaCon = parseFloat(document.getElementById("pagaCon").value);
+
+msg += `Subtotal: $${subtotal.toFixed(2)}\n`;
+msg += `Envío: ${envio ? "$10 🚚" : "No aplica"}\n`;
+msg += `TOTAL: $${total.toFixed(2)}\n\n`;
+
+// Si paga con efectivo, validar y calcular cambio
+if (metodo === "Efectivo") {
+    if (isNaN(pagaCon) || pagaCon <= 0) {
+        alert("⚠ Falta indicar con cuánto paga el cliente.");
+        return;
+    }
+
+    const cambio = pagaCon - total;
+
+    msg += `💵 Pago en efectivo\n`;
+    msg += `Paga con: $${pagaCon.toFixed(2)}\n`;
+    msg += `Cambio: $${cambio.toFixed(2)}\n\n`;
+} else if (metodo === "Transferencia") {
+    msg += `🏦 Pago por transferencia\n`;
+    msg += `Banco: ${CTA_BANCO}\n`;
+    msg += `Nombre: ${CTA_NOMBRE}\n`;
+    msg += `Cuenta/CLABE: ${CTA_NUMERO}\n`;
+    msg += `📎 Enviar comprobante por favor.\n\n`;
+
+} else if (metodo === "Tarjeta") {
+    
+    const comision = total * COMISION_TARJETA;
+    const totalConComision = total + comision;
+
+    msg += `💳 Pago con tarjeta\n`;
+    msg += `Comisión (3.5%): $${comision.toFixed(2)}\n`;
+    msg += `Total con comisión: $${totalConComision.toFixed(2)}\n\n`;
+
+    // Actualiza el total para el envío final
+    totalFinal = totalConComision;
+
+} else {
+    msg += `Método de pago: ${metodo}\n\n`;
 }
 
-msg += "Gracias por tu pedido 😄";
 
+    // ===== CÓDIGO VERIFICADOR =====
+    const codigo = generarCodigoVerificadorPedido(subtotal, envio, total);
+    msg += `🔐 Código verificador: ${codigo}\n`;
+   
+    // Dirección escrita o ubicación de Google Maps
+    const direccion = document.getElementById("direccionCliente").value.trim();
+    if (direccion !== "") {
+        msg += `📍 Ubicación / Dirección:\n${direccion}\n\n`;
+    }
+// Datos del cliente
+const nombre = document.getElementById("nombreCliente").value.trim();
+if (nombre !== "") {
+    msg += `👤 Cliente: ${nombre}\n`;
+}
+
+const telefono = document.getElementById("telefonoCliente").value.trim();
+if (telefono !== "") {
+    msg += `📞 Teléfono: ${telefono}\n`;
+}
+
+const referencia = document.getElementById("referenciaCliente").value.trim();
+if (referencia !== "") {
+    msg += `📌 Referencias: ${referencia}\n`;
+}
+
+msg += "\n"; // Espacio antes de cerrar el mensaje
+
+    msg += "Gracias por tu pedido 😄";
 
     window.open(`https://wa.me/${NUM_WHATSAPP_LA_CARPITA}?text=${encodeURIComponent(msg)}`);
 }
@@ -1864,6 +1974,3 @@ document.addEventListener("click", (e)=>{
 </script>
 </body>
 </html>
-
-
-
