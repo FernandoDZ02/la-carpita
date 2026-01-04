@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Carpita - Menú</title>
+
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+<div class="app">
+
+  <header>
+    <div class="top-bar">
+      <img src="img/LC.png" alt="La Carpita" class="top-bar-logo">
+    </div>
+
+    <div class="title-row">
+      <div>
+        <h1 class="page-title">Explora nuestro menú</h1>
+        <p class="subtitle">Elige una categoría para comenzar</p>
+      </div>
+      <div class="chip-toggle">
+        <button class="chip">Inicio</button>
+      </div>
+    </div>
+    <button onclick="iniciarGuia()" class="btn-secondary">
+  ❓ ¿Cómo pedir?
+</button>
+
+   <div id="guiaOverlay" style="display:none;">
+  <div id="guiaBox">
+
+    <div id="guiaHeader">
+      <span>🧭 Guía rápida</span>
+      <button id="guiaSkip">Omitir</button>
+    </div>
+
+    <div id="guiaTexto"></div>
+
+    <button id="guiaBtn">Siguiente</button>
+  </div>
+</div>
+
+
+  </header>
+
+  <!-- GRID DE CATEGORÍAS -->
+  <div class="menu-grid">
+    <div class="menu-card" onclick="openModal('boneless')">
+      <img src="img/BS.png" alt="Boneless">
+      <span>Boneless</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('tenders')">
+      <img src="img/TS.png" alt="Tenders">
+      <span>Tenders</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('alitas')">
+      <img src="img/A.png" alt="Alitas">
+      <span>Alitas</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('palomitas')">
+      <img src="img/P.png" alt="Palomitas">
+      <span>Palomitas</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('dedos')">
+      <img src="img/DQ.png" alt="Dedos de queso">
+      <span>Dedos de queso</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('banderillas')">
+      <img src="img/B.png" alt="Banderillas">
+      <span>Banderillas</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('mini_banderillas')">
+      <img src="img/MB.png" alt="Mini Banderillas">
+      <span>Mini Banderillas</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('papas')">
+      <img src="img/papas.png" alt="Papas">
+      <span>Papas</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('super')">
+      <img src="img/SC1.png" alt="Súper combos">
+      <span>Súper combos</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('mega')">
+      <img src="img/mcombo.png" alt="Mega combos">
+      <span>Mega combos</span>
+    </div>
+
+    <div class="menu-card" onclick="openModal('aderezos')">
+      <img src="img/Aderezos.png" alt="Aderezos">
+      <p>Aderezos</p>
+    </div>
+  </div>
+
+  <!-- BARRA INFERIOR -->
+  <div class="bottom-bar">
+    <div class="bottom-total">
+      <span>Total</span>
+      <strong id="bottomTotal">$0.00</strong>
+    </div>
+  </div>
+
+  <!-- MODAL GENERAL -->
+  <div class="modal" id="modal">
+    <div class="modal-content" id="modal-content"></div>
+  </div>
+
+</div> <!-- /app -->
+
+<!-- TOAST -->
+<div id="toast" class="toast">Producto agregado ✔</div>
+
+<!-- CARRITO FLOTANTE -->
+<div id="btnCarritoFlotante" class="floating-cart" onclick="abrirCarrito()">
+  <span>🛒</span>
+  <div class="cart-badge" id="cart-count">0</div>
+</div>
+
+<!-- PANEL LATERAL CARRITO -->
+<div class="cart-panel" id="cart-panel">
+  <div class="cart-panel-header">
+    <h2 id="cart-panel-title">Tu carrito</h2>
+    <button class="btn-secondary" style="width:auto;padding:6px 10px;" onclick="cerrarCarrito()">✕</button>
+  </div>
+  <div class="cart-panel-body" id="cart-panel-body"></div>
+  <div class="cart-panel-footer" id="cart-panel-footer"></div>
+</div>
+
+<!-- MODAL: Selecciona envío obligatorio -->
+<div id="modalEnvioObligatorio" class="modal-overlay">
+  <div class="modal-envio-box">
+    <h3>Selecciona tu método de entrega</h3>
+    <p>Antes de enviar tu pedido, debes indicar si deseas <strong>envío a domicilio (+$10)</strong> o recoger en el punto de entrega.</p>
+    <button class="btn-modal-aceptar" onclick="cerrarModalEnvioObligatorio()">Entendido</button>
+  </div>
+</div>
+<!-- MODAL: Confirmación de producto agregado -->
+<div id="modalProductoAgregado" class="modal-overlay modal-agregado">
+  <div class="modal-envio-box" style="padding:25px;">
+    <span class="icono-carrito-modal">🛒</span>
+    <h3 style="margin-bottom:5px;">¡Producto agregado!</h3>
+    <p style="font-size:1.05rem; color:#333; margin-bottom:18px;">
+      Tu alimento se añadió al carrito correctamente.
+    </p>
+
+    <button class="btn-modal-aceptar" onclick="cerrarModalProductoAgregado()">
+      Entendido
+    </button>
+  </div>
+</div>
+
+<script src="fn.js"></script>
+
+
+</body>
+</html>
+
+
+
