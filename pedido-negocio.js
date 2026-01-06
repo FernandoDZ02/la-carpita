@@ -289,11 +289,24 @@ function tieneEnvio(texto){
 function verResumenHoy(){
   const r = obtenerResumenHoy();
 
-  alert(
-`📊 Resumen del día
-
-🧾 Pedidos: ${r.pedidos}
+  mostrarAlert(
+    "📊 Corte del día",
+`🧾 Pedidos: ${r.pedidos}
 💰 Total vendido: $${r.totalVendido.toFixed(2)}
 🚚 Envíos: ${r.envios}`
   );
+}
+
+/* ==========================
+   ALERTA BONITA
+========================== */
+
+function mostrarAlert(titulo, mensaje){
+  document.getElementById("alertTitle").textContent = titulo || "Aviso";
+  document.getElementById("alertMessage").textContent = mensaje || "";
+  document.getElementById("alertOverlay").style.display = "flex";
+}
+
+function cerrarAlert(){
+  document.getElementById("alertOverlay").style.display = "none";
 }
