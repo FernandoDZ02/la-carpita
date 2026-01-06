@@ -14,7 +14,11 @@
 
   <header>
     <div class="top-bar">
-      <img src="img/LC.png" alt="La Carpita" class="top-bar-logo">
+      <img src="img/LC.png"
+     alt="La Carpita"
+     class="top-bar-logo"
+     id="logoSecreto">
+
     </div>
 
     <div class="title-row">
@@ -24,6 +28,7 @@
       </div>
       <div class="chip-toggle">
         <button class="chip">Inicio</button>
+        <button id="btnTheme" class="chip" onclick="toggleTheme()">🌙</button>
       </div>
     </div>
     <button onclick="iniciarGuia()" class="btn-secondary">
@@ -162,11 +167,26 @@
   </div>
 </div>
 
+<!-- MODAL ALERTA BONITA -->
+<div id="alertModal" class="alert-overlay" style="display:none;">
+  <div class="alert-box">
+    <div class="alert-icon">⚠️</div>
+    <h3 id="alertTitle">Atención</h3>
+    <p id="alertMessage"></p>
+    <button class="alert-btn" onclick="cerrarAlert()">Aceptar</button>
+  </div>
+</div>
+
 <script src="fn.js"></script>
 
 
 </body>
 </html>
+
+
+
+
+
 
 
 
