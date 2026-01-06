@@ -4,6 +4,11 @@ const COSTO_ENVIO = 10;
 const COMISION_TARJETA = 0.035;
 const NUM_WHATSAPP_LA_CARPITA = "525657861068";
 let ubicacionManual = false;
+let modoPapas = "todo"; // todo | solo | personalizar
+const URL_PANEL_NEGOCIO =
+  "https://fernandodz02.github.io/la-carpita/pedido-negocio.html";
+
+
 
 const ADEREZOS = [
   "Ranch",
@@ -46,7 +51,16 @@ const opciones = {
     {id:"papas_francesa", nombre:"Papas Francesa", precio:50, img:"img/PF.png", incluyePapas:true, tieneAderezo:false},
     {id:"papas_curly", nombre:"Papas Curly", precio:60, img:"img/PC.png", incluyePapas:true, tieneAderezo:false},
     {id:"papas_waffle", nombre:"Papas Waffle", precio:60, img:"img/PW.png", incluyePapas:true, tieneAderezo:false},
-    {id:"papas_gajo", nombre:"Papas Gajo", precio:60, img:"img/PG.png", incluyePapas:true, tieneAderezo:false}
+    {id:"papas_gajo", nombre:"Papas Gajo", precio:60, img:"img/PG.png", incluyePapas:true, tieneAderezo:false},
+  {
+    id: "papas_mix",
+    nombre: "Mix de papas",
+    precio: 115, // base (2 papas)
+    img: "img/papas.png",
+    incluyePapas: true,
+    tieneAderezo: false,
+    esMixPapas: true
+  }
   ],
   banderillas: [
     {id:"band_salchicha", nombre:"Banderilla de salchicha", precio:25, img:"img/B.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
@@ -384,6 +398,58 @@ html += `
 </div>
     `;
   }
+/* ----------------------------------------
+     MIX DE PAPAS (2, 3 o 4)
+---------------------------------------- */
+if (p.esMixPapas) {
+  html += `
+  <div class="modal-section">
+    <div class="modal-section-title">Arma tu mix de papas</div>
+
+    <label class="modal-label">Cantidad de papas</label>
+    <select id="mixCantidad" class="select-bonito">
+      <option value="2" data-precio="115">2 papas — $115</option>
+      <option value="3" data-precio="165">3 papas — $165</option>
+      <option value="4" data-precio="215">4 papas — $215</option>
+    </select>
+
+    <label class="modal-label" style="margin-top:12px;">Tipos de papa</label>
+
+ <label class="checkbox-bonito checkbox-mix">
+
+  <input type="checkbox" name="mixPapa" value="Francesa">
+  <span class="checkbox-shape"></span>
+  <span>Francesa</span>
+</label>
+
+<label class="checkbox-bonito checkbox-mix">
+
+  <input type="checkbox" name="mixPapa" value="Curly">
+  <span class="checkbox-shape"></span>
+  <span>Curly</span>
+</label>
+
+<label class="checkbox-bonito checkbox-mix">
+
+  <input type="checkbox" name="mixPapa" value="Waffle">
+  <span class="checkbox-shape"></span>
+  <span>Waffle</span>
+</label>
+
+<label class="checkbox-bonito checkbox-mix">
+
+  <input type="checkbox" name="mixPapa" value="Gajo">
+  <span class="checkbox-shape"></span>
+  <span>Gajo</span>
+</label>
+
+
+    <small style="display:block;margin-top:8px;color:#777;">
+      Selecciona exactamente la cantidad elegida
+    </small>
+  </div>
+  `;
+}
 
   /* ----------------------------------------
               PAPAS
@@ -601,7 +667,7 @@ document.addEventListener("click", e => {
 // ===============================
 setTimeout(() => {
   if (p.incluyePapas) {
-
+ modoPapas = "todo";
     // Activar botón "Papas con todo"
     const btnTodo = document.getElementById("btnTodo");
     if (btnTodo) btnTodo.classList.add("active");
@@ -624,6 +690,17 @@ setTimeout(actualizarPreviewPedido, 0);
 
   content.innerHTML = html;
 }
+// 🔥 SINCRONIZAR CLASES VISUALES
+["quesoPapa","catsupPapa","salsaPapa"].forEach(name => {
+  const radio = document.querySelector(`input[name='${name}'][value='Untado']`);
+  if (radio) {
+    const group = radio.closest(".radio-bonito-papas-group");
+    group.querySelectorAll(".radio-bonito-papas")
+         .forEach(l => l.classList.remove("selected"));
+    radio.closest(".radio-bonito-papas").classList.add("selected");
+  }
+});
+
 function selectMiniModo(tipo){
   const btnTodo = document.getElementById("btnMiniTodo");
   const btnPers = document.getElementById("btnMiniPers");
@@ -718,6 +795,57 @@ function construirItemDesdeFormulario(){
   let extra = 0;
   let total = p.precio;
   let descDetalle = ""; // descripción debajo del nombre
+
+  /* ---- MIX DE PAPAS ---- */
+if (p.esMixPapas) {
+
+  const sel = document.getElementById("mixCantidad");
+  const cantidad = Number(sel.value);
+  const precioBase = Number(sel.selectedOptions[0].dataset.precio);
+
+const checks = [...document.querySelectorAll("input[name='mixPapa']:checked")];
+
+  const tipos = checks.map(c => c.value);
+
+// ❗ NO bloquear mientras se elige (solo advertir)
+if (tipos.length > cantidad) {
+  mostrarAlert(
+  `Solo puedes elegir ${cantidad} tipos de papa`,
+  "Límite alcanzado"
+);
+
+  return null;
+}
+
+
+  let descDetalle = `Mix de papas (${cantidad}): ${tipos.join(", ")}\n`;
+
+// 🔥 AGREGAR DESCRIPCIÓN DE PAPAS
+if (modoPapas === "todo") {
+  descDetalle += `Papas con todo\n`;
+} 
+else if (modoPapas === "solo") {
+  descDetalle += `Papas solas\n`;
+} 
+else {
+  const queso = getRadioValue("quesoPapa") || "Untado";
+  const cats  = getRadioValue("catsupPapa") || "Untado";
+  const salsa = getRadioValue("salsaPapa") || "Untado";
+
+  descDetalle +=
+    `Papas personalizadas (` +
+    `queso ${queso.toLowerCase()}, ` +
+    `catsup ${cats.toLowerCase()}, ` +
+    `salsa ${salsa.toLowerCase()}` +
+    `)\n`;
+}
+
+return {
+  descripcion: `Mix de papas — ${precioFormato(precioBase)}\n${descDetalle}`,
+  precio: precioBase
+};
+
+}
 
   /* ---- ADEREZOS NORMALES ---- */
 /* ---- ADEREZOS NORMALES ---- */
@@ -817,16 +945,21 @@ if(p.incluyePapas || categoriaActual === "papas"){
   }
 
   // --- DESCRIPCIÓN NORMALIZADA ---
-  if(queso === "Untado" && cats === "Untado" && salsa === "Untado"){
-    descDetalle += `Papas ${tipo} (con todo)\n`;
-  } else {
-    descDetalle +=
-      `Papas ${tipo} (` +
-      `queso ${queso.toLowerCase()}, ` +
-      `catsup ${cats.toLowerCase()}, ` +
-      `salsa ${salsa.toLowerCase()}` +
-      `)\n`;
-  }
+ if(modoPapas === "todo"){
+  descDetalle += `Papas ${tipo} (con todo)\n`;
+}
+else if(modoPapas === "solo"){
+  descDetalle += `Papas ${tipo} (solas)\n`;
+}
+else {
+  descDetalle +=
+    `Papas ${tipo} (` +
+    `queso ${queso.toLowerCase()}, ` +
+    `catsup ${cats.toLowerCase()}, ` +
+    `salsa ${salsa.toLowerCase()}` +
+    `)\n`;
+}
+
 }
 
 
@@ -873,9 +1006,34 @@ if(p.incluyePapas || categoriaActual === "papas"){
 function confirmarPersonalizacion(){
   const item = construirItemDesdeFormulario();
   if(!item){
-    alert("Falta información del alimento.");
-    return;
+    mostrarAlert(
+  `Debes elegir exactamente ${cantidad} tipos de papa`,
+  "Mix de papas"
+);
+
   }
+// VALIDACIÓN FINAL DEL MIX
+if (productoSeleccionado?.esMixPapas) {
+  const cantidad = Number(document.getElementById("mixCantidad").value);
+  const checks = document.querySelectorAll("input[name='mixPapa']:checked");
+
+if (checks.length < cantidad) {
+  mostrarAlert(
+    `Te falta elegir ${cantidad - checks.length} tipo(s) de papa`,
+    "Completa tu mix"
+  );
+  return;
+}
+
+if (checks.length > cantidad) {
+  mostrarAlert(
+    `Solo puedes elegir ${cantidad} tipos de papa`,
+    "Límite alcanzado"
+  );
+  return;
+}
+
+}
 
   detalleTemporal = item;
 
@@ -1040,7 +1198,7 @@ function editarItem(index){
   const lista = opciones[item.categoria];
   const prod = lista.find(p => p.id === item.productoId);
   if(!prod){
-    alert("No se pudo editar este producto");
+    mostrarAlert("No se pudo editar este producto");
     return;
   }
 
@@ -1163,7 +1321,23 @@ Tarjeta
     <div class="pedido-section">
       <div class="pedido-title">Tus datos</div>
 
-      <input type="text" id="nombreCliente" class="pedido-input" placeholder="Nombre">
+<div class="pedido-section">
+  <div class="pedido-title">Tus datos</div>
+
+  <input type="text"
+         id="nombreCliente"
+         class="pedido-input"
+         placeholder="Nombre">
+
+  <input type="tel"
+         id="telefonoCliente"
+         class="pedido-input"
+         placeholder="Teléfono (10 dígitos)"
+         inputmode="numeric"
+         pattern="[0-9]{10}"
+         maxlength="10"
+         required>
+
     <div style="display:flex; gap:10px;">
   <button class="btn-primary" style="flex:1;" onclick="obtenerUbicacion()">
       Obtener mi ubicación 📍
@@ -1301,6 +1475,19 @@ if (metodo === "Transferencia") {
    ================================ */
 function enviarPedidoWhatsApp() {
     const nombre = document.getElementById("nombreCliente").value.trim();
+const telefonoRaw = document.getElementById("telefonoCliente").value.trim();
+const telefonoPedido = limpiarTelefono(telefonoRaw);
+if (!nombre) {
+  showToast("Ingresa tu nombre");
+  return;
+}
+
+if (!telefonoPedido || telefonoPedido.length !== 10) {
+  showToast("Ingresa un teléfono válido de 10 dígitos");
+  return;
+}
+
+
     const dire   = document.getElementById("direccionCliente").value.trim(); // URL de Google Maps
     const ref    = document.getElementById("referenciasCliente").value.trim();
     const notas  = document.getElementById("notasCliente").value.trim();
@@ -1424,6 +1611,7 @@ if (!dire) {
     mensaje     += "-----------------------\n";
 
     mensaje     += `👤 Nombre: *${nombre}*\n`;
+mensaje += `📞 Teléfono: *${telefonoPedido}*\n`;
 
     // 🔹 AQUÍ VA LO DE LA IMAGEN (UBICACIÓN)
     // 🔹 UBICACIÓN
@@ -1440,6 +1628,10 @@ if (ubicacionManual) {
 
     mensaje     += `\n💳 Método de pago: *${metodoPago}*\n`;
 
+    const linkPanel =
+  `${URL_PANEL_NEGOCIO}?tel=${telefonoPedido}&pedido=${encodeURIComponent(mensaje)}`;
+
+mensaje += `\n\n🧾 *Abrir pedido en sistema:*\n${linkPanel}`;
     // Detalle de pago
     if (metodoPago === "mixto" && detalleMixto) {
         mensaje += "\n💳 *Detalle pago mixto:*\n" + detalleMixto;
@@ -1516,23 +1708,14 @@ function nombreAderezoCombo(i, prod){
   return "Aderezo " + i;
 }
 
-function papasConTodo() {
-  document.querySelector("input[name='quesoPapa'][value='Untado']").checked = true;
-  document.querySelector("input[name='catsupPapa'][value='Untado']").checked = true;
-  document.querySelector("input[name='salsaPapa'][value='Untado']").checked = true;
-
-  document.getElementById("boxPersonalizarPapas").style.display = "none";
-}
-
-function togglePersonalizarPapas() {
-  const box = document.getElementById("boxPersonalizarPapas");
-  box.style.display = (box.style.display === "none") ? "block" : "none";
-}
 function selectPapasModo(tipo){
   const btnTodo = document.getElementById("btnTodo");
   const btnSolo = document.getElementById("btnSolo");
   const btnPers = document.getElementById("btnPers");
   const box = document.getElementById("boxPersonalizarPapas");
+
+  // 👉 GUARDAR ESTADO
+  modoPapas = tipo;
 
   // reset visual
   [btnTodo, btnSolo, btnPers].forEach(b => b && b.classList.remove("active"));
@@ -1550,7 +1733,6 @@ function selectPapasModo(tipo){
     btnSolo.classList.add("active");
     box.style.display = "none";
 
-    // TODAS SIN
     document.querySelector("input[name='quesoPapa'][value='Sin']").checked = true;
     document.querySelector("input[name='catsupPapa'][value='Sin']").checked = true;
     document.querySelector("input[name='salsaPapa'][value='Sin']").checked = true;
@@ -1562,6 +1744,7 @@ function selectPapasModo(tipo){
 
   actualizarPreviewPedido();
 }
+
 
 function formatearDescripcion(texto){
   let lineas = texto.trim().split("\n");
@@ -1786,7 +1969,7 @@ function validarMixto() {
     const metodos = document.querySelectorAll("input[name='mixtoMetodo']:checked");
 
     if (metodos.length > 2) {
-        alert("Solo puedes elegir dos métodos en pago mixto");
+        mostrarAlert("Solo puedes elegir dos métodos en pago mixto", "Límite alcanzado");
         event.target.checked = false;
         return;
     }
@@ -1898,3 +2081,135 @@ document.addEventListener("DOMContentLoaded", ()=>{
     setTimeout(iniciarGuia, 800);
   }
 });
+/**************************************
+ * CHECKBOX MIX PAPAS – AISLADO
+ **************************************/
+document.addEventListener("click", function (e) {
+  const label = e.target.closest(".checkbox-mix");
+  if (!label) return;
+
+  // 🔒 Evita que se dispare el resto de handlers
+  e.stopPropagation();
+  e.preventDefault();
+
+  const input = label.querySelector("input[type='checkbox']");
+  if (!input) return;
+
+  // Toggle manual
+  input.checked = !input.checked;
+  label.classList.toggle("selected", input.checked);
+
+  // Refrescar preview
+  setTimeout(actualizarPreviewPedido, 0);
+});
+function mostrarAlert(mensaje, titulo = "Atención"){
+  document.getElementById("alertTitle").textContent = titulo;
+  document.getElementById("alertMessage").textContent = mensaje;
+  document.getElementById("alertModal").style.display = "flex";
+}
+
+function cerrarAlert(){
+  document.getElementById("alertModal").style.display = "none";
+}
+/**************************************
+ * AUTO SELECCIÓN MIX DE PAPAS (4)
+ **************************************/
+document.addEventListener("change", function (e) {
+  if (e.target && e.target.id === "mixCantidad") {
+
+    const cantidad = Number(e.target.value);
+    const checks = document.querySelectorAll("input[name='mixPapa']");
+    
+    // 🔥 SI SELECCIONA 4 → MARCAR TODAS
+    if (cantidad === 4) {
+      checks.forEach(chk => {
+        chk.checked = true;
+        chk.closest(".checkbox-bonito")?.classList.add("selected");
+      });
+    } 
+    // 🔁 SI BAJA DE 4 → DESMARCAR TODAS
+    else {
+      checks.forEach(chk => {
+        chk.checked = false;
+        chk.closest(".checkbox-bonito")?.classList.remove("selected");
+      });
+    }
+
+    // Refrescar preview
+    setTimeout(actualizarPreviewPedido, 0);
+  }
+});
+/* ===============================
+   MODO OSCURO
+================================ */
+
+function toggleTheme(){
+  const html = document.documentElement;
+  const current = html.getAttribute("data-theme");
+
+  if(current === "dark"){
+    html.removeAttribute("data-theme");
+    localStorage.setItem("theme","light");
+    document.getElementById("btnTheme").textContent = "🌙";
+  }else{
+    html.setAttribute("data-theme","dark");
+    localStorage.setItem("theme","dark");
+    document.getElementById("btnTheme").textContent = "☀️";
+  }
+}
+
+/* Cargar preferencia */
+document.addEventListener("DOMContentLoaded", ()=>{
+  const theme = localStorage.getItem("theme");
+  if(theme === "dark"){
+    document.documentElement.setAttribute("data-theme","dark");
+    const btn = document.getElementById("btnTheme");
+    if(btn) btn.textContent = "☀️";
+  }
+});
+/* ==============================
+   BOTÓN SECRETO COCINA
+================================ */
+
+/* ==============================
+   ACCESO SECRETO COCINA (5 TOQUES)
+================================ */
+
+(function activarAccesoCocina(){
+  const logo = document.getElementById("logoSecreto");
+  if(!logo) return;
+
+  let contador = 0;
+  let timerReset = null;
+
+  logo.addEventListener("click", () => {
+    contador++;
+
+    // reset si tarda mucho
+    clearTimeout(timerReset);
+    timerReset = setTimeout(() => {
+      contador = 0;
+    }, 1500);
+
+    // 🔓 5 toques = acceso
+    if(contador >= 5){
+      contador = 0;
+      abrirPanelCocina();
+    }
+  });
+})();
+
+function abrirPanelCocina(){
+  const pin = prompt("PIN cocina:");
+
+  if(pin !== "230321"){   // 🔒 cambia el PIN
+    showToast("Acceso denegado");
+    return;
+  }
+
+  window.location.href = "./pedido-negocio.html";
+}
+
+function limpiarTelefono(txt){
+  return txt.replace(/\D/g, "").slice(-10);
+}
