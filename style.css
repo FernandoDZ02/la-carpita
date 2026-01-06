@@ -1080,3 +1080,298 @@ h2{
 .preview-sticky {
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
+/* ===== ALERT MODAL ===== */
+.alert-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  animation:fadeIn .2s ease;
+}
+
+.alert-box{
+  background:#fffaf3;
+  width:90%;
+  max-width:320px;
+  border-radius:20px;
+  padding:22px 18px;
+  text-align:center;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+  animation:scaleIn .25s ease;
+}
+
+.alert-icon{
+  font-size:2.2rem;
+  margin-bottom:10px;
+}
+
+.alert-box h3{
+  margin:0;
+  font-size:1.1rem;
+  color:#B34700;
+}
+
+.alert-box p{
+  font-size:.95rem;
+  color:#5a3212;
+  margin:12px 0 18px;
+  line-height:1.4;
+}
+
+.alert-btn{
+  background:#ff7a00;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:14px;
+  font-size:.95rem;
+  font-weight:600;
+  cursor:pointer;
+  width:100%;
+}
+
+.alert-btn:active{
+  transform:scale(.97);
+}
+
+/* Animaciones */
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes scaleIn{
+  from{transform:scale(.9)}
+  to{transform:scale(1)}
+}
+/* ===============================
+   MODO OSCURO
+================================ */
+
+html[data-theme="dark"] body{
+  background:linear-gradient(180deg,#121212,#1c1c1c);
+  color:#f5f5f5;
+}
+
+/* APP */
+html[data-theme="dark"] .app{
+  background:linear-gradient(180deg,#1e1e1e,#151515);
+  box-shadow:0 22px 55px rgba(0,0,0,.85);
+}
+
+/* TEXTOS */
+html[data-theme="dark"] .page-title,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] .pedido-title{
+  color:#fff;
+}
+
+html[data-theme="dark"] .subtitle,
+html[data-theme="dark"] .resume-text{
+  color:#bbb;
+}
+
+/* CARDS */
+html[data-theme="dark"] .menu-card,
+html[data-theme="dark"] .option-card,
+html[data-theme="dark"] .pedido-section{
+  background:#1f1f1f;
+  color:#eee;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
+}
+
+/* MODALES */
+html[data-theme="dark"] .modal-content,
+html[data-theme="dark"] .modal-envio-box,
+html[data-theme="dark"] .alert-box{
+  background:#1c1c1c;
+  color:#fff;
+  border:1px solid #333;
+}
+
+/* INPUTS */
+html[data-theme="dark"] .input-box,
+html[data-theme="dark"] .select-bonito,
+html[data-theme="dark"] .pedido-input{
+  background:#111;
+  color:#fff;
+  border-color:#333;
+}
+
+/* RADIO / CHECKBOX */
+html[data-theme="dark"] .radio-bonito,
+html[data-theme="dark"] .radio-bonito-papas,
+html[data-theme="dark"] .checkbox-bonito{
+  background:#111;
+  color:#eee;
+  border-color:#444;
+}
+
+/* BARRA INFERIOR */
+html[data-theme="dark"] .bottom-bar{
+  background:rgba(25,25,25,.95);
+}
+
+/* CARRITO */
+html[data-theme="dark"] .cart-panel{
+  background:#161616;
+}
+
+html[data-theme="dark"] .cart-item small{
+  color:#aaa;
+}
+
+/* BOTONES */
+html[data-theme="dark"] .btn-secondary{
+  background:#222;
+  color:#fff;
+  border-color:#444;
+}
+
+/* GUIA */
+html[data-theme="dark"] #guiaBox{
+  background:#1c1c1c;
+  color:#fff;
+}
+
+html[data-theme="dark"] #guiaTexto{
+  color:#ddd;
+}
+/* ===============================
+   FIX CONTRASTE MODO OSCURO
+   (TEXTOS INVISIBLES)
+================================ */
+
+/* Títulos de secciones dentro del modal */
+html[data-theme="dark"] .modal-section-title,
+html[data-theme="dark"] .modal-label,
+html[data-theme="dark"] .step-title{
+  color:#ffb86c !important;
+}
+
+/* Textos normales */
+html[data-theme="dark"] p,
+html[data-theme="dark"] span,
+html[data-theme="dark"] li{
+  color:#eaeaea;
+}
+
+/* Resumen del pedido */
+html[data-theme="dark"] .modal-resumen-box{
+  background:#262626;
+  border-color:#444;
+  color:#f5f5f5;
+}
+
+/* Preview fijo */
+html[data-theme="dark"] .preview-sticky{
+  background:#1f1f1f;
+  border-color:#444;
+  color:#f0f0f0;
+}
+
+/* Chips y radios */
+html[data-theme="dark"] .modal-chip,
+html[data-theme="dark"] .radio-bonito,
+html[data-theme="dark"] .radio-bonito-papas{
+  background:#1a1a1a;
+  color:#eee;
+  border-color:#444;
+}
+
+/* Botones papas NO activos */
+html[data-theme="dark"] .btn-papas{
+  background:#1a1a1a;
+  color:#ffb86c;
+  border-color:#ff7a00;
+}
+
+/* Botones secundarios */
+html[data-theme="dark"] .btn-secondary{
+  background:#1f1f1f;
+  color:#fff;
+}
+
+/* Texto de opciones (Boneless, Papas, etc) */
+html[data-theme="dark"] .menu-card span,
+html[data-theme="dark"] .option-title{
+  color:#fff;
+}
+
+/* Inputs seleccionados */
+html[data-theme="dark"] select option{
+  background:#1a1a1a;
+  color:#fff;
+}
+/* ===============================
+   FIX CARRITO MODO OSCURO
+================================ */
+
+/* Panel completo */
+html[data-theme="dark"] .cart-panel{
+  background:#121212;
+  color:#f5f5f5;
+}
+
+/* Header / Footer */
+html[data-theme="dark"] .cart-panel-header,
+html[data-theme="dark"] .cart-panel-footer{
+  background:linear-gradient(180deg,#1a1a1a,#111);
+  border-color:#333;
+}
+
+/* Cuerpo */
+html[data-theme="dark"] .cart-panel-body{
+  background:#121212;
+}
+
+/* Items del carrito */
+html[data-theme="dark"] .cart-item{
+  border-bottom:1px dashed #333;
+}
+
+html[data-theme="dark"] .cart-item-title{
+  color:#fff;
+}
+
+html[data-theme="dark"] .cart-item small{
+  color:#bbb;
+}
+
+/* Totales */
+html[data-theme="dark"] .cart-total-line{
+  color:#fff;
+}
+
+/* Método de pago / entrega */
+html[data-theme="dark"] .payment-method,
+html[data-theme="dark"] .pedido-option{
+  background:#1a1a1a;
+  color:#eee;
+  border:1px solid #333;
+}
+
+/* Inputs dentro del carrito */
+html[data-theme="dark"] .cart-input{
+  background:#0f0f0f;
+  color:#fff;
+  border-color:#333;
+}
+
+/* Labels */
+html[data-theme="dark"] .step-title{
+  color:#ffb86c;
+}
+
+/* Subtotales y precios */
+html[data-theme="dark"] .bottom-total,
+html[data-theme="dark"] .cart-total-line span{
+  color:#ffb86c;
+}
+
+/* Botón finalizar */
+html[data-theme="dark"] .btn-primary{
+  box-shadow:0 12px 28px rgba(255,120,0,.45);
+}
