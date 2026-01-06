@@ -157,3 +157,45 @@ button{
   color:#c62828;
   font-size:.9rem;
 }
+/* ==========================
+   PEDIDO PRO
+========================== */
+
+.pedido-body{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.pedido-section{
+  background:#fafafa;
+  border-radius:12px;
+  padding:10px;
+}
+
+.pedido-section.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.sec-title{
+  font-size:.75rem;
+  font-weight:800;
+  color:#666;
+  display:block;
+  margin-bottom:4px;
+}
+
+.sec-text{
+  font-size:.85rem;
+}
+
+.pedido-items{
+  font-size:.85rem;
+  white-space:pre-line;
+  background:#fff;
+  border-radius:8px;
+  padding:8px;
+  border:1px dashed #ddd;
+}
