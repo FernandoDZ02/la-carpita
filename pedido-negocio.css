@@ -104,3 +104,56 @@ button{
   width:100%;
   background:#eee;
 }
+/* ==========================
+   MODAL SEGURIDAD
+========================== */
+
+.auth-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.auth-box{
+  background:#fff;
+  padding:24px;
+  border-radius:16px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+}
+
+.auth-box h2{
+  margin-bottom:8px;
+}
+
+.auth-box input{
+  width:100%;
+  padding:10px;
+  margin:12px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+  font-size:1rem;
+}
+
+.auth-box button{
+  width:100%;
+  background:#ff7a00;
+  color:#fff;
+  border:none;
+  padding:10px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.auth-error{
+  margin-top:10px;
+  color:#c62828;
+  font-size:.9rem;
+}
