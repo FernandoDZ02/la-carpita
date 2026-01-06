@@ -1,159 +1,189 @@
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-body{
-  background:#f6f6f6;
-  color:#333;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-.top{
-  background:#ff7a00;
-  color:#fff;
-  padding:14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.top h1{
-  font-size:1.2rem;
-}
-
-main{
-  flex:1;
-  overflow-y:auto;
-  padding:12px;
-}
-
-.fila{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.pedido{
-  background:#fff;
-  border-radius:14px;
-  padding:12px;
-  box-shadow:0 6px 20px rgba(0,0,0,.12);
-}
-
-.pedido-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:6px;
-}
-
-.pedido-num{
-  font-weight:800;
-  font-size:1.05rem;
-}
-
-.estado{
-  padding:4px 10px;
-  border-radius:12px;
-  font-size:.75rem;
-  font-weight:700;
-}
-
-.estado.RECIBIDO{ background:#ffe6b3; }
-.estado.PREPARACION{ background:#cce5ff; }
-.estado.EN_CAMINO{ background:#d1f5d3; }
-.estado.ENTREGADO{ background:#ddd; }
-
-.pedido-texto{
-  font-size:.85rem;
-  white-space:pre-line;
-  margin:6px 0 10px;
-}
-
-.acciones{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
-
-button{
-  border:none;
-  border-radius:10px;
-  padding:8px 10px;
-  font-size:.8rem;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.btn-prep{ background:#3b82f6; color:#fff; }
-.btn-camino{ background:#16a34a; color:#fff; }
-.btn-ok{ background:#444; color:#fff; }
-
-.bottom{
-  padding:10px;
-  background:#fff;
-  border-top:1px solid #ddd;
-}
-
-.btn-sec{
-  width:100%;
-  background:#eee;
-}
 /* ==========================
-   MODAL SEGURIDAD
+   CARGA INICIAL
+========================== */
+/* ==========================
+   SEGURIDAD DE ACCESO
 ========================== */
 
-.auth-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
+const PASS_COCINA = "230321"; // 🔒 CAMBIA ESTO
+
+document.addEventListener("DOMContentLoaded", () => {
+  const acceso = localStorage.getItem("acceso_cocina");
+
+  if(acceso === "ok"){
+    desbloquearPanel();
+  }
+});
+function verificarAcceso(){
+  const pass = document.getElementById("authPass").value;
+  const err  = document.getElementById("authError");
+
+  if(pass === PASS_COCINA){
+    localStorage.setItem("acceso_cocina","ok");
+    desbloquearPanel();
+  }else{
+    err.textContent = "Contraseña incorrecta";
+  }
 }
 
-.auth-box{
-  background:#fff;
-  padding:24px;
-  border-radius:16px;
-  width:90%;
-  max-width:320px;
-  text-align:center;
-  box-shadow:0 20px 40px rgba(0,0,0,.35);
+function desbloquearPanel(){
+  document.getElementById("authOverlay").style.display = "none";
 }
 
-.auth-box h2{
-  margin-bottom:8px;
+document.addEventListener("DOMContentLoaded", () => {
+  if(localStorage.getItem("acceso_cocina") === "ok"){
+    importarDesdeURL();
+    renderFila();
+    setInterval(renderFila, 3000);
+  }
+});
+
+function cerrarSesionCocina(){
+  localStorage.removeItem("acceso_cocina");
+  location.reload();
 }
 
-.auth-box input{
-  width:100%;
-  padding:10px;
-  margin:12px 0;
-  border-radius:10px;
-  border:1px solid #ccc;
-  font-size:1rem;
+/* ==========================
+   IMPORTAR DESDE LINK
+========================== */
+
+function importarDesdeURL(){
+  const params = new URLSearchParams(window.location.search);
+  const tel = params.get("tel");
+  const pedidoTxt = params.get("pedido");
+
+  if(!tel || !pedidoTxt) return;
+
+  const key = "pedido_" + tel;
+
+  if(!localStorage.getItem(key)){
+    const pedido = {
+      telefono: tel,
+      texto: decodeURIComponent(pedidoTxt),
+      estado: "RECIBIDO",
+      fecha: new Date().toLocaleString()
+    };
+
+    localStorage.setItem(key, JSON.stringify(pedido));
+
+    let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+    if(!cola.includes(tel)){
+      cola.push(tel);
+      localStorage.setItem("cola_pedidos", JSON.stringify(cola));
+    }
+  }
+
+  history.replaceState({}, document.title, location.pathname);
 }
 
-.auth-box button{
-  width:100%;
-  background:#ff7a00;
-  color:#fff;
-  border:none;
-  padding:10px;
-  border-radius:10px;
-  font-weight:700;
-  cursor:pointer;
+/* ==========================
+   RENDER FILA
+========================== */
+
+function renderFila(){
+  const fila = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+  const cont = document.getElementById("filaPedidos");
+
+  document.getElementById("contadorPedidos").textContent =
+    fila.length ? `${fila.length} pedido(s)` : "Sin pedidos";
+
+  if(fila.length === 0){
+    cont.innerHTML = `<p style="text-align:center;color:#777;">No hay pedidos</p>`;
+    return;
+  }
+
+  cont.innerHTML = fila.map((tel, i) => {
+    const p = JSON.parse(localStorage.getItem("pedido_" + tel));
+    if(!p) return "";
+
+    return `
+      <div class="pedido">
+        <div class="pedido-header">
+          <div class="pedido-num">#${i+1} · ${p.telefono}</div>
+          <span class="estado ${p.estado}">${p.estado.replace("_"," ")}</span>
+        </div>
+
+        <div class="pedido-texto">${p.texto}</div>
+
+        <div class="acciones">
+          <button class="btn-prep" onclick="cambiarEstado('${tel}','PREPARACION')">
+            🔵 Preparación
+          </button>
+          <button class="btn-camino" onclick="cambiarEstado('${tel}','EN_CAMINO')">
+            🚚 En camino
+          </button>
+          <button class="btn-ok" onclick="entregarPedido('${tel}')">
+            ✅ Entregado
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
-.auth-error{
-  margin-top:10px;
-  color:#c62828;
-  font-size:.9rem;
+/* ==========================
+   CAMBIAR ESTADO
+========================== */
+
+function cambiarEstado(tel, estado){
+  const key = "pedido_" + tel;
+  const p = JSON.parse(localStorage.getItem(key));
+  if(!p) return;
+
+  p.estado = estado;
+  localStorage.setItem(key, JSON.stringify(p));
+
+  enviarWhatsEstado(p);
+  renderFila();
+}
+
+/* ==========================
+   ENTREGAR
+========================== */
+
+function entregarPedido(tel){
+  const key = "pedido_" + tel;
+  const p = JSON.parse(localStorage.getItem(key));
+  if(!p) return;
+
+  p.estado = "ENTREGADO";
+  localStorage.setItem(key, JSON.stringify(p));
+
+  enviarWhatsEstado(p);
+
+  let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+  cola = cola.filter(x => x !== tel);
+  localStorage.setItem("cola_pedidos", JSON.stringify(cola));
+
+  renderFila();
+}
+
+/* ==========================
+   WHATSAPP SEGUIMIENTO
+========================== */
+
+function enviarWhatsEstado(p){
+  const msg =
+`🍟 *La Carpita*
+Tu pedido está:
+👉 *${p.estado.replace("_"," ")}*`;
+
+  window.open(`https://wa.me/${p.telefono}?text=${encodeURIComponent(msg)}`,"_blank");
+}
+
+/* ==========================
+   LIMPIAR ENTREGADOS
+========================== */
+
+function limpiarEntregados(){
+  Object.keys(localStorage)
+    .filter(k => k.startsWith("pedido_"))
+    .forEach(k => {
+      const p = JSON.parse(localStorage.getItem(k));
+      if(p?.estado === "ENTREGADO"){
+        localStorage.removeItem(k);
+      }
+    });
+
+  renderFila();
 }
