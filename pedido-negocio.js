@@ -103,7 +103,32 @@ function renderFila(){
           <span class="estado ${p.estado}">${p.estado.replace("_"," ")}</span>
         </div>
 
-        <div class="pedido-texto">${p.texto}</div>
+        <div class="pedido-body">
+
+  <div class="pedido-section">
+    <span class="sec-title">🍽️ Pedido</span>
+    <pre class="pedido-items">${extraerSeccion(p.texto, "🍽️", "-----------------------")}</pre>
+  </div>
+
+  <div class="pedido-section grid">
+    <div>
+      <span class="sec-title">💰 Total</span>
+      <strong>${extraerLinea(p.texto, "Total:")}</strong>
+    </div>
+    <div>
+      <span class="sec-title">💳 Pago</span>
+      <strong>${extraerLinea(p.texto, "Método de pago:")}</strong>
+    </div>
+  </div>
+
+  <div class="pedido-section">
+    <span class="sec-title">👤 Cliente</span>
+    <div class="sec-text">${extraerLinea(p.texto, "Nombre:")}</div>
+    <div class="sec-text">${extraerLinea(p.texto, "Teléfono:")}</div>
+  </div>
+
+</div>
+
 
         <div class="acciones">
           <button class="btn-prep" onclick="cambiarEstado('${tel}','PREPARACION')">
@@ -119,6 +144,17 @@ function renderFila(){
       </div>
     `;
   }).join("");
+}
+function extraerLinea(txt, clave){
+  const l = txt.split("\n").find(x => x.includes(clave));
+  return l ? l.replace(clave, "").replace("*","").trim() : "-";
+}
+
+function extraerSeccion(txt, inicio, fin){
+  const i = txt.indexOf(inicio);
+  const f = txt.indexOf(fin);
+  if(i === -1 || f === -1) return "";
+  return txt.substring(i, f).replace(inicio, "").trim();
 }
 
 /* ==========================
@@ -146,11 +182,26 @@ function entregarPedido(tel){
   const p = JSON.parse(localStorage.getItem(key));
   if(!p) return;
 
+  // marcar entregado
   p.estado = "ENTREGADO";
   localStorage.setItem(key, JSON.stringify(p));
 
+  // 🔔 WhatsApp
   enviarWhatsEstado(p);
 
+  // 📊 REGISTRAR EN RESUMEN DIARIO
+  const resumen = obtenerResumenHoy();
+
+  resumen.pedidos += 1;
+  resumen.totalVendido += extraerTotalPedido(p.texto);
+
+  if(tieneEnvio(p.texto)){
+    resumen.envios += 1;
+  }
+
+  guardarResumenHoy(resumen);
+
+  // quitar de la cola
   let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
   cola = cola.filter(x => x !== tel);
   localStorage.setItem("cola_pedidos", JSON.stringify(cola));
@@ -163,13 +214,28 @@ function entregarPedido(tel){
 ========================== */
 
 function enviarWhatsEstado(p){
+  const estados = {
+    RECIBIDO: "🟡 *Recibido*",
+    PREPARACION: "🔵 *En preparación*",
+    EN_CAMINO: "🚚 *En camino*",
+    ENTREGADO: "✅ *Entregado*"
+  };
+
   const msg =
 `🍟 *La Carpita*
-Tu pedido está:
-👉 *${p.estado.replace("_"," ")}*`;
+Hola 👋
 
-  window.open(`https://wa.me/${p.telefono}?text=${encodeURIComponent(msg)}`,"_blank");
+Tu pedido está:
+👉 ${estados[p.estado]}
+
+Gracias por tu preferencia 💛`;
+
+  window.open(
+    `https://wa.me/${p.telefono}?text=${encodeURIComponent(msg)}`,
+    "_blank"
+  );
 }
+
 
 /* ==========================
    LIMPIAR ENTREGADOS
@@ -186,4 +252,48 @@ function limpiarEntregados(){
     });
 
   renderFila();
+}
+/* ==========================
+   RESUMEN DIARIO
+========================== */
+
+function obtenerFechaHoy(){
+  return new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+}
+
+function obtenerResumenHoy(){
+  const key = "resumen_" + obtenerFechaHoy();
+  return JSON.parse(localStorage.getItem(key)) || {
+    totalVendido: 0,
+    pedidos: 0,
+    envios: 0
+  };
+}
+
+function guardarResumenHoy(res){
+  const key = "resumen_" + obtenerFechaHoy();
+  localStorage.setItem(key, JSON.stringify(res));
+}
+function extraerTotalPedido(texto){
+  const linea = texto.split("\n").find(l => l.includes("Total:"));
+  if(!linea) return 0;
+  return parseFloat(linea.replace(/[^0-9.]/g,"")) || 0;
+}
+
+function tieneEnvio(texto){
+  const linea = texto.split("\n").find(l => l.includes("Envío:"));
+  if(!linea) return false;
+  const monto = parseFloat(linea.replace(/[^0-9.]/g,"")) || 0;
+  return monto > 0;
+}
+function verResumenHoy(){
+  const r = obtenerResumenHoy();
+
+  alert(
+`📊 Resumen del día
+
+🧾 Pedidos: ${r.pedidos}
+💰 Total vendido: $${r.totalVendido.toFixed(2)}
+🚚 Envíos: ${r.envios}`
+  );
 }
