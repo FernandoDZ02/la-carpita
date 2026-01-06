@@ -1,12 +1,47 @@
 /* ==========================
    CARGA INICIAL
 ========================== */
+/* ==========================
+   SEGURIDAD DE ACCESO
+========================== */
+
+const PASS_COCINA = "230321"; // 🔒 CAMBIA ESTO
 
 document.addEventListener("DOMContentLoaded", () => {
-  importarDesdeURL();
-  renderFila();
-  setInterval(renderFila, 3000);
+  const acceso = localStorage.getItem("acceso_cocina");
+
+  if(acceso === "ok"){
+    desbloquearPanel();
+  }
 });
+function verificarAcceso(){
+  const pass = document.getElementById("authPass").value;
+  const err  = document.getElementById("authError");
+
+  if(pass === PASS_COCINA){
+    localStorage.setItem("acceso_cocina","ok");
+    desbloquearPanel();
+  }else{
+    err.textContent = "Contraseña incorrecta";
+  }
+}
+
+function desbloquearPanel(){
+  document.getElementById("authOverlay").style.display = "none";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if(localStorage.getItem("acceso_cocina") === "ok"){
+    importarDesdeURL();
+    renderFila();
+    setInterval(renderFila, 3000);
+  }
+});
+
+function cerrarSesionCocina(){
+  localStorage.removeItem("acceso_cocina");
+  location.reload();
+}
 
 /* ==========================
    IMPORTAR DESDE LINK
