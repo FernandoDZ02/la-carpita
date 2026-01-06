@@ -21,6 +21,23 @@
 <footer class="bottom">
   <button onclick="limpiarEntregados()" class="btn-sec">🧹 Limpiar entregados</button>
 </footer>
+<!-- MODAL ACCESO COCINA -->
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-box">
+    <h2>🔒 Acceso restringido</h2>
+    <p>Ingresa la contraseña del negocio</p>
+
+    <input type="password"
+           id="authPass"
+           placeholder="Contraseña"
+           autocomplete="off">
+
+    <button onclick="verificarAcceso()">Entrar</button>
+
+    <p id="authError" class="auth-error"></p>
+  </div>
+</div>
+<button onclick="cerrarSesionCocina()">🔒 Cerrar sesión</button>
 
 <script src="pedido-negocio.js"></script>
 </body>
