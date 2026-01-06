@@ -42,6 +42,17 @@
   </div>
 </div>
 <button onclick="cerrarSesionCocina()">🔒 Cerrar sesión</button>
+<!-- MODAL ALERTA GLOBAL -->
+<div id="alertOverlay" class="alert-overlay" style="display:none;">
+  <div class="alert-box">
+    <h3 id="alertTitle">Aviso</h3>
+    <div id="alertMessage" class="alert-message"></div>
+
+    <button onclick="cerrarAlert()" class="alert-btn">
+      Entendido
+    </button>
+  </div>
+</div>
 
 <script src="pedido-negocio.js"></script>
 </body>
