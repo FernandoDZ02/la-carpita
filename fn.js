@@ -2269,4 +2269,9 @@ window.cerrarCarrito = cerrarCarrito;
 window.enviarPedidoWhatsApp = enviarPedidoWhatsApp;
 window.abrirPanelCocina = abrirPanelCocina;
 window.toggleTheme = toggleTheme;
+// 🔥 ESTAS TE FALTABAN
+window.cerrarModalProductoAgregado = cerrarModalProductoAgregado;
+window.abrirPasoPago = abrirPasoPago;
+window.iniciarGuia = iniciarGuia;
+window.cerrarAlert = cerrarAlert;
 
