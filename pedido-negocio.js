@@ -121,7 +121,13 @@ function renderFila(){
         </div>
 
         <div class="pedido-body">
-
+  <!-- 🍽️ ALIMENTOS -->
+  <div class="pedido-section">
+    <span class="sec-title">🍽️ Pedido</span>
+    <pre class="pedido-items">
+${extraerSeccion(p.texto, "🍽️", "-----------------------")}
+    </pre>
+  </div>
  <div class="pedido-section grid">
   <div>
     <span class="sec-title">💰 Total</span>
