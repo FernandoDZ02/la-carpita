@@ -1968,19 +1968,21 @@ function seleccionarRadioBonito(label){
 }
 function actualizarVisibilidadPagoCon() {
   const metodo = getRadioValue("pago");
-  const campoPagoCon = document.getElementById("pagoCon");
+
+  const contenedor = document.getElementById("contenedorPagoCon");
   const lineaCambio = document.getElementById("lineaCambio");
 
   if (metodo === "efectivo") {
-    campoPagoCon.style.display = "block";
+    contenedor.style.display = "block";
     lineaCambio.style.display = "flex";
   } else {
-    campoPagoCon.style.display = "none";
+    contenedor.style.display = "none";
     lineaCambio.style.display = "none";
   }
 
   actualizarCostoPedido();
 }
+
 function mostrarOpcionesMixto() {
     document.getElementById("pagoMixtoOpciones").style.display = "block";
     document.getElementById("contenedorPagoCon").style.display = "none"; // evita confusión
