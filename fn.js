@@ -1527,10 +1527,11 @@ if (!telefonoPedido || telefonoPedido.length !== 10) {
         showToast("Ingresa tu nombre");
         return;
     }
-if (!dire) {
+if (!dire && !ubicacionManual) {
   showToast("Comparte tu ubicación automática o por WhatsApp");
   return;
 }
+
 
     if (!metodoPago) {
         showToast("Selecciona un método de pago");
@@ -2317,4 +2318,3 @@ window.cerrarModalProductoAgregado = cerrarModalProductoAgregado;
 
 // COCINA
 window.abrirPanelCocina = abrirPanelCocina;
-
