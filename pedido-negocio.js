@@ -42,6 +42,23 @@ function cerrarSesionCocina(){
   localStorage.removeItem("acceso_cocina");
   location.reload();
 }
+function extraerUrlUbicacion(txt){
+  const linea = txt.split("\n").find(l => l.includes("maps.google") || l.includes("google.com/maps"));
+  return linea ? linea.trim() : null;
+}
+
+function tieneUbicacion(txt){
+  return !!extraerUrlUbicacion(txt);
+}
+
+function abrirUbicacion(txt){
+  const url = extraerUrlUbicacion(txt);
+  if(url){
+    window.open(url, "_blank");
+  }else{
+    mostrarAlert("Ubicación", "Este pedido no tiene ubicación disponible.");
+  }
+}
 
 /* ==========================
    IMPORTAR DESDE LINK
@@ -105,46 +122,108 @@ function renderFila(){
 
         <div class="pedido-body">
 
-  <div class="pedido-section">
-    <span class="sec-title">🍽️ Pedido</span>
-    <pre class="pedido-items">${extraerSeccion(p.texto, "🍽️", "-----------------------")}</pre>
+ <div class="pedido-section grid">
+  <div>
+    <span class="sec-title">💰 Total</span>
+    <strong>${extraerLinea(p.texto, "Total:")}</strong>
   </div>
 
-  <div class="pedido-section grid">
-    <div>
-      <span class="sec-title">💰 Total</span>
-      <strong>${extraerLinea(p.texto, "Total:")}</strong>
-    </div>
-    <div>
-      <span class="sec-title">💳 Pago</span>
-      <strong>${extraerLinea(p.texto, "Método de pago:")}</strong>
-    </div>
-  </div>
+<div>
+  <span class="sec-title">💳 Pago</span>
+  <strong>
+    ${esPagoMixto(p.texto)
+      ? "Mixto"
+      : extraerLinea(p.texto, "Método de pago:")}
+  </strong>
+</div>
 
-  <div class="pedido-section">
-    <span class="sec-title">👤 Cliente</span>
-    <div class="sec-text">${extraerLinea(p.texto, "Nombre:")}</div>
-    <div class="sec-text">${extraerLinea(p.texto, "Teléfono:")}</div>
-  </div>
+${esPagoMixto(p.texto) ? `
+<div>
+  <span class="sec-title">💵 Efectivo</span>
+  <strong>${extraerMonto(p.texto, "Efectivo") || "-"}</strong>
+</div>
 
+<div>
+  <span class="sec-title">💳 Tarjeta</span>
+  <strong>${extraerMonto(p.texto, "Tarjeta") || "-"}</strong>
+</div>
+` : ""}
+
+
+  ${extraerPagoCon(p.texto) !== "-" ? `
+  <div>
+    <span class="sec-title">💵 Pagas con</span>
+    <strong>${extraerPagoCon(p.texto)}</strong>
+  </div>` : ""}
+
+  ${extraerCambio(p.texto) !== "-" ? `
+  <div>
+    <span class="sec-title">🔁 Cambio</span>
+    <strong>${extraerCambio(p.texto)}</strong>
+  </div>` : ""}
 </div>
 
 
         <div class="acciones">
-          <button class="btn-prep" onclick="cambiarEstado('${tel}','PREPARACION')">
-            🔵 Preparación
-          </button>
-          <button class="btn-camino" onclick="cambiarEstado('${tel}','EN_CAMINO')">
-            🚚 En camino
-          </button>
-          <button class="btn-ok" onclick="entregarPedido('${tel}')">
-            ✅ Entregado
-          </button>
-        </div>
+  <button class="btn-prep" onclick="cambiarEstado('${tel}','PREPARACION')">
+    🔵 Preparación
+  </button>
+
+  <!-- ESTE YA ENTREGA -->
+  <button class="btn-camino" onclick="entregarPedido('${tel}')">
+    🚚 En camino
+  </button>
+
+  <!-- NUEVO BOTÓN -->
+  <button class="btn-cancelar" onclick="cancelarPedido('${tel}')">
+    ❌ Cancelado
+  </button>
+  ${tieneUbicacion(p.texto) ? `
+<button class="btn-ubi" onclick='abrirUbicacion(${JSON.stringify(p.texto)})'>
+  📍 Abrir ubicación
+</button>
+` : ""}
+
+</div>
+
       </div>
     `;
   }).join("");
 }
+function cancelarPedido(tel){
+  const key = "pedido_" + tel;
+  const p = JSON.parse(localStorage.getItem(key));
+  if(!p) return;
+
+  // 🗑️ eliminar pedido
+  localStorage.removeItem(key);
+
+  // 🗑️ quitar de la cola
+  let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+  cola = cola.filter(x => x !== tel);
+  localStorage.setItem("cola_pedidos", JSON.stringify(cola));
+
+  // 📩 WhatsApp opcional
+  const msg =
+`🍟 *La Carpita*
+Hola 👋
+
+Tu pedido fue *cancelado* ❌
+Si fue un error, contáctanos.`;
+
+  window.open(
+    `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,
+    "_blank"
+  );
+
+  mostrarAlert(
+    "Pedido cancelado",
+    "El pedido fue eliminado correctamente"
+  );
+
+  renderFila();
+}
+
 function extraerLinea(txt, clave){
   const l = txt.split("\n").find(x => x.includes(clave));
   return l ? l.replace(clave, "").replace("*","").trim() : "-";
@@ -155,6 +234,23 @@ function extraerSeccion(txt, inicio, fin){
   const f = txt.indexOf(fin);
   if(i === -1 || f === -1) return "";
   return txt.substring(i, f).replace(inicio, "").trim();
+}
+function extraerPagoCon(txt){
+  return extraerLinea(txt, "Pagas con:");
+}
+
+function extraerCambio(txt){
+  return extraerLinea(txt, "Cambio:");
+}
+function esPagoMixto(txt){
+  return txt.toLowerCase().includes("mixto");
+}
+
+function extraerMonto(txt, clave){
+  const l = txt.split("\n").find(x => x.toLowerCase().includes(clave.toLowerCase()));
+  if(!l) return null;
+  const n = parseFloat(l.replace(/[^0-9.]/g,""));
+  return isNaN(n) ? null : `$${n.toFixed(2)}`;
 }
 
 /* ==========================
