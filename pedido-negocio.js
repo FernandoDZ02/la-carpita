@@ -65,40 +65,9 @@ function abrirUbicacion(txt){
 ========================== */
 
 function importarDesdeURL(){
-  const params = new URLSearchParams(window.location.search);
-  const tel = params.get("tel");
-  if(!tel) return;
-
-  const key = "pedido_" + tel;
-
-  // 🟢 Si ya existe el pedido, no hacer nada
-  if(localStorage.getItem(key)){
-    history.replaceState({}, document.title, location.pathname);
-    return;
-  }
-
-  // 🔁 RESPALDO (solo por compatibilidad vieja)
-  const pedidoTxt = params.get("pedido");
-  if(pedidoTxt){
-    const pedido = {
-      telefono: tel,
-      texto: decodeURIComponent(pedidoTxt),
-      estado: "RECIBIDO",
-      fecha: new Date().toLocaleString()
-    };
-
-    localStorage.setItem(key, JSON.stringify(pedido));
-
-    let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
-    if(!cola.includes(tel)){
-      cola.push(tel);
-      localStorage.setItem("cola_pedidos", JSON.stringify(cola));
-    }
-  }
-
-  // 🧹 limpiar URL (importante)
   history.replaceState({}, document.title, location.pathname);
 }
+
 
 
 /* ==========================
@@ -117,14 +86,19 @@ function renderFila(){
     return;
   }
 
-  cont.innerHTML = fila.map((tel, i) => {
-    const p = JSON.parse(localStorage.getItem("pedido_" + tel));
-    if(!p) return "";
+  cont.innerHTML = fila.map((ref, i) => {
+  const pedidos = JSON.parse(
+    localStorage.getItem("pedidos_" + ref.tel)
+  ) || [];
+
+  const p = pedidos.find(x => x.id === ref.id);
+  if(!p) return "";
+
 
     return `
       <div class="pedido">
         <div class="pedido-header">
-          <div class="pedido-num">#${i+1} · ${p.telefono}</div>
+          <div class="pedido-num">#${i+1} · ${p.telefono} · Pedido ${p.id}</div>
           <span class="estado ${p.estado}">${p.estado.replace("_"," ")}</span>
         </div>
 
@@ -188,17 +162,17 @@ ${tieneTransferencia(p.texto) ? `
 
 
         <div class="acciones">
-  <button class="btn-prep" onclick="cambiarEstado('${tel}','PREPARACION')">
+  <button class="btn-prep" onclick="cambiarEstado('${ref.tel}', ${ref.id}, 'PREPARACION')">
     🔵 Preparación
   </button>
 
   <!-- ESTE YA ENTREGA -->
-  <button class="btn-camino" onclick="entregarPedido('${tel}')">
+  <button class="btn-camino" onclick="entregarPedido('${ref.tel}', ${ref.id})">
     🚚 En camino
   </button>
 
   <!-- NUEVO BOTÓN -->
-  <button class="btn-cancelar" onclick="cancelarPedido('${tel}')">
+  <button class="btn-cancelar" onclick="cancelarPedido('${ref.tel}', ${ref.id})">
     ❌ Cancelado
   </button>
   ${tieneUbicacion(p.texto) ? `
@@ -213,39 +187,33 @@ ${tieneTransferencia(p.texto) ? `
     `;
   }).join("");
 }
-function cancelarPedido(tel){
-  const key = "pedido_" + tel;
-  const p = JSON.parse(localStorage.getItem(key));
+function cancelarPedido(tel, id){
+  const key = "pedidos_" + tel;
+  let pedidos = JSON.parse(localStorage.getItem(key)) || [];
+
+  const p = pedidos.find(x => x.id === id);
   if(!p) return;
 
-  // 🗑️ eliminar pedido
-  localStorage.removeItem(key);
+  // quitar de pedidos
+  pedidos = pedidos.filter(x => x.id !== id);
+  localStorage.setItem(key, JSON.stringify(pedidos));
 
-  // 🗑️ quitar de la cola
+  // quitar de cola
   let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
-  cola = cola.filter(x => x !== tel);
+  cola = cola.filter(x => !(x.tel === tel && x.id === id));
   localStorage.setItem("cola_pedidos", JSON.stringify(cola));
 
-  // 📩 WhatsApp opcional
-  const msg =
-`🍟 *La Carpita*
-Hola 👋
-
-Tu pedido fue *cancelado* ❌
-Si fue un error, contáctanos.`;
-
+  // WhatsApp
   window.open(
-    `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,
+    `https://wa.me/${tel}?text=${encodeURIComponent(
+      "🍟 *La Carpita*\n\nTu pedido fue *cancelado* ❌"
+    )}`,
     "_blank"
-  );
-
-  mostrarAlert(
-    "Pedido cancelado",
-    "El pedido fue eliminado correctamente"
   );
 
   renderFila();
 }
+
 
 function extraerLinea(txt, clave){
   const l = txt.split("\n").find(x => x.includes(clave));
@@ -296,53 +264,44 @@ function extraerMontoTransferencia(txt){
    CAMBIAR ESTADO
 ========================== */
 
-function cambiarEstado(tel, estado){
-  const key = "pedido_" + tel;
-  const p = JSON.parse(localStorage.getItem(key));
+function cambiarEstado(tel, id, estado){
+  const key = "pedidos_" + tel;
+  let pedidos = JSON.parse(localStorage.getItem(key)) || [];
+
+  const p = pedidos.find(x => x.id === id);
   if(!p) return;
 
   p.estado = estado;
-  localStorage.setItem(key, JSON.stringify(p));
+  localStorage.setItem(key, JSON.stringify(pedidos));
 
   enviarWhatsEstado(p);
   renderFila();
 }
+
 
 /* ==========================
    ENTREGAR
 ========================== */
 
-function entregarPedido(tel){
-  const key = "pedido_" + tel;
-  const p = JSON.parse(localStorage.getItem(key));
+function entregarPedido(tel, id){
+  const key = "pedidos_" + tel;
+  let pedidos = JSON.parse(localStorage.getItem(key)) || [];
+
+  const p = pedidos.find(x => x.id === id);
   if(!p) return;
 
-  // marcar entregado
-  p.estado = "ENTREGADO";
-  localStorage.setItem(key, JSON.stringify(p));
+  p.estado = "EN_CAMINO";
+  localStorage.setItem(key, JSON.stringify(pedidos));
 
-  // 🔔 WhatsApp
-  enviarWhatsEstado(p);
-
-  // 📊 REGISTRAR EN RESUMEN DIARIO
-  const resumen = obtenerResumenHoy();
-
-  resumen.pedidos += 1;
-  resumen.totalVendido += extraerTotalPedido(p.texto);
-
-  if(tieneEnvio(p.texto)){
-    resumen.envios += 1;
-  }
-
-  guardarResumenHoy(resumen);
-
-  // quitar de la cola
+  // quitar solo este pedido de la cola
   let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
-  cola = cola.filter(x => x !== tel);
+  cola = cola.filter(x => !(x.tel === tel && x.id === id));
   localStorage.setItem("cola_pedidos", JSON.stringify(cola));
 
+  enviarWhatsEstado(p);
   renderFila();
 }
+
 
 /* ==========================
    WHATSAPP SEGUIMIENTO
@@ -378,16 +337,16 @@ Gracias por tu preferencia 💛`;
 
 function limpiarEntregados(){
   Object.keys(localStorage)
-    .filter(k => k.startsWith("pedido_"))
+    .filter(k => k.startsWith("pedidos_"))
     .forEach(k => {
-      const p = JSON.parse(localStorage.getItem(k));
-      if(p?.estado === "ENTREGADO"){
-        localStorage.removeItem(k);
-      }
+      let pedidos = JSON.parse(localStorage.getItem(k)) || [];
+      pedidos = pedidos.filter(p => p.estado !== "ENTREGADO");
+      localStorage.setItem(k, JSON.stringify(pedidos));
     });
 
   renderFila();
 }
+
 /* ==========================
    RESUMEN DIARIO
 ========================== */
