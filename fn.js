@@ -2262,34 +2262,59 @@ function limpiarTelefono(txt){
 // EXPONER FUNCIONES PARA HTML
 // ================================
 
-// ya las tenías
+// MODALES Y NAVEGACIÓN
 window.openModal = openModal;
 window.closeModal = closeModal;
+window.volverAPrimeraOpcion = volverAPrimeraOpcion;
+window.abrirPasoPersonalizacion = abrirPasoPersonalizacion;
+
+// SELECCIÓN DE PRODUCTOS
 window.selectVariante = selectVariante;
 window.confirmarPersonalizacion = confirmarPersonalizacion;
 window.agregarAlimentoCarrito = agregarAlimentoCarrito;
+
+// CARRITO
 window.abrirCarrito = abrirCarrito;
 window.cerrarCarrito = cerrarCarrito;
-window.enviarPedidoWhatsApp = enviarPedidoWhatsApp;
-window.abrirPanelCocina = abrirPanelCocina;
-window.toggleTheme = toggleTheme;
-window.cerrarModalProductoAgregado = cerrarModalProductoAgregado;
+window.editarItem = editarItem;
+window.eliminarItem = eliminarItem;
 window.abrirPasoPago = abrirPasoPago;
-window.iniciarGuia = iniciarGuia;
-window.cerrarAlert = cerrarAlert;
 
-// 🔥🔥 ESTAS ERAN LAS QUE FALTABAN 🔥🔥
-window.toggleCheckboxDoble = toggleCheckboxDoble;
+// PAPAS
 window.selectPapasModo = selectPapasModo;
-window.volverAPrimeraOpcion = volverAPrimeraOpcion;
+
+// MINI / BANDERILLAS
 window.selectMiniModo = selectMiniModo;
-window.validarMixto = validarMixto;
-window.mostrarOpcionesMixto = mostrarOpcionesMixto;
+
+// ADEREZOS
+window.toggleCheckboxDoble = toggleCheckboxDoble;
+window.toggleCheckBonito = toggleCheckBonito;
+window.seleccionarRadioBonito = seleccionarRadioBonito;
+
+// COSTOS Y PAGOS
 window.actualizarCostoPedido = actualizarCostoPedido;
 window.actualizarVisibilidadPagoCon = actualizarVisibilidadPagoCon;
+window.mostrarOpcionesMixto = mostrarOpcionesMixto;
+window.validarMixto = validarMixto;
 window.ocultarMixtoSiNoCorresponde = ocultarMixtoSiNoCorresponde;
+
+// UBICACIÓN
 window.obtenerUbicacion = obtenerUbicacion;
 window.enviarUbicacionPorWhatsApp = enviarUbicacionPorWhatsApp;
 
+// WHATSAPP
+window.enviarPedidoWhatsApp = enviarPedidoWhatsApp;
+
+// ALERTAS
+window.mostrarAlert = mostrarAlert;
 window.cerrarAlert = cerrarAlert;
+
+// UI / EXTRAS
+window.toggleTheme = toggleTheme;
+window.iniciarGuia = iniciarGuia;
+window.cerrarGuia = cerrarGuia;
+window.cerrarModalProductoAgregado = cerrarModalProductoAgregado;
+
+// COCINA
+window.abrirPanelCocina = abrirPanelCocina;
 
