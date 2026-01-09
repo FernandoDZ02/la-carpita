@@ -1,4 +1,24 @@
 /* ===== CONSTANTES ===== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDLIhg6TI7aXTB16WVYlXDYrf3JVw6h-mg",
+  authDomain: "la-carpita-8d34c.firebaseapp.com",
+  projectId: "la-carpita-8d34c",
+  storageBucket: "la-carpita-8d34c.appspot.com",
+  messagingSenderId: "548024012544",
+  appId: "1:548024012544:web:b1216962906643d8242de5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
 const COSTO_DOBLE_ADEREZO = 8;
 const COSTO_ENVIO = 10;
 const COMISION_TARJETA = 0.035;
@@ -1469,11 +1489,20 @@ if (metodo === "Transferencia") {
 
   return total;
 }
+async function guardarPedidoFirebase(pedido) {
+  const ref = await addDoc(collection(db, "pedidos"), {
+    ...pedido,
+    estado: "RECIBIDO",
+    fecha: serverTimestamp()
+  });
+
+  return ref.id; // 👈 ESTE ES EL ID CORTO
+}
 
 /* ================================
       WHATSAPP: ENVIAR PEDIDO
    ================================ */
-function enviarPedidoWhatsApp() {
+async function enviarPedidoWhatsApp() {
     const nombre = document.getElementById("nombreCliente").value.trim();
 const telefonoRaw = document.getElementById("telefonoCliente").value.trim();
 const telefonoPedido = limpiarTelefono(telefonoRaw);
@@ -1653,30 +1682,24 @@ else if (metodoPago === "tarjeta") {
 // 🧠 Guardar pedido localmente (RESPALDO)
 
 
-const pedidoId = Date.now(); // ID único
-
 const pedidoObj = {
-  id: pedidoId,
+  nombre,
   telefono: telefonoPedido,
-  texto: mensaje,
-  estado: "RECIBIDO",
-  fecha: new Date().toLocaleString()
+  mensaje,
+  carrito,
+  total,
+  metodoPago,
+  ubicacion: dire,
+  referencias: ref,
+  notas
 };
 
-// 📦 carpeta por teléfono
-const key = "pedidos_" + telefonoPedido;
-let pedidos = JSON.parse(localStorage.getItem(key)) || [];
-
-pedidos.push(pedidoObj);
-localStorage.setItem(key, JSON.stringify(pedidos));
-
-// 📋 cola de cocina (referencia)
-let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
-cola.push({ tel: telefonoPedido, id: pedidoId });
-localStorage.setItem("cola_pedidos", JSON.stringify(cola));
+const pedidoId = await guardarPedidoFirebase(pedidoObj);
 
 const linkPanel =
-  `${URL_PANEL_NEGOCIO}?tel=${telefonoPedido}`;
+  `${URL_PANEL_NEGOCIO}?id=${pedidoId}`;
+
+
 
 mensaje += `\n\n🧾 *Abrir pedido en sistema:*\n${linkPanel}`;
 
