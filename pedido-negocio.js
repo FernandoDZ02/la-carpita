@@ -76,6 +76,17 @@ function importarDesdeURL(){
 
 function renderFila(){
   const fila = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+   fila = fila
+    .map(x => {
+      if(typeof x === "string"){
+        // pedido viejo → NO SE PUEDE RECUPERAR
+        return null;
+      }
+      return x;
+    })
+    .filter(Boolean);
+
+  localStorage.setItem("cola_pedidos", JSON.stringify(fila));
   const cont = document.getElementById("filaPedidos");
 
   document.getElementById("contadorPedidos").textContent =
