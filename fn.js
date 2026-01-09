@@ -1,24 +1,5 @@
+
 /* ===== CONSTANTES ===== */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDLIhg6TI7aXTB16WVYlXDYrf3JVw6h-mg",
-  authDomain: "la-carpita-8d34c.firebaseapp.com",
-  projectId: "la-carpita-8d34c",
-  storageBucket: "la-carpita-8d34c.appspot.com",
-  messagingSenderId: "548024012544",
-  appId: "1:548024012544:web:b1216962906643d8242de5"
-};
-
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
 const COSTO_DOBLE_ADEREZO = 8;
 const COSTO_ENVIO = 10;
 const COMISION_TARJETA = 0.035;
@@ -1489,20 +1470,11 @@ if (metodo === "Transferencia") {
 
   return total;
 }
-async function guardarPedidoFirebase(pedido) {
-  const ref = await addDoc(collection(db, "pedidos"), {
-    ...pedido,
-    estado: "RECIBIDO",
-    fecha: serverTimestamp()
-  });
-
-  return ref.id; // 👈 ESTE ES EL ID CORTO
-}
 
 /* ================================
       WHATSAPP: ENVIAR PEDIDO
    ================================ */
-async function enviarPedidoWhatsApp() {
+function enviarPedidoWhatsApp() {
     const nombre = document.getElementById("nombreCliente").value.trim();
 const telefonoRaw = document.getElementById("telefonoCliente").value.trim();
 const telefonoPedido = limpiarTelefono(telefonoRaw);
@@ -1527,11 +1499,10 @@ if (!telefonoPedido || telefonoPedido.length !== 10) {
         showToast("Ingresa tu nombre");
         return;
     }
-if (!dire && !ubicacionManual) {
+if (!dire) {
   showToast("Comparte tu ubicación automática o por WhatsApp");
   return;
 }
-
 
     if (!metodoPago) {
         showToast("Selecciona un método de pago");
@@ -1683,24 +1654,30 @@ else if (metodoPago === "tarjeta") {
 // 🧠 Guardar pedido localmente (RESPALDO)
 
 
+const pedidoId = Date.now(); // ID único
+
 const pedidoObj = {
-  nombre,
+  id: pedidoId,
   telefono: telefonoPedido,
-  mensaje,
-  carrito,
-  total,
-  metodoPago,
-  ubicacion: dire,
-  referencias: ref,
-  notas
+  texto: mensaje,
+  estado: "RECIBIDO",
+  fecha: new Date().toLocaleString()
 };
 
-const pedidoId = await guardarPedidoFirebase(pedidoObj);
+// 📦 carpeta por teléfono
+const key = "pedidos_" + telefonoPedido;
+let pedidos = JSON.parse(localStorage.getItem(key)) || [];
+
+pedidos.push(pedidoObj);
+localStorage.setItem(key, JSON.stringify(pedidos));
+
+// 📋 cola de cocina (referencia)
+let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+cola.push({ tel: telefonoPedido, id: pedidoId });
+localStorage.setItem("cola_pedidos", JSON.stringify(cola));
 
 const linkPanel =
-  `${URL_PANEL_NEGOCIO}?id=${pedidoId}`;
-
-
+  `${URL_PANEL_NEGOCIO}?tel=${telefonoPedido}`;
 
 mensaje += `\n\n🧾 *Abrir pedido en sistema:*\n${linkPanel}`;
 
@@ -1992,21 +1969,31 @@ function seleccionarRadioBonito(label){
 }
 function actualizarVisibilidadPagoCon() {
   const metodo = getRadioValue("pago");
-
-  const contenedor = document.getElementById("contenedorPagoCon");
+  const campoPagoCon = document.getElementById("pagoCon");
   const lineaCambio = document.getElementById("lineaCambio");
 
   if (metodo === "efectivo") {
-    contenedor.style.display = "block";
+    campoPagoCon.style.display = "block";
     lineaCambio.style.display = "flex";
   } else {
-    contenedor.style.display = "none";
+    campoPagoCon.style.display = "none";
     lineaCambio.style.display = "none";
   }
 
   actualizarCostoPedido();
 }
+function actualizarVisibilidadPagoCon() {
+    const metodo = getRadioValue("pago");
+    const cont = document.getElementById("contenedorPagoCon");
 
+    if (metodo === "efectivo") {
+        cont.style.display = "block";
+    } else {
+        cont.style.display = "none";
+        document.getElementById("pagoCon").value = "";
+        document.getElementById("pedidoCambio").textContent = "$0.00";
+    }
+}
 function mostrarOpcionesMixto() {
     document.getElementById("pagoMixtoOpciones").style.display = "block";
     document.getElementById("contenedorPagoCon").style.display = "none"; // evita confusión
@@ -2259,62 +2246,443 @@ function abrirPanelCocina(){
 function limpiarTelefono(txt){
   return txt.replace(/\D/g, "").slice(-10);
 }
-// ================================
-// EXPONER FUNCIONES PARA HTML
-// ================================
+/* ==========================
+   CARGA INICIAL
+========================== */
+/* ==========================
+   SEGURIDAD DE ACCESO
+========================== */
 
-// MODALES Y NAVEGACIÓN
-window.openModal = openModal;
-window.closeModal = closeModal;
-window.volverAPrimeraOpcion = volverAPrimeraOpcion;
-window.abrirPasoPersonalizacion = abrirPasoPersonalizacion;
+const PASS_COCINA = "230321"; // 🔒 CAMBIA ESTO
 
-// SELECCIÓN DE PRODUCTOS
-window.selectVariante = selectVariante;
-window.confirmarPersonalizacion = confirmarPersonalizacion;
-window.agregarAlimentoCarrito = agregarAlimentoCarrito;
+document.addEventListener("DOMContentLoaded", () => {
+  const acceso = localStorage.getItem("acceso_cocina");
 
-// CARRITO
-window.abrirCarrito = abrirCarrito;
-window.cerrarCarrito = cerrarCarrito;
-window.editarItem = editarItem;
-window.eliminarItem = eliminarItem;
-window.abrirPasoPago = abrirPasoPago;
+  if(acceso === "ok"){
+    desbloquearPanel();
+  }
+});
+function verificarAcceso(){
+  const pass = document.getElementById("authPass").value;
+  const err  = document.getElementById("authError");
 
-// PAPAS
-window.selectPapasModo = selectPapasModo;
+  if(pass === PASS_COCINA){
+    localStorage.setItem("acceso_cocina","ok");
+    desbloquearPanel();
+  }else{
+    err.textContent = "Contraseña incorrecta";
+  }
+}
 
-// MINI / BANDERILLAS
-window.selectMiniModo = selectMiniModo;
+function desbloquearPanel(){
+  document.getElementById("authOverlay").style.display = "none";
+}
 
-// ADEREZOS
-window.toggleCheckboxDoble = toggleCheckboxDoble;
-window.toggleCheckBonito = toggleCheckBonito;
-window.seleccionarRadioBonito = seleccionarRadioBonito;
+document.addEventListener("DOMContentLoaded", () => {
+  if(localStorage.getItem("acceso_cocina") === "ok"){
+    importarDesdeURL();
+    renderFila();
+    setInterval(renderFila, 3000);
+  }
+});
 
-// COSTOS Y PAGOS
-window.actualizarCostoPedido = actualizarCostoPedido;
-window.actualizarVisibilidadPagoCon = actualizarVisibilidadPagoCon;
-window.mostrarOpcionesMixto = mostrarOpcionesMixto;
-window.validarMixto = validarMixto;
-window.ocultarMixtoSiNoCorresponde = ocultarMixtoSiNoCorresponde;
+function cerrarSesionCocina(){
+  localStorage.removeItem("acceso_cocina");
+  location.reload();
+}
+function extraerUrlUbicacion(txt){
+  const linea = txt.split("\n").find(l => l.includes("maps.google") || l.includes("google.com/maps"));
+  return linea ? linea.trim() : null;
+}
 
-// UBICACIÓN
-window.obtenerUbicacion = obtenerUbicacion;
-window.enviarUbicacionPorWhatsApp = enviarUbicacionPorWhatsApp;
+function tieneUbicacion(txt){
+  return !!extraerUrlUbicacion(txt);
+}
 
-// WHATSAPP
-window.enviarPedidoWhatsApp = enviarPedidoWhatsApp;
+function abrirUbicacion(txt){
+  const url = extraerUrlUbicacion(txt);
+  if(url){
+    window.open(url, "_blank");
+  }else{
+    mostrarAlert("Ubicación", "Este pedido no tiene ubicación disponible.");
+  }
+}
 
-// ALERTAS
-window.mostrarAlert = mostrarAlert;
-window.cerrarAlert = cerrarAlert;
+/* ==========================
+   IMPORTAR DESDE LINK
+========================== */
 
-// UI / EXTRAS
-window.toggleTheme = toggleTheme;
-window.iniciarGuia = iniciarGuia;
-window.cerrarGuia = cerrarGuia;
-window.cerrarModalProductoAgregado = cerrarModalProductoAgregado;
+function importarDesdeURL(){
+  const params = new URLSearchParams(window.location.search);
+  const tel = params.get("tel");
+  if(!tel) return;
 
-// COCINA
-window.abrirPanelCocina = abrirPanelCocina;
+  const key = "pedido_" + tel;
+
+  // 🟢 Si ya existe el pedido, no hacer nada
+  if(localStorage.getItem(key)){
+    history.replaceState({}, document.title, location.pathname);
+    return;
+  }
+
+  // 🔁 RESPALDO (solo por compatibilidad vieja)
+  const pedidoTxt = params.get("pedido");
+  if(pedidoTxt){
+    const pedido = {
+      telefono: tel,
+      texto: decodeURIComponent(pedidoTxt),
+      estado: "RECIBIDO",
+      fecha: new Date().toLocaleString()
+    };
+
+    localStorage.setItem(key, JSON.stringify(pedido));
+
+    let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+    if(!cola.includes(tel)){
+      cola.push(tel);
+      localStorage.setItem("cola_pedidos", JSON.stringify(cola));
+    }
+  }
+
+  // 🧹 limpiar URL (importante)
+  history.replaceState({}, document.title, location.pathname);
+}
+
+
+/* ==========================
+   RENDER FILA
+========================== */
+
+function renderFila(){
+  const fila = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+  const cont = document.getElementById("filaPedidos");
+
+  document.getElementById("contadorPedidos").textContent =
+    fila.length ? `${fila.length} pedido(s)` : "Sin pedidos";
+
+  if(fila.length === 0){
+    cont.innerHTML = `<p style="text-align:center;color:#777;">No hay pedidos</p>`;
+    return;
+  }
+
+  cont.innerHTML = fila.map((ref, i) => {
+  const pedidos = JSON.parse(
+    localStorage.getItem("pedidos_" + ref.tel)
+  ) || [];
+
+  const p = pedidos.find(x => x.id === ref.id);
+  if(!p) return "";
+
+
+    return `
+      <div class="pedido">
+        <div class="pedido-header">
+          <div class="pedido-num">#${i+1} · ${p.telefono}</div>
+          <span class="estado ${p.estado}">${p.estado.replace("_"," ")}</span>
+        </div>
+
+        <div class="pedido-body">
+  <!-- 🍽️ ALIMENTOS -->
+  <div class="pedido-section">
+    <span class="sec-title">🍽️ Pedido</span>
+    <pre class="pedido-items">
+${extraerSeccion(p.texto, "🍽️", "-----------------------")}
+    </pre>
+  </div>
+ <div class="pedido-section grid">
+  <div>
+    <span class="sec-title">💰 Total</span>
+    <strong>${extraerLinea(p.texto, "Total:")}</strong>
+  </div>
+
+<div>
+  <span class="sec-title">💳 Pago</span>
+  <strong>
+    ${esPagoMixto(p.texto)
+      ? "Mixto"
+      : extraerLinea(p.texto, "Método de pago:")}
+  </strong>
+</div>
+
+${esPagoMixto(p.texto) ? `
+${extraerMonto(p.texto, "Efectivo") ? `
+<div>
+  <span class="sec-title">💵 Efectivo</span>
+  <strong>${extraerMonto(p.texto, "Efectivo")}</strong>
+</div>` : ""}
+
+${extraerMonto(p.texto, "Tarjeta") ? `
+<div>
+  <span class="sec-title">💳 Tarjeta</span>
+  <strong>${extraerMonto(p.texto, "Tarjeta")}</strong>
+</div>` : ""}
+
+${tieneTransferencia(p.texto) ? `
+<div>
+  <span class="sec-title">🏦 Transferencia</span>
+  <strong>${extraerMontoTransferencia(p.texto)}</strong>
+</div>` : ""}
+` : ""}
+
+
+
+  ${extraerPagoCon(p.texto) !== "-" ? `
+  <div>
+    <span class="sec-title">💵 Pagas con</span>
+    <strong>${extraerPagoCon(p.texto)}</strong>
+  </div>` : ""}
+
+  ${extraerCambio(p.texto) !== "-" ? `
+  <div>
+    <span class="sec-title">🔁 Cambio</span>
+    <strong>${extraerCambio(p.texto)}</strong>
+  </div>` : ""}
+</div>
+
+
+        <div class="acciones">
+  <button class="btn-prep" onclick="cambiarEstado('${ref.tel}', ${ref.id}, 'PREPARACION')">
+    🔵 Preparación
+  </button>
+
+  <!-- ESTE YA ENTREGA -->
+  <button class="btn-camino" onclick="entregarPedido('${ref.tel}', ${ref.id})">
+    🚚 En camino
+  </button>
+
+  <!-- NUEVO BOTÓN -->
+  <button class="btn-cancelar" onclick="cancelarPedido('${ref.tel}', ${ref.id})">
+    ❌ Cancelado
+  </button>
+  ${tieneUbicacion(p.texto) ? `
+<button class="btn-ubi" onclick='abrirUbicacion(${JSON.stringify(p.texto)})'>
+  📍 Abrir ubicación
+</button>
+` : ""}
+
+</div>
+
+      </div>
+    `;
+  }).join("");
+}
+function cancelarPedido(tel){
+  const key = "pedido_" + tel;
+  const p = JSON.parse(localStorage.getItem(key));
+  if(!p) return;
+
+  // 🗑️ eliminar pedido
+  localStorage.removeItem(key);
+
+  // 🗑️ quitar de la cola
+  let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+  cola = cola.filter(x => x !== tel);
+  localStorage.setItem("cola_pedidos", JSON.stringify(cola));
+
+  // 📩 WhatsApp opcional
+  const msg =
+`🍟 *La Carpita*
+Hola 👋
+
+Tu pedido fue *cancelado* ❌
+Si fue un error, contáctanos.`;
+
+  window.open(
+    `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,
+    "_blank"
+  );
+
+  mostrarAlert(
+    "Pedido cancelado",
+    "El pedido fue eliminado correctamente"
+  );
+
+  renderFila();
+}
+
+function extraerLinea(txt, clave){
+  const l = txt.split("\n").find(x => x.includes(clave));
+  return l ? l.replace(clave, "").replace("*","").trim() : "-";
+}
+
+function extraerSeccion(txt, inicio, fin){
+  const i = txt.indexOf(inicio);
+  const f = txt.indexOf(fin);
+  if(i === -1 || f === -1) return "";
+  return txt.substring(i, f).replace(inicio, "").trim();
+}
+function extraerPagoCon(txt){
+  return extraerLinea(txt, "Pagas con:");
+}
+
+function extraerCambio(txt){
+  return extraerLinea(txt, "Cambio:");
+}
+function esPagoMixto(txt){
+  return txt.toLowerCase().includes("mixto");
+}
+
+function extraerMonto(txt, clave){
+  const l = txt.split("\n").find(x => x.toLowerCase().includes(clave.toLowerCase()));
+  if(!l) return null;
+  const n = parseFloat(l.replace(/[^0-9.]/g,""));
+  return isNaN(n) ? null : `$${n.toFixed(2)}`;
+}
+function tieneTransferencia(txt){
+  return txt.toLowerCase().includes("transferencia");
+}
+
+function extraerMontoTransferencia(txt){
+  // si no viene monto explícito, calculamos el resto
+  const total = extraerTotalPedido(txt);
+  const efectivo = extraerMonto(txt, "Efectivo");
+
+  if(efectivo){
+    const ef = parseFloat(efectivo.replace(/[^0-9.]/g,"")) || 0;
+    const resto = total - ef;
+    return resto > 0 ? `$${resto.toFixed(2)}` : "-";
+  }
+  return "-";
+}
+
+/* ==========================
+   CAMBIAR ESTADO
+========================== */
+
+function cambiarEstado(tel, estado){
+  const key = "pedido_" + tel;
+  const p = JSON.parse(localStorage.getItem(key));
+  if(!p) return;
+
+  p.estado = estado;
+  localStorage.setItem(key, JSON.stringify(p));
+
+  enviarWhatsEstado(p);
+  renderFila();
+}
+
+/* ==========================
+   ENTREGAR
+========================== */
+
+function entregarPedido(tel, id){
+  const key = "pedidos_" + tel;
+  let pedidos = JSON.parse(localStorage.getItem(key)) || [];
+
+  const p = pedidos.find(x => x.id === id);
+  if(!p) return;
+
+  p.estado = "EN_CAMINO";
+  localStorage.setItem(key, JSON.stringify(pedidos));
+
+  // quitar solo este pedido de la cola
+  let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+  cola = cola.filter(x => !(x.tel === tel && x.id === id));
+  localStorage.setItem("cola_pedidos", JSON.stringify(cola));
+
+  enviarWhatsEstado(p);
+  renderFila();
+}
+
+
+/* ==========================
+   WHATSAPP SEGUIMIENTO
+========================== */
+
+function enviarWhatsEstado(p){
+  const estados = {
+    RECIBIDO: "🟡 *Recibido*",
+    PREPARACION: "🔵 *En preparación*",
+    EN_CAMINO: "🚚 *En camino*",
+    ENTREGADO: "✅ *Entregado*"
+  };
+
+  const msg =
+`🍟 *La Carpita*
+Hola 👋
+
+Tu pedido está:
+👉 ${estados[p.estado]}
+
+Gracias por tu preferencia 💛`;
+
+  window.open(
+    `https://wa.me/${p.telefono}?text=${encodeURIComponent(msg)}`,
+    "_blank"
+  );
+}
+
+
+/* ==========================
+   LIMPIAR ENTREGADOS
+========================== */
+
+function limpiarEntregados(){
+  Object.keys(localStorage)
+    .filter(k => k.startsWith("pedido_"))
+    .forEach(k => {
+      const p = JSON.parse(localStorage.getItem(k));
+      if(p?.estado === "ENTREGADO"){
+        localStorage.removeItem(k);
+      }
+    });
+
+  renderFila();
+}
+/* ==========================
+   RESUMEN DIARIO
+========================== */
+
+function obtenerFechaHoy(){
+  return new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+}
+
+function obtenerResumenHoy(){
+  const key = "resumen_" + obtenerFechaHoy();
+  return JSON.parse(localStorage.getItem(key)) || {
+    totalVendido: 0,
+    pedidos: 0,
+    envios: 0
+  };
+}
+
+function guardarResumenHoy(res){
+  const key = "resumen_" + obtenerFechaHoy();
+  localStorage.setItem(key, JSON.stringify(res));
+}
+function extraerTotalPedido(texto){
+  const linea = texto.split("\n").find(l => l.includes("Total:"));
+  if(!linea) return 0;
+  return parseFloat(linea.replace(/[^0-9.]/g,"")) || 0;
+}
+
+function tieneEnvio(texto){
+  const linea = texto.split("\n").find(l => l.includes("Envío:"));
+  if(!linea) return false;
+  const monto = parseFloat(linea.replace(/[^0-9.]/g,"")) || 0;
+  return monto > 0;
+}
+function verResumenHoy(){
+  const r = obtenerResumenHoy();
+
+  mostrarAlert(
+    "📊 Corte del día",
+`🧾 Pedidos: ${r.pedidos}
+💰 Total vendido: $${r.totalVendido.toFixed(2)}
+🚚 Envíos: ${r.envios}`
+  );
+}
+
+/* ==========================
+   ALERTA BONITA
+========================== */
+
+function mostrarAlert(titulo, mensaje){
+  document.getElementById("alertTitle").textContent = titulo || "Aviso";
+  document.getElementById("alertMessage").textContent = mensaje || "";
+  document.getElementById("alertOverlay").style.display = "flex";
+}
+
+function cerrarAlert(){
+  document.getElementById("alertOverlay").style.display = "none";
+}
