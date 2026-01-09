@@ -2258,7 +2258,11 @@ function abrirPanelCocina(){
 function limpiarTelefono(txt){
   return txt.replace(/\D/g, "").slice(-10);
 }
-// 🔓 EXPONER FUNCIONES PARA HTML
+// ================================
+// EXPONER FUNCIONES PARA HTML
+// ================================
+
+// ya las tenías
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.selectVariante = selectVariante;
@@ -2269,9 +2273,23 @@ window.cerrarCarrito = cerrarCarrito;
 window.enviarPedidoWhatsApp = enviarPedidoWhatsApp;
 window.abrirPanelCocina = abrirPanelCocina;
 window.toggleTheme = toggleTheme;
-// 🔥 ESTAS TE FALTABAN
 window.cerrarModalProductoAgregado = cerrarModalProductoAgregado;
 window.abrirPasoPago = abrirPasoPago;
 window.iniciarGuia = iniciarGuia;
+window.cerrarAlert = cerrarAlert;
+
+// 🔥🔥 ESTAS ERAN LAS QUE FALTABAN 🔥🔥
+window.toggleCheckboxDoble = toggleCheckboxDoble;
+window.selectPapasModo = selectPapasModo;
+window.volverAPrimeraOpcion = volverAPrimeraOpcion;
+window.selectMiniModo = selectMiniModo;
+window.validarMixto = validarMixto;
+window.mostrarOpcionesMixto = mostrarOpcionesMixto;
+window.actualizarCostoPedido = actualizarCostoPedido;
+window.actualizarVisibilidadPagoCon = actualizarVisibilidadPagoCon;
+window.ocultarMixtoSiNoCorresponde = ocultarMixtoSiNoCorresponde;
+window.obtenerUbicacion = obtenerUbicacion;
+window.enviarUbicacionPorWhatsApp = enviarUbicacionPorWhatsApp;
+
 window.cerrarAlert = cerrarAlert;
 
