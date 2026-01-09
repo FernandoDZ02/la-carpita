@@ -1626,29 +1626,55 @@ if (ubicacionManual) {
     if (ref)   mensaje += `📌 Referencias: ${ref}\n`;
     if (notas) mensaje += `📝 Notas: ${notas}\n`;
 
-    mensaje     += `\n💳 Método de pago: *${metodoPago}*\n`;
+    mensaje += `\n💳 Método de pago: *${metodoPago}*\n`;
 
-    const linkPanel =
-  `${URL_PANEL_NEGOCIO}?tel=${telefonoPedido}&pedido=${encodeURIComponent(mensaje)}`;
+// 🔥 DETALLE DE PAGO ANTES DEL LINK
+if (metodoPago === "mixto" && detalleMixto) {
+    mensaje += "\n💳 *Detalle pago mixto:*\n" + detalleMixto;
+} 
+else if (metodoPago === "efectivo") {
+    const pagoCon = Number(document.getElementById("pagoCon").value);
+    const cambio  = pagoCon - total;
+    mensaje += `\n💵 Pagas con: $${pagoCon.toFixed(2)}\n`;
+    mensaje += `🔁 Cambio: $${cambio.toFixed(2)}\n`;
+}
+else if (metodoPago === "transferencia") {
+    mensaje +=
+        "\n🏦 *Datos para transferir:*\n" +
+        "Banco: Nu\n" +
+        "Nombre: Fernando Gael Duran Zamora\n" +
+        "CLABE: 638180000136730578\n";
+}
+else if (metodoPago === "tarjeta") {
+    mensaje += "\n💳 Pago con tarjeta (3.5% extra)\n";
+}
+
+// 🔗 AHORA SÍ, CREAR LINK
+// 🧠 Guardar pedido localmente (RESPALDO)
+const pedidoObj = {
+  telefono: telefonoPedido,
+  texto: mensaje,
+  estado: "RECIBIDO",
+  fecha: new Date().toLocaleString()
+};
+
+localStorage.setItem(
+  "pedido_" + telefonoPedido,
+  JSON.stringify(pedidoObj)
+);
+
+// Guardar en cola
+let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+if(!cola.includes(telefonoPedido)){
+  cola.push(telefonoPedido);
+  localStorage.setItem("cola_pedidos", JSON.stringify(cola));
+}
+const linkPanel =
+  `${URL_PANEL_NEGOCIO}?tel=${telefonoPedido}`;
 
 mensaje += `\n\n🧾 *Abrir pedido en sistema:*\n${linkPanel}`;
-    // Detalle de pago
-    if (metodoPago === "mixto" && detalleMixto) {
-        mensaje += "\n💳 *Detalle pago mixto:*\n" + detalleMixto;
-    } else if (metodoPago === "efectivo") {
-        const pagoCon = Number(document.getElementById("pagoCon").value);
-        const cambio  = pagoCon - total;
-        mensaje += `\n💵 Pagas con: $${pagoCon.toFixed(2)}\n`;
-        mensaje += `🔁 Cambio: $${cambio.toFixed(2)}\n`;
-    } else if (metodoPago === "transferencia") {
-        mensaje +=
-            "\n🏦 *Datos para transferir:*\n" +
-            "Banco: Nu\n" +
-            "Nombre: Fernando Gael Duran Zamora\n" +
-            "CLABE: 638180000136730578\n";
-    } else if (metodoPago === "tarjeta") {
-        mensaje += "\n💳 Pago con tarjeta (3.5% extra)\n";
-    }
+
+
 
     // Enviar a WhatsApp
     const url = `https://wa.me/${525657861068}?text=${encodeURIComponent(mensaje)}`;
