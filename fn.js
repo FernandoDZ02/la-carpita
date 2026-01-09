@@ -1651,24 +1651,30 @@ else if (metodoPago === "tarjeta") {
 
 // 🔗 AHORA SÍ, CREAR LINK
 // 🧠 Guardar pedido localmente (RESPALDO)
+
+
+const pedidoId = Date.now(); // ID único
+
 const pedidoObj = {
+  id: pedidoId,
   telefono: telefonoPedido,
   texto: mensaje,
   estado: "RECIBIDO",
   fecha: new Date().toLocaleString()
 };
 
-localStorage.setItem(
-  "pedido_" + telefonoPedido,
-  JSON.stringify(pedidoObj)
-);
+// 📦 carpeta por teléfono
+const key = "pedidos_" + telefonoPedido;
+let pedidos = JSON.parse(localStorage.getItem(key)) || [];
 
-// Guardar en cola
+pedidos.push(pedidoObj);
+localStorage.setItem(key, JSON.stringify(pedidos));
+
+// 📋 cola de cocina (referencia)
 let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
-if(!cola.includes(telefonoPedido)){
-  cola.push(telefonoPedido);
-  localStorage.setItem("cola_pedidos", JSON.stringify(cola));
-}
+cola.push({ tel: telefonoPedido, id: pedidoId });
+localStorage.setItem("cola_pedidos", JSON.stringify(cola));
+
 const linkPanel =
   `${URL_PANEL_NEGOCIO}?tel=${telefonoPedido}`;
 
@@ -1974,18 +1980,6 @@ function actualizarVisibilidadPagoCon() {
   }
 
   actualizarCostoPedido();
-}
-function actualizarVisibilidadPagoCon() {
-    const metodo = getRadioValue("pago");
-    const cont = document.getElementById("contenedorPagoCon");
-
-    if (metodo === "efectivo") {
-        cont.style.display = "block";
-    } else {
-        cont.style.display = "none";
-        document.getElementById("pagoCon").value = "";
-        document.getElementById("pedidoCambio").textContent = "$0.00";
-    }
 }
 function mostrarOpcionesMixto() {
     document.getElementById("pagoMixtoOpciones").style.display = "block";
