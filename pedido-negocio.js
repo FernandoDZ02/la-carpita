@@ -67,13 +67,19 @@ function abrirUbicacion(txt){
 function importarDesdeURL(){
   const params = new URLSearchParams(window.location.search);
   const tel = params.get("tel");
-  const pedidoTxt = params.get("pedido");
-
-  if(!tel || !pedidoTxt) return;
+  if(!tel) return;
 
   const key = "pedido_" + tel;
 
-  if(!localStorage.getItem(key)){
+  // 🟢 Si ya existe el pedido, no hacer nada
+  if(localStorage.getItem(key)){
+    history.replaceState({}, document.title, location.pathname);
+    return;
+  }
+
+  // 🔁 RESPALDO (solo por compatibilidad vieja)
+  const pedidoTxt = params.get("pedido");
+  if(pedidoTxt){
     const pedido = {
       telefono: tel,
       texto: decodeURIComponent(pedidoTxt),
@@ -90,8 +96,10 @@ function importarDesdeURL(){
     }
   }
 
+  // 🧹 limpiar URL (importante)
   history.replaceState({}, document.title, location.pathname);
 }
+
 
 /* ==========================
    RENDER FILA
@@ -309,14 +317,14 @@ function entregarPedido(tel){
   const p = JSON.parse(localStorage.getItem(key));
   if(!p) return;
 
-  // 🚚 marcar EN CAMINO (no entregado)
-  p.estado = "EN_CAMINO";
+  // marcar entregado
+  p.estado = "ENTREGADO";
   localStorage.setItem(key, JSON.stringify(p));
 
-  // 📩 WhatsApp: En camino para entregar
+  // 🔔 WhatsApp
   enviarWhatsEstado(p);
 
-  // 📊 REGISTRAR EN RESUMEN DIARIO (igual que entregado)
+  // 📊 REGISTRAR EN RESUMEN DIARIO
   const resumen = obtenerResumenHoy();
 
   resumen.pedidos += 1;
@@ -328,7 +336,7 @@ function entregarPedido(tel){
 
   guardarResumenHoy(resumen);
 
-  // 🗑️ quitar de la cola (igual que entregado)
+  // quitar de la cola
   let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
   cola = cola.filter(x => x !== tel);
   localStorage.setItem("cola_pedidos", JSON.stringify(cola));
