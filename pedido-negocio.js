@@ -309,14 +309,14 @@ function entregarPedido(tel){
   const p = JSON.parse(localStorage.getItem(key));
   if(!p) return;
 
-  // marcar entregado
-  p.estado = "ENTREGADO";
+  // 🚚 marcar EN CAMINO (no entregado)
+  p.estado = "EN_CAMINO";
   localStorage.setItem(key, JSON.stringify(p));
 
-  // 🔔 WhatsApp
+  // 📩 WhatsApp: En camino para entregar
   enviarWhatsEstado(p);
 
-  // 📊 REGISTRAR EN RESUMEN DIARIO
+  // 📊 REGISTRAR EN RESUMEN DIARIO (igual que entregado)
   const resumen = obtenerResumenHoy();
 
   resumen.pedidos += 1;
@@ -328,7 +328,7 @@ function entregarPedido(tel){
 
   guardarResumenHoy(resumen);
 
-  // quitar de la cola
+  // 🗑️ quitar de la cola (igual que entregado)
   let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
   cola = cola.filter(x => x !== tel);
   localStorage.setItem("cola_pedidos", JSON.stringify(cola));
