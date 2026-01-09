@@ -1468,6 +1468,9 @@ if (metodo === "Transferencia") {
 
   return total;
 }
+function limpiarTelefono(tel){
+  return tel.replace(/\D/g, ""); // solo números
+}
 
 /* ================================
       WHATSAPP: ENVIAR PEDIDO
@@ -2167,7 +2170,3 @@ document.addEventListener("DOMContentLoaded", ()=>{
   }
 });
 
-
-function cerrarAlert(){
-  document.getElementById("alertOverlay").style.display = "none";
-}
