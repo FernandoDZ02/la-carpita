@@ -4,6 +4,30 @@
 /* ==========================
    SEGURIDAD DE ACCESO
 ========================== */
+// 🔥 FIREBASE
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDLIhg6TI7aXTB16WVYlXDYrf3JVw6h-mg",
+  authDomain: "la-carpita-8d34c.firebaseapp.com",
+  projectId: "la-carpita-8d34c",
+  storageBucket: "la-carpita-8d34c.appspot.com",
+  messagingSenderId: "548024012544",
+  appId: "1:548024012544:web:b1216962906643d8242de5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 
 const PASS_COCINA = "230321"; // 🔒 CAMBIA ESTO
 
@@ -34,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if(localStorage.getItem("acceso_cocina") === "ok"){
     importarDesdeURL();
     renderFila();
-    setInterval(renderFila, 3000);
+    escucharPedidos();
   }
 });
 
@@ -69,161 +93,82 @@ function importarDesdeURL(){
 }
 
 
+function escucharPedidos() {
+  const q = query(
+    collection(db, "pedidos"),
+    orderBy("fecha", "desc")
+  );
+
+  onSnapshot(q, snap => {
+    const pedidos = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    renderFila(pedidos);
+  });
+}
 
 /* ==========================
    RENDER FILA
 ========================== */
 
-function renderFila(){
-  let fila = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
-   fila = fila
-    .map(x => {
-      if(typeof x === "string"){
-        // pedido viejo → NO SE PUEDE RECUPERAR
-        return null;
-      }
-      return x;
-    })
-    .filter(Boolean);
-
-  localStorage.setItem("cola_pedidos", JSON.stringify(fila));
+function renderFila(pedidos = []) {
   const cont = document.getElementById("filaPedidos");
 
   document.getElementById("contadorPedidos").textContent =
-    fila.length ? `${fila.length} pedido(s)` : "Sin pedidos";
+    pedidos.length ? `${pedidos.length} pedido(s)` : "Sin pedidos";
 
-  if(fila.length === 0){
+  if (!pedidos.length) {
     cont.innerHTML = `<p style="text-align:center;color:#777;">No hay pedidos</p>`;
     return;
   }
 
-  cont.innerHTML = fila.map((ref, i) => {
-  const pedidos = JSON.parse(
-    localStorage.getItem("pedidos_" + ref.tel)
-  ) || [];
-
-  const p = pedidos.find(x => x.id === ref.id);
-  if(!p) return "";
-
-
-    return `
-      <div class="pedido">
-        <div class="pedido-header">
-          <div class="pedido-num">#${i+1} · ${p.telefono} · Pedido ${p.id}</div>
-          <span class="estado ${p.estado}">${p.estado.replace("_"," ")}</span>
+  cont.innerHTML = pedidos.map((p, i) => `
+    <div class="pedido">
+      <div class="pedido-header">
+        <div class="pedido-num">
+          #${i + 1} · ${p.telefono} · Pedido ${p.id.slice(0, 6)}
         </div>
-
-        <div class="pedido-body">
-  <!-- 🍽️ ALIMENTOS -->
-  <div class="pedido-section">
-    <span class="sec-title">🍽️ Pedido</span>
-    <pre class="pedido-items">
-${extraerSeccion(p.texto, "🍽️", "-----------------------")}
-    </pre>
-  </div>
- <div class="pedido-section grid">
-  <div>
-    <span class="sec-title">💰 Total</span>
-    <strong>${extraerLinea(p.texto, "Total:")}</strong>
-  </div>
-
-<div>
-  <span class="sec-title">💳 Pago</span>
-  <strong>
-    ${esPagoMixto(p.texto)
-      ? "Mixto"
-      : extraerLinea(p.texto, "Método de pago:")}
-  </strong>
-</div>
-
-${esPagoMixto(p.texto) ? `
-${extraerMonto(p.texto, "Efectivo") ? `
-<div>
-  <span class="sec-title">💵 Efectivo</span>
-  <strong>${extraerMonto(p.texto, "Efectivo")}</strong>
-</div>` : ""}
-
-${extraerMonto(p.texto, "Tarjeta") ? `
-<div>
-  <span class="sec-title">💳 Tarjeta</span>
-  <strong>${extraerMonto(p.texto, "Tarjeta")}</strong>
-</div>` : ""}
-
-${tieneTransferencia(p.texto) ? `
-<div>
-  <span class="sec-title">🏦 Transferencia</span>
-  <strong>${extraerMontoTransferencia(p.texto)}</strong>
-</div>` : ""}
-` : ""}
-
-
-
-  ${extraerPagoCon(p.texto) !== "-" ? `
-  <div>
-    <span class="sec-title">💵 Pagas con</span>
-    <strong>${extraerPagoCon(p.texto)}</strong>
-  </div>` : ""}
-
-  ${extraerCambio(p.texto) !== "-" ? `
-  <div>
-    <span class="sec-title">🔁 Cambio</span>
-    <strong>${extraerCambio(p.texto)}</strong>
-  </div>` : ""}
-</div>
-
-
-        <div class="acciones">
-  <button class="btn-prep" onclick="cambiarEstado('${ref.tel}', ${ref.id}, 'PREPARACION')">
-    🔵 Preparación
-  </button>
-
-  <!-- ESTE YA ENTREGA -->
-  <button class="btn-camino" onclick="entregarPedido('${ref.tel}', ${ref.id})">
-    🚚 En camino
-  </button>
-
-  <!-- NUEVO BOTÓN -->
-  <button class="btn-cancelar" onclick="cancelarPedido('${ref.tel}', ${ref.id})">
-    ❌ Cancelado
-  </button>
-  ${tieneUbicacion(p.texto) ? `
-<button class="btn-ubi" onclick='abrirUbicacion(${JSON.stringify(p.texto)})'>
-  📍 Abrir ubicación
-</button>
-` : ""}
-
-</div>
-
+        <span class="estado ${p.estado}">
+          ${p.estado.replace("_", " ")}
+        </span>
       </div>
-    `;
-  }).join("");
+
+      <div class="pedido-body">
+        <pre class="pedido-items">${p.mensaje}</pre>
+      </div>
+
+      <div class="acciones">
+        <button onclick="cambiarEstadoFirebase('${p.id}','PREPARACION')">
+          🔵 Preparación
+        </button>
+
+        <button onclick="cambiarEstadoFirebase('${p.id}','EN_CAMINO')">
+          🚚 En camino
+        </button>
+
+        <button onclick="cancelarPedidoFirebase('${p.id}','${p.telefono}')">
+          ❌ Cancelado
+        </button>
+      </div>
+    </div>
+  `).join("");
 }
-function cancelarPedido(tel, id){
-  const key = "pedidos_" + tel;
-  let pedidos = JSON.parse(localStorage.getItem(key)) || [];
 
-  const p = pedidos.find(x => x.id === id);
-  if(!p) return;
+async function cancelarPedidoFirebase(id, tel) {
+  await updateDoc(doc(db, "pedidos", id), {
+    estado: "CANCELADO"
+  });
 
-  // quitar de pedidos
-  pedidos = pedidos.filter(x => x.id !== id);
-  localStorage.setItem(key, JSON.stringify(pedidos));
-
-  // quitar de cola
-  let cola = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
-  cola = cola.filter(x => !(x.tel === tel && x.id === id));
-  localStorage.setItem("cola_pedidos", JSON.stringify(cola));
-
-  // WhatsApp
   window.open(
     `https://wa.me/${tel}?text=${encodeURIComponent(
       "🍟 *La Carpita*\n\nTu pedido fue *cancelado* ❌"
     )}`,
     "_blank"
   );
-
-  renderFila();
 }
+
 
 
 function extraerLinea(txt, clave){
@@ -275,19 +220,12 @@ function extraerMontoTransferencia(txt){
    CAMBIAR ESTADO
 ========================== */
 
-function cambiarEstado(tel, id, estado){
-  const key = "pedidos_" + tel;
-  let pedidos = JSON.parse(localStorage.getItem(key)) || [];
-
-  const p = pedidos.find(x => x.id === id);
-  if(!p) return;
-
-  p.estado = estado;
-  localStorage.setItem(key, JSON.stringify(pedidos));
-
-  enviarWhatsEstado(p);
-  renderFila();
+async function cambiarEstadoFirebase(id, estado) {
+  await updateDoc(doc(db, "pedidos", id), {
+    estado
+  });
 }
+
 
 
 /* ==========================
