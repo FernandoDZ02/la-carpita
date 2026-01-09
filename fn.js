@@ -1937,21 +1937,6 @@ function seleccionarRadioBonito(label){
   label.classList.add("selected");
 }
 function actualizarVisibilidadPagoCon() {
-  const metodo = getRadioValue("pago");
-  const campoPagoCon = document.getElementById("pagoCon");
-  const lineaCambio = document.getElementById("lineaCambio");
-
-  if (metodo === "efectivo") {
-    campoPagoCon.style.display = "block";
-    lineaCambio.style.display = "flex";
-  } else {
-    campoPagoCon.style.display = "none";
-    lineaCambio.style.display = "none";
-  }
-
-  actualizarCostoPedido();
-}
-function actualizarVisibilidadPagoCon() {
     const metodo = getRadioValue("pago");
     const cont = document.getElementById("contenedorPagoCon");
 
