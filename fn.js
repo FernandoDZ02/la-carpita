@@ -2258,3 +2258,15 @@ function abrirPanelCocina(){
 function limpiarTelefono(txt){
   return txt.replace(/\D/g, "").slice(-10);
 }
+// 🔓 EXPONER FUNCIONES PARA HTML
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.selectVariante = selectVariante;
+window.confirmarPersonalizacion = confirmarPersonalizacion;
+window.agregarAlimentoCarrito = agregarAlimentoCarrito;
+window.abrirCarrito = abrirCarrito;
+window.cerrarCarrito = cerrarCarrito;
+window.enviarPedidoWhatsApp = enviarPedidoWhatsApp;
+window.abrirPanelCocina = abrirPanelCocina;
+window.toggleTheme = toggleTheme;
+
