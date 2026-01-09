@@ -138,16 +138,25 @@ function renderFila(){
 </div>
 
 ${esPagoMixto(p.texto) ? `
+${extraerMonto(p.texto, "Efectivo") ? `
 <div>
   <span class="sec-title">💵 Efectivo</span>
-  <strong>${extraerMonto(p.texto, "Efectivo") || "-"}</strong>
-</div>
+  <strong>${extraerMonto(p.texto, "Efectivo")}</strong>
+</div>` : ""}
 
+${extraerMonto(p.texto, "Tarjeta") ? `
 <div>
   <span class="sec-title">💳 Tarjeta</span>
-  <strong>${extraerMonto(p.texto, "Tarjeta") || "-"}</strong>
-</div>
+  <strong>${extraerMonto(p.texto, "Tarjeta")}</strong>
+</div>` : ""}
+
+${tieneTransferencia(p.texto) ? `
+<div>
+  <span class="sec-title">🏦 Transferencia</span>
+  <strong>${extraerMontoTransferencia(p.texto)}</strong>
+</div>` : ""}
 ` : ""}
+
 
 
   ${extraerPagoCon(p.texto) !== "-" ? `
@@ -251,6 +260,22 @@ function extraerMonto(txt, clave){
   if(!l) return null;
   const n = parseFloat(l.replace(/[^0-9.]/g,""));
   return isNaN(n) ? null : `$${n.toFixed(2)}`;
+}
+function tieneTransferencia(txt){
+  return txt.toLowerCase().includes("transferencia");
+}
+
+function extraerMontoTransferencia(txt){
+  // si no viene monto explícito, calculamos el resto
+  const total = extraerTotalPedido(txt);
+  const efectivo = extraerMonto(txt, "Efectivo");
+
+  if(efectivo){
+    const ef = parseFloat(efectivo.replace(/[^0-9.]/g,"")) || 0;
+    const resto = total - ef;
+    return resto > 0 ? `$${resto.toFixed(2)}` : "-";
+  }
+  return "-";
 }
 
 /* ==========================
