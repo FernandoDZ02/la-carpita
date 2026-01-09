@@ -75,7 +75,7 @@ function importarDesdeURL(){
 ========================== */
 
 function renderFila(){
-  const fila = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
+  let fila = JSON.parse(localStorage.getItem("cola_pedidos")) || [];
    fila = fila
     .map(x => {
       if(typeof x === "string"){
