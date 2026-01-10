@@ -1,60 +1,145 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>La Carpita · Cocina</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Control de Caja - La Carpita</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="pedido-negocio.css">
+<style>
+*{box-sizing:border-box}
+body{
+  font-family: system-ui, sans-serif;
+  background:#f2f2f2;
+  padding:20px;
+}
+.app{
+  max-width:650px;
+  background:#fff;
+  margin:auto;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 15px 35px rgba(0,0,0,.18);
+}
+h2{
+  text-align:center;
+  margin-bottom:15px;
+}
+label{
+  font-weight:600;
+  margin-top:10px;
+  display:block;
+}
+textarea{
+  width:100%;
+  height:240px;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  resize:none;
+}
+input{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  margin-top:6px;
+}
+button{
+  width:100%;
+  margin-top:15px;
+  padding:14px;
+  background:#ff7a00;
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+}
+.result{
+  margin-top:20px;
+  background:#fafafa;
+  padding:15px;
+  border-radius:12px;
+}
+.result div{
+  margin:6px 0;
+}
+.ok{color:green;font-weight:700}
+.err{color:red;font-weight:700}
+strong{color:#ff7a00}
+hr{margin:10px 0}
+</style>
 </head>
+
 <body>
 
-<header class="top">
-  <h1>🍳 Cocina · La Carpita</h1>
-  <span id="contadorPedidos"></span>
-</header>
+<div class="app">
+  <h2>📦 Control de Caja - La Carpita</h2>
 
-<main>
-  <div id="filaPedidos" class="fila"></div>
-</main>
+  <label>📋 Pega aquí TODOS los pedidos del día:</label>
+  <textarea id="textoPedidos" placeholder="Pega aquí los mensajes de WhatsApp..."></textarea>
 
-<footer class="bottom">
-  <button onclick="limpiarEntregados()" class="btn-sec">🧹 Limpiar entregados</button>
-<button onclick="verResumenHoy()" class="btn-sec">
-  📊 Corte del día
-</button>
+  <label>💼 Fondo de caja (cambio inicial):</label>
+  <input type="number" id="inicio" placeholder="Ej. 300">
 
-</footer>
-<!-- MODAL ACCESO COCINA -->
-<div id="authOverlay" class="auth-overlay">
-  <div class="auth-box">
-    <h2>🔒 Acceso restringido</h2>
-    <p>Ingresa la contraseña del negocio</p>
+  <label>💼 Efectivo final en caja:</label>
+  <input type="number" id="final" placeholder="Ej. 980">
 
-    <input type="password"
-           id="authPass"
-           placeholder="Contraseña"
-           autocomplete="off">
+  <button onclick="calcular()">📊 Calcular Corte</button>
 
-    <button onclick="verificarAcceso()">Entrar</button>
-
-    <p id="authError" class="auth-error"></p>
-  </div>
-</div>
-<button onclick="cerrarSesionCocina()">🔒 Cerrar sesión</button>
-<!-- MODAL ALERTA GLOBAL -->
-<div id="alertOverlay" class="alert-overlay" style="display:none;">
-  <div class="alert-box">
-    <h3 id="alertTitle">Aviso</h3>
-    <div id="alertMessage" class="alert-message"></div>
-
-    <button onclick="cerrarAlert()" class="alert-btn">
-      Entendido
-    </button>
-  </div>
+  <div class="result" id="resultado"></div>
 </div>
 
-<script type="module" src="pedido-negocio.js"></script>
+<script>
+function calcular(){
+  const texto = document.getElementById("textoPedidos").value;
+  const fondo = parseFloat(document.getElementById("inicio").value) || 0;
+  const efectivoFinal = parseFloat(document.getElementById("final").value) || 0;
+
+  // Contar pedidos
+  const viajes = (texto.match(/📌 \*Pedido La Carpita\*/g) || []).length;
+
+  // Sumar totales y envíos
+  let totalVentas = 0;
+  let totalEnvios = 0;
+
+  (texto.match(/Total:\s*\$([\d.]+)/g) || []).forEach(t=>{
+    totalVentas += parseFloat(t.replace(/[^\d.]/g,""));
+  });
+
+  (texto.match(/Envío:\s*\$([\d.]+)/g) || []).forEach(e=>{
+    totalEnvios += parseFloat(e.replace(/[^\d.]/g,""));
+  });
+
+  // Efectivo real ganado
+  const efectivoGanado = efectivoFinal - fondo;
+
+  // Diferencia
+  const diferencia = efectivoGanado - totalVentas;
+
+  let estadoCaja = "";
+  if(Math.abs(diferencia) < 0.01){
+    estadoCaja = `<div class="ok">✅ Caja cuadrada</div>`;
+  }else if(diferencia > 0){
+    estadoCaja = `<div class="ok">🟢 Sobra dinero: $${diferencia.toFixed(2)}</div>`;
+  }else{
+    estadoCaja = `<div class="err">🔴 Falta dinero: $${Math.abs(diferencia).toFixed(2)}</div>`;
+  }
+
+  document.getElementById("resultado").innerHTML = `
+    <div>📦 <strong>Viajes realizados:</strong> ${viajes}</div>
+    <div>💰 <strong>Total vendido (según mensajes):</strong> $${totalVentas.toFixed(2)}</div>
+    <div>🚚 <strong>Total de envíos:</strong> $${totalEnvios.toFixed(2)}</div>
+    <hr>
+    <div>💼 <strong>Fondo de caja:</strong> $${fondo.toFixed(2)}</div>
+    <div>💼 <strong>Efectivo final:</strong> $${efectivoFinal.toFixed(2)}</div>
+    <div>📊 <strong>Efectivo ganado real:</strong> $${efectivoGanado.toFixed(2)}</div>
+    <hr>
+    ${estadoCaja}
+  `;
+}
+</script>
 
 </body>
 </html>
