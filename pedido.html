@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>PV Mensajes - Caja Diaria</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui,Segoe UI,Arial;
+  background:linear-gradient(180deg,#ff8a1d,#ff6a00);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:18px;
+}
+.app{
+  width:100%;
+  max-width:900px;
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 20px 50px rgba(0,0,0,.3);
+  padding:18px;
+}
+h1{margin:0 0 8px}
+small{color:#666}
+
+.card{
+  border:1px solid #ddd;
+  border-radius:14px;
+  padding:14px;
+  margin-top:14px;
+}
+
+textarea,input{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  font-size:14px;
+}
+
+button{
+  padding:10px 14px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn-add{background:#111;color:#fff}
+.btn-clear{background:#ffe1e1;color:#7a0000}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:10px;
+  margin-top:10px;
+}
+
+.kpi{
+  background:#fff7ef;
+  border-radius:14px;
+  padding:12px;
+}
+.kpi b{font-size:20px;display:block}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  font-size:14px;
+}
+td,th{
+  padding:8px;
+  border-bottom:1px solid #ddd;
+  text-align:left;
+}
+.tabs{
+  display:flex;
+  gap:6px;
+  margin-bottom:10px;
+}
+.tab-btn{
+  flex:1;
+  padding:8px;
+  border:none;
+  border-radius:10px;
+  background:#f1f1f1;
+  cursor:pointer;
+  font-weight:600;
+}
+.tab-btn.active{
+  background:#111;
+  color:#fff;
+}
+.tab-content{
+  display:none;
+}
+.tab-content.active{
+  display:block;
+}
+
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<h1>📦 Punto de Venta por Mensajes</h1>
+<small>Caja diaria – pega pedidos uno por uno</small>
+
+<div class="card">
+<label>💵 Cambio inicial (solo una vez):</label>
+<input id="cambioInicial" placeholder="Ej. 300">
+</div>
+
+<div class="card">
+<label>📋 Pega UN pedido aquí:</label>
+<textarea id="pedidoTxt" rows="8"></textarea>
+
+<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+  <button class="btn-add" onclick="agregarPedido()">➕ Agregar pedido</button>
+  <button class="btn-clear" onclick="reiniciarCaja()">🔁 Cerrar caja</button>
+</div>
+</div>
+<div class="card">
+  <h3>💸 Retiro / Gasto de Caja</h3>
+
+  <input id="retiroConcepto" placeholder="Concepto (ej. Comprar refrescos)">
+  <input id="retiroMonto" placeholder="Monto" style="margin-top:6px">
+
+  <button class="btn-clear" style="margin-top:8px" onclick="agregarRetiro()">
+    ➖ Registrar retiro
+  </button>
+</div>
+<div class="card">
+  <h3>➕ Ingreso manual</h3>
+
+  <input id="ingresoConcepto" placeholder="Concepto (ej. Cliente sin mensaje)">
+  <input id="ingresoMonto" placeholder="Monto" style="margin-top:6px">
+
+  <select id="ingresoMetodo" style="margin-top:6px">
+    <option value="efectivo">💵 Efectivo</option>
+    <option value="tarjeta">💳 Tarjeta</option>
+    <option value="transferencia">🏦 Transferencia</option>
+  </select>
+
+  <button class="btn-add" style="margin-top:8px" onclick="agregarIngreso()">
+    ➕ Registrar ingreso
+  </button>
+</div>
+
+<div class="card grid">
+  <div class="kpi">🚚 Viajes<b id="viajes">0</b></div>
+  <div class="kpi">🍽️ Productos<b id="productos">0</b></div>
+  <div class="kpi">💰 Total vendido<b id="total">$0.00</b></div>
+  <div class="kpi">💵 Cambio inicial<b id="cambio">$0.00</b></div>
+  <div class="kpi">💵 Efectivo<b id="kEfectivo">$0.00</b></div>
+<div class="kpi">💳 Tarjeta<b id="kTarjeta">$0.00</b></div>
+<div class="kpi">🏦 Transferencia<b id="kTransferencia">$0.00</b></div>
+<div class="kpi">💸 Retiros<b id="kRetiros">$0.00</b></div>
+
+</div>
+
+<div class="card">
+<h3>📊 Productos vendidos</h3>
+<table>
+<thead><tr><th>Producto</th><th>Cant.</th><th>Total</th></tr></thead>
+<tbody id="tablaProductos"></tbody>
+</table>
+</div>
+
+</div>
+<!-- ===== MODAL CORTE DE CAJA ===== -->
+<div id="modalCorte" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); align-items:center; justify-content:center; z-index:999;">
+  <div style="background:#fff; border-radius:18px; width:90%; max-width:420px; padding:18px; box-shadow:0 20px 50px rgba(0,0,0,.4)">
+    
+    <h2 style="margin-top:0">📦 Corte de Caja</h2>
+
+    <div class="tabs">
+  <button class="tab-btn active" onclick="openTab('resumen')">📊 Resumen</button>
+  <button class="tab-btn" onclick="openTab('ventas')">🍽️ Ventas</button>
+  <button class="tab-btn" onclick="openTab('pagos')">💳 Pagos</button>
+  <button class="tab-btn" onclick="openTab('retiros')">💸 Retiros</button>
+  <button class="tab-btn" onclick="openTab('ingresos')">➕ Ingresos</button>
+
+</div>
+
+<div id="tab-resumen" class="tab-content active"></div>
+<div id="tab-ventas" class="tab-content"></div>
+<div id="tab-pagos" class="tab-content"></div>
+<div id="tab-retiros" class="tab-content"></div>
+<div id="tab-ingresos" class="tab-content"></div>
+
+
+<div style="margin-top:10px">
+  <label><b>💵 Efectivo contado:</b></label>
+  <input id="efectivoContado" placeholder="Ej. 1350">
+</div>
+
+<div id="resultadoCaja" style="margin-top:10px;font-weight:bold"></div>
+
+    <div style="display:flex; gap:10px; margin-top:16px">
+      <button onclick="cerrarModal()" style="flex:1; background:#eee">Cancelar</button>
+      <button onclick="confirmarCierre()" style="flex:1; background:#111; color:#fff">Confirmar</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+    let ingresos = [];
+let totalIngresos = 0;
+    let totalEnvios = 0;
+let totalComida = 0;
+    let totalEfectivo = 0;
+let totalTarjeta = 0;
+let totalTransferencia = 0;
+let totalRetiros = 0;
+let retiros = [];
+let viajes = 0;
+let total = 0;
+let totalProductos = 0;
+let productosMap = {};
+let cambioGuardado = null;
+
+const money = n => "$" + Number(n).toFixed(2);
+
+function agregarPedido(){
+  const txt = document.getElementById("pedidoTxt").value;
+  if(!txt.trim()) return alert("Pega un pedido");
+
+  if(cambioGuardado === null){
+    const c = Number(document.getElementById("cambioInicial").value);
+    if(!isFinite(c)) return alert("Ingresa el cambio inicial");
+    cambioGuardado = c;
+    document.getElementById("cambio").textContent = money(c);
+  }
+
+  // 🔍 Total del pedido
+  const totalMatch = txt.match(/Total:\s*\$?([\d.]+)/i);
+  if(!totalMatch) return alert("No se encontró el TOTAL");
+
+ const pedidoTotal = Number(totalMatch[1]);
+
+const subMatch = txt.match(/Subtotal:\s*\$?([\d.]+)/i);
+const envioMatch = txt.match(/Envío:\s*\$?([\d.]+)/i);
+
+const subtotal = subMatch ? Number(subMatch[1]) : pedidoTotal;
+const envio = envioMatch ? Number(envioMatch[1]) : 0;
+
+totalComida += subtotal;
+totalEnvios += envio;
+total += pedidoTotal;
+
+  viajes++;
+
+  // 🔍 Método de pago
+  const metodoMatch = txt.match(/Método de pago:\s*\*?(efectivo|tarjeta|transferencia)\*?/i);
+  const metodo = metodoMatch ? metodoMatch[1].toLowerCase() : "efectivo";
+
+  if(metodo === "efectivo") totalEfectivo += pedidoTotal;
+  if(metodo === "tarjeta") totalTarjeta += pedidoTotal;
+  if(metodo === "transferencia") totalTransferencia += pedidoTotal;
+
+  // 🍽️ Productos
+  const lineas = txt.split("\n").filter(l => l.includes("— $"));
+  lineas.forEach(l=>{
+    const [nombre,precioTxt] = l.split("—");
+    const precio = Number(precioTxt.replace(/[^0-9.]/g,""));
+    const key = nombre.trim();
+
+    if(!productosMap[key]){
+      productosMap[key] = {cant:0,total:0};
+    }
+    productosMap[key].cant++;
+    productosMap[key].total += precio;
+    totalProductos++;
+  });
+
+  render();
+  document.getElementById("pedidoTxt").value = "";
+}
+
+
+function render(){
+    document.getElementById("kRetiros").textContent = money(totalRetiros);
+  document.getElementById("viajes").textContent = viajes;
+  document.getElementById("productos").textContent = totalProductos;
+  document.getElementById("total").textContent = money(total);
+document.getElementById("kEfectivo").textContent = money(totalEfectivo);
+document.getElementById("kTarjeta").textContent = money(totalTarjeta);
+document.getElementById("kTransferencia").textContent = money(totalTransferencia);
+
+  const tb = document.getElementById("tablaProductos");
+  tb.innerHTML = "";
+  Object.entries(productosMap).forEach(([n,v])=>{
+    tb.innerHTML += `
+      <tr>
+        <td>${n}</td>
+        <td>${v.cant}</td>
+        <td>${money(v.total)}</td>
+      </tr>
+    `;
+  });
+}
+
+function reiniciarCaja(){
+    document.getElementById("tab-ingresos").innerHTML = `
+  <p><b>Total ingresos manuales:</b> ${money(
+    ingresos.reduce((a,i)=>a+i.monto,0)
+  )}</p>
+  <ul>
+    ${
+      ingresos.length
+      ? ingresos.map(i=>`<li>${i.concepto} (${i.metodo}): ${money(i.monto)}</li>`).join("")
+      : "<li>Sin ingresos manuales</li>"
+    }
+  </ul>
+`;
+
+  if(viajes === 0){
+    alert("No hay ventas registradas");
+    return;
+  }
+let retirosHTML = "";
+if(retiros.length){
+  retirosHTML = `
+    <hr>
+    <b>📋 Retiros</b>
+    <ul>
+      ${retiros.map(r=>`<li>${r.concepto}: ${money(r.monto)}</li>`).join("")}
+    </ul>
+  `;
+}
+
+const efectivoEsperado =
+  (cambioGuardado || 0) +
+  totalEfectivo -
+  totalRetiros;
+
+const ventaReal =
+  total - (cambioGuardado || 0) - totalRetiros;
+
+// ===== RESUMEN =====
+document.getElementById("tab-resumen").innerHTML = `
+  <p><b>🚚 Viajes:</b> ${viajes}</p>
+
+  <hr>
+
+  <p><b>💰 Total vendido:</b> ${money(total)}</p>
+
+  <small>
+    💵 Efectivo: ${money(totalEfectivo)}<br>
+    💳 Tarjeta: ${money(totalTarjeta)}<br>
+    🏦 Transferencia: ${money(totalTransferencia)}
+  </small>
+
+  <hr>
+
+  <p><b>💵 Cambio inicial:</b> ${money(cambioGuardado || 0)}</p>
+  <p><b>💸 Retiros:</b> ${money(totalRetiros)}</p>
+
+  <hr>
+
+  <p><b>💵 Efectivo esperado en caja</b></p>
+  <small>
+    ${money(cambioGuardado || 0)}
+    + ${money(totalEfectivo)}
+    − ${money(totalRetiros)}
+  </small>
+  <p style="font-size:18px;margin-top:4px">
+    = <b>${money(efectivoEsperado)}</b>
+  </p>
+
+  <hr>
+
+  <p><b>🧮 Venta real del día</b></p>
+  <small>
+    ${money(total)}
+    − ${money(cambioGuardado || 0)}
+    − ${money(totalRetiros)}
+  </small>
+  <p style="font-size:20px;margin-top:4px">
+    = <b>${money(ventaReal)}</b>
+  </p>
+`;
+
+
+// ===== VENTAS =====
+document.getElementById("tab-ventas").innerHTML = `
+  <p>🍽️ <b>Comida:</b> ${money(totalComida)}</p>
+  <p>🚚 <b>Envíos:</b> ${money(totalEnvios)}</p>
+`;
+
+// ===== PAGOS =====
+document.getElementById("tab-pagos").innerHTML = `
+  <p>💵 <b>Efectivo:</b> ${money(totalEfectivo)}</p>
+  <p>💳 <b>Tarjeta:</b> ${money(totalTarjeta)}</p>
+  <p>🏦 <b>Transferencia:</b> ${money(totalTransferencia)}</p>
+`;
+
+// ===== RETIROS =====
+document.getElementById("tab-retiros").innerHTML = `
+  <p><b>Total retiros:</b> ${money(totalRetiros)}</p>
+  <ul>
+    ${retiros.map(r=>`<li>${r.concepto}: ${money(r.monto)}</li>`).join("") || "<li>Sin retiros</li>"}
+  </ul>
+`;
+
+abrirModal();
+openTab("resumen");
+}
+
+function abrirModal(){
+  document.getElementById("modalCorte").style.display = "flex";
+}
+
+
+function cerrarModal(){
+  document.getElementById("modalCorte").style.display = "none";
+}
+function confirmarCierre(){
+    totalEnvios = 0;
+totalComida = 0;
+  totalRetiros = 0;
+retiros = [];
+  viajes = 0;
+  total = 0;
+  totalProductos = 0;
+  totalEfectivo = 0;
+  totalTarjeta = 0;
+  totalTransferencia = 0;
+  productosMap = {};
+  cambioGuardado = null;
+
+  document.getElementById("pedidoTxt").value = "";
+  document.getElementById("cambioInicial").value = "";
+  document.getElementById("cambio").textContent = "$0.00";
+
+  render();
+  cerrarModal();
+}
+function agregarRetiro(){
+  const concepto = document.getElementById("retiroConcepto").value.trim();
+  const monto = Number(document.getElementById("retiroMonto").value);
+
+  if(!concepto) return alert("Ingresa el concepto del retiro");
+  if(!isFinite(monto) || monto <= 0) return alert("Monto inválido");
+
+  totalRetiros += monto;
+  totalEfectivo -= monto;
+
+  retiros.push({ concepto, monto });
+
+  document.getElementById("retiroConcepto").value = "";
+  document.getElementById("retiroMonto").value = "";
+
+  render();
+}
+document.addEventListener("input", e=>{
+  if(e.target.id !== "efectivoContado") return;
+
+  const contado = Number(e.target.value);
+  const esperado =
+    (cambioGuardado || 0) +
+    totalEfectivo -
+    totalRetiros;
+
+  const dif = contado - esperado;
+  const res = document.getElementById("resultadoCaja");
+
+  if(!isFinite(contado)) return res.textContent = "";
+
+  if(dif === 0) res.textContent = "✅ Caja cuadrada";
+  else if(dif > 0) res.textContent = `➕ Sobrante: ${money(dif)}`;
+  else res.textContent = `➖ Faltante: ${money(Math.abs(dif))}`;
+});
+function copiarCorte(){
+  const texto = `
+📦 CORTE DE CAJA – LA CARPITA
+
+🚚 Viajes: ${viajes}
+
+🍽️ Comida: ${money(totalComida)}
+🚚 Envíos: ${money(totalEnvios)}
+
+💵 Efectivo: ${money(totalEfectivo)}
+💳 Tarjeta: ${money(totalTarjeta)}
+🏦 Transferencia: ${money(totalTransferencia)}
+💸 Retiros: ${money(totalRetiros)}
+
+💰 Total vendido: ${money(total)}
+💵 Cambio inicial: ${money(cambioGuardado || 0)}
+`;
+
+  navigator.clipboard.writeText(texto.trim());
+  alert("Corte copiado 📋");
+}
+function openTab(tab){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
+
+  document.querySelector(`[onclick="openTab('${tab}')"]`).classList.add("active");
+  document.getElementById("tab-"+tab).classList.add("active");
+}
+function agregarIngreso(){
+  const concepto = document.getElementById("ingresoConcepto").value.trim();
+  const monto = Number(document.getElementById("ingresoMonto").value);
+  const metodo = document.getElementById("ingresoMetodo").value;
+
+  if(!concepto) return alert("Ingresa el concepto del ingreso");
+  if(!isFinite(monto) || monto <= 0) return alert("Monto inválido");
+
+  // 👉 Aumenta totales generales
+  total += monto;
+  viajes++; // cuenta como venta
+
+  // 👉 Según método
+  if(metodo === "efectivo") totalEfectivo += monto;
+  if(metodo === "tarjeta") totalTarjeta += monto;
+  if(metodo === "transferencia") totalTransferencia += monto;
+
+  ingresos.push({ concepto, monto, metodo });
+
+  // limpiar
+  document.getElementById("ingresoConcepto").value = "";
+  document.getElementById("ingresoMonto").value = "";
+  document.getElementById("ingresoMetodo").value = "efectivo";
+
+  render();
+}
+
+</script>
+
+</body>
+</html>
