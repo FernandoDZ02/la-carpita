@@ -6,6 +6,8 @@ const COMISION_TARJETA = 0.035;
 const NUM_WHATSAPP_LA_CARPITA = "525657861068";
 let ubicacionManual = false;
 let modoPapas = "todo"; // todo | solo | personalizar
+const ADEREZO_2OZ = 8;
+const ADEREZO_4OZ = 15;
 
 
 
@@ -87,6 +89,17 @@ const opciones = {
     {id:"mega2", nombre:"Mega 2 (Tenders + Palomitas + Boneless)", precio:170, img:"img/M2.png", incluyePapas:false, tieneAderezo:true, tipoCombo:"mega"},
     {id:"mega3", nombre:"Súper Mega (Tenders + Dedos + Boneless + Papas)", precio:195, img:"img/SM.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"mega"}
   ],
+  aros: [
+  {
+    id: "aros_cebolla",
+    nombre: "Aros de cebolla (15 pz)",
+    precio: 50,
+    img: "img/aros.png",
+    incluyePapas: false,
+    tieneAderezo: false,
+    esAros: true
+  }
+],
   aderezos: [
     {id:"ad_ranch", nombre:"Ranch", precio:8, img:"img/Aderezos.png"},
     {id:"ad_mango", nombre:"Mango habanero", precio:8, img:"img/Aderezos.png"},
@@ -311,6 +324,30 @@ html += `
     html += `</div>`;
 }
 
+    /* ----------------------------------------
+   ADEREZOS COMO PRODUCTO (SOLO CATEGORÍA)
+---------------------------------------- */
+if (categoriaActual === "aderezos") {
+  html += `
+  <div class="modal-section">
+    <div class="modal-section-title">Tamaño del aderezo</div>
+
+    <div class="radio-bonito-group">
+      <label class="radio-bonito selected"
+             onclick="seleccionarRadioBonito(this)">
+        <input type="radio" name="tamAderezo" value="2" checked>
+        2 oz (+$8)
+      </label>
+
+      <label class="radio-bonito"
+             onclick="seleccionarRadioBonito(this)">
+        <input type="radio" name="tamAderezo" value="4">
+        4 oz (+$15)
+      </label>
+    </div>
+  </div>
+  `;
+}
 
   /* ----------------------------------------
        ADEREZOS NORMALES (NO COMBO)
@@ -561,6 +598,100 @@ document.addEventListener("click", e => {
         label.classList.add("selected");
     }
 });
+/* ----------------------------------------
+   AROS DE CEBOLLA
+---------------------------------------- */
+if (p.esAros) {
+  html += `
+  <div class="modal-section">
+    <div class="modal-section-title">Salsas en aros</div>
+
+    <!-- BOTONES: CON TODO / PERSONALIZAR -->
+    <div style="margin: 10px 0; display:flex; gap:8px;">
+      <button type="button" id="btnArosTodo"
+              class="btn-papas"
+              onclick="selectArosModo('todo')">
+        Con todo
+      </button>
+
+      <button type="button" id="btnArosPers"
+              class="btn-papas"
+              onclick="selectArosModo('personalizar')">
+        Personalizar
+      </button>
+    </div>
+
+    <!-- CONTENEDOR PERSONALIZACIÓN -->
+    <div id="boxPersonalizarAros" style="display:none;">
+
+
+    <div class="modal-label">Queso</div>
+    <div class="radio-bonito-papas-group">
+      <label class="radio-bonito-papas selected">
+        <input type="radio" name="quesoAros" value="Untado" checked> Untado
+      </label>
+      <label class="radio-bonito-papas">
+        <input type="radio" name="quesoAros" value="Aparte"> Aparte
+      </label>
+      <label class="radio-bonito-papas">
+        <input type="radio" name="quesoAros" value="Sin"> Sin
+      </label>
+    </div>
+
+    <div class="modal-label">Catsup</div>
+    <div class="radio-bonito-papas-group">
+      <label class="radio-bonito-papas selected">
+        <input type="radio" name="catsupAros" value="Untado" checked> Untado
+      </label>
+      <label class="radio-bonito-papas">
+        <input type="radio" name="catsupAros" value="Aparte"> Aparte
+      </label>
+      <label class="radio-bonito-papas">
+        <input type="radio" name="catsupAros" value="Sin"> Sin
+      </label>
+    </div>
+
+    <div class="modal-label">Salsa</div>
+    <div class="radio-bonito-papas-group">
+      <label class="radio-bonito-papas selected">
+        <input type="radio" name="salsaAros" value="Untado" checked> Untado
+      </label>
+      <label class="radio-bonito-papas">
+        <input type="radio" name="salsaAros" value="Aparte"> Aparte
+      </label>
+      <label class="radio-bonito-papas">
+        <input type="radio" name="salsaAros" value="Sin"> Sin
+      </label>
+    </div>
+    </div> 
+
+    <!-- ADEREZO EXTRA -->
+    <label class="checkbox-bonito" id="chkArosExtra">
+      <input type="checkbox" id="aderezoArosExtra">
+      <span class="checkbox-shape"></span>
+      <span>Aderezo extra (+$8)</span>
+    </label>
+
+    <div id="boxArosExtra"
+         style="display:none; padding:12px; border:1px solid #eee; border-radius:12px; margin-top:10px;">
+
+      <label class="modal-label">Aderezo</label>
+      <select id="tipoAderezoAros" class="select-bonito">
+        ${ADEREZOS.map(a => `<option value="${a}">${a}</option>`).join("")}
+      </select>
+
+      <div class="radio-bonito-group" style="margin-top:6px;">
+        <label class="radio-bonito selected">
+          <input type="radio" name="modoAderezoAros" value="Untado" checked> Untado
+        </label>
+        <label class="radio-bonito">
+          <input type="radio" name="modoAderezoAros" value="Aparte"> Aparte
+        </label>
+      </div>
+    </div>
+  </div>
+  `;
+}
 
 /* ----------------------------------------
    BANDERILLAS / MINI BANDERILLAS
@@ -661,9 +792,27 @@ document.addEventListener("click", e => {
       <button class="btn-primary" onclick="confirmarPersonalizacion()">Continuar</button>
     </div>
   `;
+  // ===============================
+// DEFAULT AROS: CON TODO
+// ===============================
+setTimeout(() => {
+  if (p.esAros) {
+    selectArosModo("todo");
+  }
+}, 0);
+// ===============================
+// DEFAULT BANDERILLAS / MINI: CON TODO
+// ===============================
+setTimeout(() => {
+  if (p.esBanderilla) {
+    selectMiniModo("todo");
+  }
+}, 0);
+
 // ===============================
 // DEFAULT PAPAS CUANDO INCLUYE
 // ===============================
+
 setTimeout(() => {
   if (p.incluyePapas) {
  modoPapas = "todo";
@@ -697,6 +846,12 @@ setTimeout(actualizarPreviewPedido, 0);
     group.querySelectorAll(".radio-bonito-papas")
          .forEach(l => l.classList.remove("selected"));
     radio.closest(".radio-bonito-papas").classList.add("selected");
+  }
+});
+document.addEventListener("change", e => {
+  if (e.target.id === "aderezoArosExtra") {
+    document.getElementById("boxArosExtra").style.display =
+      e.target.checked ? "block" : "none";
   }
 });
 
@@ -845,8 +1000,57 @@ return {
 };
 
 }
+/* ---- ADEREZOS COMO PRODUCTO ---- */
+if (categoriaActual === "aderezos") {
 
-  /* ---- ADEREZOS NORMALES ---- */
+  const tam = getRadioValue("tamAderezo") || "2";
+  const precioFinal = tam === "4" ? ADEREZO_4OZ : ADEREZO_2OZ;
+
+  return {
+    descripcion: `${p.nombre} ${tam} oz — ${precioFormato(precioFinal)}`,
+    precio: precioFinal
+  };
+}
+
+/* ---- AROS DE CEBOLLA ---- */
+if (p.esAros) {
+  let total = p.precio;
+  let descDetalle = "";
+
+  const btnTodo = document.getElementById("btnArosTodo");
+
+  // 🔥 MODO CON TODO
+  if (btnTodo && btnTodo.classList.contains("active")) {
+    descDetalle += `Con todo (queso, catsup y salsa)\n`;
+  } 
+  // 🔧 MODO PERSONALIZAR
+  else {
+    const q = getRadioValue("quesoAros") || "Untado";
+    const c = getRadioValue("catsupAros") || "Untado";
+    const s = getRadioValue("salsaAros") || "Untado";
+
+    descDetalle += `Queso ${q.toLowerCase()}\n`;
+    descDetalle += `Catsup ${c.toLowerCase()}\n`;
+    descDetalle += `Salsa ${s.toLowerCase()}\n`;
+  }
+
+  // ADEREZO EXTRA
+  const chk = document.getElementById("aderezoArosExtra");
+  if (chk && chk.checked) {
+    const ad = document.getElementById("tipoAderezoAros").value;
+    const modo = getRadioValue("modoAderezoAros") || "Untado";
+
+    descDetalle += `Aderezo extra: ${ad} (${modo.toLowerCase()}) (+$8)\n`;
+    total += COSTO_DOBLE_ADEREZO;
+  }
+
+  return {
+    descripcion: `${p.nombre} — ${precioFormato(total)}\n${descDetalle}`,
+    precio: total
+  };
+}
+
+
 /* ---- ADEREZOS NORMALES ---- */
 if(p.tieneAderezo && !p.tipoCombo){
 
@@ -1709,6 +1913,31 @@ function nombreAderezoCombo(i, prod){
 
   return "Aderezo " + i;
 }
+function selectArosModo(tipo){
+  const btnTodo = document.getElementById("btnArosTodo");
+  const btnPers = document.getElementById("btnArosPers");
+  const box = document.getElementById("boxPersonalizarAros");
+
+  // reset visual
+  btnTodo.classList.remove("active");
+  btnPers.classList.remove("active");
+
+  if(tipo === "todo"){
+    btnTodo.classList.add("active");
+    box.style.display = "none";
+
+    // Forzar TODO a untado
+    document.querySelector("input[name='quesoAros'][value='Untado']").checked = true;
+    document.querySelector("input[name='catsupAros'][value='Untado']").checked = true;
+    document.querySelector("input[name='salsaAros'][value='Untado']").checked = true;
+
+  } else {
+    btnPers.classList.add("active");
+    box.style.display = "block";
+  }
+
+  actualizarPreviewPedido();
+}
 
 function selectPapasModo(tipo){
   const btnTodo = document.getElementById("btnTodo");
@@ -1861,33 +2090,20 @@ document.addEventListener("click", function(e){
 // CHECKBOX BONITO
 document.addEventListener("click", function(e){
   const check = e.target.closest(".checkbox-bonito");
-  if(check){
-    check.classList.toggle("selected");
 
-    const input = check.querySelector("input");
-    if(input){
-      input.checked = check.classList.contains("selected");
-    }
+  // ⛔ IGNORAR AROS Y MIX (ellos se manejan solos)
+  if(!check || check.id === "chkArosExtra" || check.classList.contains("checkbox-mix")){
+    return;
+  }
+
+  check.classList.toggle("selected");
+
+  const input = check.querySelector("input");
+  if(input){
+    input.checked = check.classList.contains("selected");
   }
 });
-// =====================
-// CHECKBOX BONITO FIXED
-// =====================
-document.addEventListener("click", function(e){
-    const box = e.target.closest(".checkbox-bonito");
-    if(box){
-        box.classList.toggle("selected");
 
-        const input = box.querySelector("input[type='checkbox']");
-        input.checked = box.classList.contains("selected");
-
-        // Mostrar/ocultar sección de doble aderezo
-        if(input.id === "dobleAderezo"){
-            document.getElementById("seccionDobleAderezo").style.display =
-                input.checked ? "block" : "none";
-        }
-    }
-});
 // === Manejador del checkbox "Doble aderezo" con diseño bonito ===
 document.addEventListener("change", function (e) {
   // Solo queremos escuchar cuando cambia el checkbox oculto
@@ -2155,3 +2371,18 @@ document.addEventListener("DOMContentLoaded", ()=>{
   }
 });
 
+document.addEventListener("click", function(e){
+  const label = e.target.closest("#chkArosExtra");
+  if(!label) return;
+
+  e.stopPropagation(); // 🔒 evita que otros handlers lo rompan
+
+  const chk = document.getElementById("aderezoArosExtra");
+  const box = document.getElementById("boxArosExtra");
+
+  chk.checked = !chk.checked;
+  label.classList.toggle("selected", chk.checked);
+  box.style.display = chk.checked ? "block" : "none";
+
+  setTimeout(actualizarPreviewPedido, 0);
+});
