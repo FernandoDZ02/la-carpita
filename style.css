@@ -1375,3 +1375,68 @@ html[data-theme="dark"] .cart-total-line span{
 html[data-theme="dark"] .btn-primary{
   box-shadow:0 12px 28px rgba(255,120,0,.45);
 }
+/* =========================
+   PROMOCIONES SLIDER
+========================= */
+.promo-slider{
+  width:100%;
+  margin:10px 0 18px;
+  overflow:hidden;
+  border-radius:18px;
+  position:relative;
+}
+
+.promo-track{
+  display:flex;
+  transition:transform .45s ease;
+}
+
+.promo-slide{
+  min-width:100%;
+  height:160px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.promo-slide img{
+  width:100%;
+  height:100%;
+  object-fit:contain;   /* 🔑 NO corta el texto */
+  display:block;
+  background:#ff8a1d;   /* relleno bonito */
+}
+
+
+/* Tablets / pantallas grandes */
+@media (min-width:480px){
+  .promo-slide img{
+    height:220px;
+  }
+}
+
+/* =========================
+   DOTS
+========================= */
+.promo-dots{
+  position:absolute;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:6px;
+}
+
+.promo-dots span{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,.6);
+  transition:.3s;
+}
+
+.promo-dots span.active{
+  background:#fff;
+  transform:scale(1.2);
+}
+
