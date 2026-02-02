@@ -19,7 +19,8 @@ const ADEREZOS = [
   "Tamarindo Habanero",
   "BBQ",
   "Ranch habanero",
-  "Adobadas"
+  "Adobadas",
+  "Ajo Parmesano"
 ];
 
 /* ===== OPCIONES DE PRODUCTOS ===== */
@@ -105,10 +106,10 @@ const opciones = {
     {id:"ad_mango", nombre:"Mango habanero", precio:8, img:"img/Aderezos.png"},
     {id:"ad_buffalo", nombre:"Buffalo", precio:8, img:"img/Aderezos.png"},
     {id:"ad_miel", nombre:"Miel habanero", precio:8, img:"img/Aderezos.png"},
-    {id:"ad_koreana", nombre:"Koreana", precio:8, img:"img/Aderezos.png"},
     {id:"ad_bbq", nombre:"BBQ", precio:8, img:"img/Aderezos.png"},
-    {id:"ad_tam", nombre:"Tamarindo Habanero", precio:8, img:"img/Aderezos.png"},
-    {id:"ad_ranchh", nombre:"Ranch habanero", precio:8, img:"img/Aderezos.png"}
+    {id:"ad_tam", nombre:"Tamarindo habanero", precio:8, img:"img/Aderezos.png"},
+    {id:"ad_ranchh", nombre:"Ranch habanero", precio:8, img:"img/Aderezos.png"},
+    {id:"ad_ajo", nombre:"Ajo parmesano", precio:8, img:"img/Aderezos.png"}
   ]
 };
 
@@ -975,24 +976,40 @@ if (tipos.length > cantidad) {
   let descDetalle = `Mix de papas (${cantidad}): ${tipos.join(", ")}\n`;
 
 // 🔥 AGREGAR DESCRIPCIÓN DE PAPAS
+// 🔥 DESCRIPCIÓN DE PAPAS EN MIX (LIMPIA)
 if (modoPapas === "todo") {
-  descDetalle += `Papas con todo\n`;
-} 
-else if (modoPapas === "solo") {
-  descDetalle += `Papas solas\n`;
-} 
-else {
-  const queso = getRadioValue("quesoPapa") || "Untado";
-  const cats  = getRadioValue("catsupPapa") || "Untado";
-  const salsa = getRadioValue("salsaPapa") || "Untado";
-
-  descDetalle +=
-    `Papas personalizadas (` +
-    `queso ${queso.toLowerCase()}, ` +
-    `catsup ${cats.toLowerCase()}, ` +
-    `salsa ${salsa.toLowerCase()}` +
-    `)\n`;
+  descDetalle += `Papas: con todo\n`;
 }
+else if (modoPapas === "solo") {
+  descDetalle += `Papas: solas\n`;
+}
+else {
+
+  let salsas = [];
+
+  const queso = getRadioValue("quesoPapa");
+  const cats  = getRadioValue("catsupPapa");
+  const salsa = getRadioValue("salsaPapa");
+
+  if (queso && queso !== "Sin") {
+    salsas.push(`Queso ${queso.toLowerCase()}`);
+  }
+
+  if (cats && cats !== "Sin") {
+    salsas.push(`Catsup ${cats.toLowerCase()}`);
+  }
+
+  if (salsa && salsa !== "Sin") {
+    salsas.push(`Salsa ${salsa.toLowerCase()}`);
+  }
+
+  if (salsas.length > 0) {
+    descDetalle += `Papas: ${salsas.join(", ")}\n`;
+  } else {
+    descDetalle += `Papas: Solas\n`;
+  }
+}
+
 
 return {
   descripcion: `Mix de papas — ${precioFormato(precioBase)}\n${descDetalle}`,
@@ -1025,14 +1042,32 @@ if (p.esAros) {
   } 
   // 🔧 MODO PERSONALIZAR
   else {
-    const q = getRadioValue("quesoAros") || "Untado";
-    const c = getRadioValue("catsupAros") || "Untado";
-    const s = getRadioValue("salsaAros") || "Untado";
 
-    descDetalle += `Queso ${q.toLowerCase()}\n`;
-    descDetalle += `Catsup ${c.toLowerCase()}\n`;
-    descDetalle += `Salsa ${s.toLowerCase()}\n`;
+  let salsas = [];
+
+  const q = getRadioValue("quesoAros");
+  const c = getRadioValue("catsupAros");
+  const s = getRadioValue("salsaAros");
+
+  if (q && q !== "Sin") {
+    salsas.push(`Queso ${q.toLowerCase()}`);
   }
+
+  if (c && c !== "Sin") {
+    salsas.push(`Catsup ${c.toLowerCase()}`);
+  }
+
+  if (s && s !== "Sin") {
+    salsas.push(`Salsa ${s.toLowerCase()}`);
+  }
+
+  if (salsas.length > 0) {
+    descDetalle += `${salsas.join(", ")}\n`;
+  } else {
+    descDetalle += `Solos\n`;
+  }
+}
+
 
   // ADEREZO EXTRA
   const chk = document.getElementById("aderezoArosExtra");
@@ -1148,20 +1183,35 @@ if(p.incluyePapas || categoriaActual === "papas"){
   }
 
   // --- DESCRIPCIÓN NORMALIZADA ---
- if(modoPapas === "todo"){
-  descDetalle += `Papas ${tipo} (con todo)\n`;
+if (modoPapas === "todo") {
+  descDetalle += `Papas ${tipo}: con todo\n`;
 }
-else if(modoPapas === "solo"){
-  descDetalle += `Papas ${tipo} (solas)\n`;
+else if (modoPapas === "solo") {
+  descDetalle += `Papas ${tipo}: solas\n`;
 }
 else {
-  descDetalle +=
-    `Papas ${tipo} (` +
-    `queso ${queso.toLowerCase()}, ` +
-    `catsup ${cats.toLowerCase()}, ` +
-    `salsa ${salsa.toLowerCase()}` +
-    `)\n`;
+
+  let salsas = [];
+
+  if (queso && queso !== "Sin") {
+    salsas.push(`Queso ${queso.toLowerCase()}`);
+  }
+
+  if (cats && cats !== "Sin") {
+    salsas.push(`Catsup ${cats.toLowerCase()}`);
+  }
+
+  if (salsa && salsa !== "Sin") {
+    salsas.push(`Salsa ${salsa.toLowerCase()}`);
+  }
+
+  if (salsas.length > 0) {
+    descDetalle += `Papas ${tipo}: ${salsas.join(", ")}\n`;
+  } else {
+    descDetalle += `Papas ${tipo}: Solas\n`;
+  }
 }
+
 
 }
 
@@ -1182,15 +1232,40 @@ else {
 
   const btnTodo = document.getElementById("btnMiniTodo");
 
-  if(btnTodo && btnTodo.classList.contains("active")){
-    descDetalle += `${tituloBanderilla}: con todo\n`;
-  } else {
-    descDetalle += `${tituloBanderilla} personalizadas: ` +
-                   `Queso ${quesoM.toLowerCase()}, ` +
-                   `Catsup ${catsM.toLowerCase()}, ` +
-                   `Mayonesa ${mayoM.toLowerCase()}, ` +
-                   `Salsa ${salsaM.toLowerCase()}\n`;
+if (btnTodo && btnTodo.classList.contains("active")) {
+  descDetalle += `${tituloBanderilla}: con todo\n`;
+} else {
+
+  let salsas = [];
+
+  const quesoM = getRadioValue("quesoMini");
+  const catsM  = getRadioValue("catsupMini");
+  const mayoM  = getRadioValue("mayoMini");
+  const salsaM = getRadioValue("salsaMini");
+
+  if (quesoM && quesoM !== "Sin") {
+    salsas.push(`Queso ${quesoM.toLowerCase()}`);
   }
+
+  if (catsM && catsM !== "Sin") {
+    salsas.push(`Catsup ${catsM.toLowerCase()}`);
+  }
+
+  if (mayoM && mayoM !== "Sin") {
+    salsas.push(`Mayonesa ${mayoM.toLowerCase()}`);
+  }
+
+  if (salsaM && salsaM !== "Sin") {
+    salsas.push(`Salsa ${salsaM.toLowerCase()}`);
+  }
+
+  if (salsas.length > 0) {
+    descDetalle += `${tituloBanderilla} personalizadas: ${salsas.join(", ")}\n`;
+  } else {
+    descDetalle += `${tituloBanderilla}: Solas\n`;
+  }
+}
+
 }
 
   /* ---- NOMBRE + PRECIO FINAL ---- */
@@ -1263,30 +1338,31 @@ if (checks.length > cantidad) {
 function agregarAlimentoCarrito(){
   if(!productoSeleccionado || !detalleTemporal) return;
 
-  carrito.push({
-  nombre: productoSeleccionado.nombre,
-  descripcion: detalleTemporal.descripcion,
-  precio: detalleTemporal.precio,
+  // 🔎 Buscar si ya existe EXACTAMENTE el mismo pedido
+  const existente = carrito.find(item =>
+    item.productoId === productoSeleccionado.id &&
+    item.descripcion === detalleTemporal.descripcion
+  );
 
-  // 🔥 NUEVO
-  productoId: productoSeleccionado.id,
-  categoria: categoriaActual,
-  estadoFormulario: obtenerEstadoFormulario()
-});
-
+  if(existente){
+    existente.cantidad++;
+  } else {
+    carrito.push({
+      nombre: productoSeleccionado.nombre,
+      descripcion: detalleTemporal.descripcion,
+      precio: detalleTemporal.precio,
+      cantidad: 1, // 👈 IMPORTANTE
+      productoId: productoSeleccionado.id,
+      categoria: categoriaActual,
+      estadoFormulario: obtenerEstadoFormulario()
+    });
+  }
 
   actualizarCarritoUI();
-  // ANIMAR EL CARRITO
-const icon = document.getElementById("btnCarritoFlotante");
-if(icon){
-  icon.classList.add("carrito-slide");
-  setTimeout(() => icon.classList.remove("carrito-slide"), 700);
-}
-
   closeModal();
   mostrarModalProductoAgregado();
-
 }
+
 function obtenerEstadoFormulario(){
   const data = {};
 
@@ -1321,14 +1397,24 @@ function cerrarCarrito(){
    ================================ */
 
 function actualizarCarritoUI(){
-  document.getElementById("cart-count").textContent = carrito.length;
+  document.getElementById("cart-count").textContent =
+  carrito.reduce((s, i) => s + i.cantidad, 0);
   actualizarTotalInferior();
 }
 
 function actualizarTotalInferior(){
-  const total = carrito.reduce((s, item) => s + item.precio, 0);
+  const total = carrito.reduce(
+    (s, item) => s + (item.precio * item.cantidad), 0
+  );
   document.getElementById("bottomTotal").textContent = precioFormato(total);
 }
+
+function subtotalCarrito(){
+  return carrito.reduce(
+    (s, item) => s + (item.precio * item.cantidad), 0
+  );
+}
+
 
 /* ================================
             RENDER CARRITO
@@ -1349,9 +1435,15 @@ function renderCarrito(){
       <div class="cart-item-title">
         ${item.nombre}
         <small>${item.descripcion.replace(/\n/g, "<br>")}</small>
+   <!-- CONTROLES DE CANTIDAD -->
+      <div class="qty-control">
+        <button onclick="restarItem(${idx})">➖</button>
+        <span>${item.cantidad}</span>
+        <button onclick="sumarItem(${idx})">➕</button>
       </div>
+    </div>
       <div>
-        <strong>${precioFormato(item.precio)}</strong>
+        <strong>${precioFormato(item.precio * item.cantidad)}</strong>
         <br>
         <button onclick="editarItem(${idx})"
         style="border:none;background:none;font-size:1.2rem;cursor:pointer;">
@@ -1385,9 +1477,6 @@ function eliminarItem(index){
   renderCarrito();
 }
 
-function subtotalCarrito(){
-  return carrito.reduce((s, i) => s + i.precio, 0);
-}
 function editarItem(index){
   const item = carrito[index];
   if(!item) return;
@@ -1801,7 +1890,10 @@ if (!dire) {
 
     // ----- DETALLE DEL CARRITO (cómo va preparado) -----
     const productosMensaje = carrito
-        .map((item, i) => `🍽️ *${i + 1}. ${item.nombre}*\n${item.descripcion}`)
+        .map((item, i) =>
+  `🍽️ *${i + 1}. ${item.nombre} (x${item.cantidad})*\n${item.descripcion}`
+)
+
         .join("\n\n");
 
     // ----- ARMAR MENSAJE FINAL -----
@@ -2386,3 +2478,71 @@ document.addEventListener("click", function(e){
 
   setTimeout(actualizarPreviewPedido, 0);
 });
+
+/* =========================
+   SLIDER PROMOCIONES
+========================= */
+const track = document.getElementById("promoTrack");
+const dotsBox = document.getElementById("promoDots");
+
+if(track){
+
+  const slides = track.children;
+  let index = 0;
+  let startX = 0;
+
+  // Crear dots
+  [...slides].forEach((_, i)=>{
+    const dot = document.createElement("span");
+    if(i===0) dot.classList.add("active");
+    dotsBox.appendChild(dot);
+  });
+
+  const dots = dotsBox.children;
+
+  function updateSlider(){
+    track.style.transform = `translateX(-${index * 100}%)`;
+    [...dots].forEach(d => d.classList.remove("active"));
+    dots[index].classList.add("active");
+  }
+
+  // Auto slide
+  setInterval(()=>{
+    index = (index + 1) % slides.length;
+    updateSlider();
+  }, 4000);
+
+  // Swipe táctil
+  track.addEventListener("touchstart", e=>{
+    startX = e.touches[0].clientX;
+  });
+
+  track.addEventListener("touchend", e=>{
+    const endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+
+    if(diff > 50 && index < slides.length - 1){
+      index++;
+    }
+    if(diff < -50 && index > 0){
+      index--;
+    }
+    updateSlider();
+  });
+}
+function sumarItem(index){
+  carrito[index].cantidad++;
+  actualizarCarritoUI();
+  renderCarrito();
+}
+
+function restarItem(index){
+  carrito[index].cantidad--;
+
+  if(carrito[index].cantidad <= 0){
+    carrito.splice(index, 1);
+  }
+
+  actualizarCarritoUI();
+  renderCarrito();
+}
