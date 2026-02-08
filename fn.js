@@ -2183,8 +2183,13 @@ document.addEventListener("click", function(e){
 document.addEventListener("click", function(e){
   const check = e.target.closest(".checkbox-bonito");
 
-  // ⛔ IGNORAR AROS Y MIX (ellos se manejan solos)
-  if(!check || check.id === "chkArosExtra" || check.classList.contains("checkbox-mix")){
+  // ⛔ EXCLUIR LOS CHECKBOX QUE YA MANEJAN SU PROPIA LÓGICA
+  if(
+    !check ||
+    check.id === "chkArosExtra" ||
+    check.classList.contains("checkbox-mix") ||
+    check.id.startsWith("chkCombo")   // 👈 ESTE ES EL FIX
+  ){
     return;
   }
 
