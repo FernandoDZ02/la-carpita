@@ -15,7 +15,6 @@ const ADEREZOS = [
   "Ranch",
   "Mango habanero",
   "Buffalo",
-  "Miel habanero",
   "Tamarindo Habanero",
   "BBQ",
   "Ranch habanero",
