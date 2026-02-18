@@ -1440,3 +1440,79 @@ html[data-theme="dark"] .btn-primary{
   transform:scale(1.2);
 }
 
+.banner-horario{
+  margin-top: 10px;
+  background:#fff3e6;
+  border:1px solid #ffd2ad;
+  padding:12px 14px;
+  border-radius:16px;
+  color:#5a3212;
+}
+
+.bh-top{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  font-size:0.95rem;
+}
+
+.bh-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ff7a00;
+  box-shadow:0 0 0 4px rgba(255,122,0,.18);
+}
+
+.bh-estado{
+  margin-top:8px;
+  font-size:0.95rem;
+  line-height:1.25;
+}
+
+/* =========================
+   ANIMACIÓN CARRITO (ADD)
+========================= */
+.floating-cart.cart-pop {
+  animation: cartPop 420ms ease;
+}
+
+@keyframes cartPop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.12); }
+  70%  { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+/* Badge pulso */
+.cart-badge.badge-pop {
+  animation: badgePop 520ms ease;
+}
+
+@keyframes badgePop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.35); }
+  60%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* +1 flotante */
+.cart-fx-plus1{
+  position: absolute;
+  right: 10px;
+  top: -10px;
+  font-weight: 900;
+  font-size: 0.95rem;
+  color: #ff6a00;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(0) scale(0.9);
+  animation: plus1Float 700ms ease forwards;
+  text-shadow: 0 2px 10px rgba(0,0,0,.18);
+}
+
+@keyframes plus1Float {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.9); }
+  20%  { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-18px) scale(1.05); }
+}
