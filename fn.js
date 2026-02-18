@@ -2,12 +2,14 @@
 /* ===== CONSTANTES ===== */
 const COSTO_DOBLE_ADEREZO = 8;
 const COSTO_ENVIO = 10;
-const COMISION_TARJETA = 0.035;
+const COMISION_TARJETA = 0;
 const NUM_WHATSAPP_LA_CARPITA = "525657861068";
 let ubicacionManual = false;
 let modoPapas = "todo"; // todo | solo | personalizar
 const ADEREZO_2OZ = 8;
 const ADEREZO_4OZ = 15;
+const UBICACION_NEGOCIO_URL = "https://www.google.com/maps/@19.3765364,-99.0344727,3a,90y,191.24h,89.98t/data=!3m7!1e1!3m5!1s1a9iLaC7d2TnGu2PHTTQVg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0.019280205655519467%26panoid%3D1a9iLaC7d2TnGu2PHTTQVg%26yaw%3D191.2439588688946!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI2MDIxMS4wIKXMDSoASAFQAw%3D%3D"; // 👈 cambia por tu link real
+const UBICACION_NEGOCIO_TEXTO = "Punto de entrega La Carpita"; // opcional
 
 
 
@@ -15,7 +17,6 @@ const ADEREZOS = [
   "Ranch",
   "Mango habanero",
   "Buffalo",
-  "Miel habanero",
   "Tamarindo Habanero",
   "BBQ",
   "Ranch habanero",
@@ -26,31 +27,31 @@ const ADEREZOS = [
 /* ===== OPCIONES DE PRODUCTOS ===== */
 const opciones = {
   boneless: [
-    {id:"boneless", nombre:"Boneless", precio:65, img:"img/BS.png", incluyePapas:false, tieneAderezo:true},
-    {id:"boneless_papas", nombre:"Boneless con papas", precio:80, img:"img/BCP.png", incluyePapas:true, tieneAderezo:true}
+    {id:"boneless", nombre:"Boneless", precio:70, img:"img/BS.png", incluyePapas:false, tieneAderezo:true},
+    {id:"boneless_papas", nombre:"Boneless con papas", precio:85, img:"img/BCP.png", incluyePapas:true, tieneAderezo:true}
   ],
   tenders: [
-    {id:"tenders", nombre:"Tenders (5pz)", precio:65, img:"img/TS.png", incluyePapas:false, tieneAderezo:true},
-    {id:"tenders_papas", nombre:"Tenders con papas", precio:80, img:"img/TCP.png", incluyePapas:true, tieneAderezo:true}
+    {id:"tenders", nombre:"Tenders (5pz)", precio:70, img:"img/TS.png", incluyePapas:false, tieneAderezo:true},
+    {id:"tenders_papas", nombre:"Tenders con papas", precio:85, img:"img/TCP.png", incluyePapas:true, tieneAderezo:true}
   ],
   alitas: [
-    {id:"alitas_ch", nombre:"Alitas Ch (6pz)", precio:70, img:"img/A.png", incluyePapas:false, tieneAderezo:true},
-    {id:"alitas_gd", nombre:"Alitas Gd (14pz)", precio:140, img:"img/AG.png", incluyePapas:false, tieneAderezo:true},
-    {id:"alitas_ch_papas", nombre:"Alitas Ch con papas", precio:85, img:"img/ACP.png", incluyePapas:true, tieneAderezo:true},
-    {id:"alitas_gd_papas", nombre:"Alitas Gd con papas", precio:170, img:"img/ACPG.png", incluyePapas:true, tieneAderezo:true}
+    {id:"alitas_ch", nombre:"Alitas Ch (6pz)", precio:75, img:"img/A.png", incluyePapas:false, tieneAderezo:true},
+    {id:"alitas_gd", nombre:"Alitas Gd (14pz)", precio:150, img:"img/AG.png", incluyePapas:false, tieneAderezo:true},
+    {id:"alitas_ch_papas", nombre:"Alitas Ch con papas", precio:90, img:"img/ACP.png", incluyePapas:true, tieneAderezo:true},
+    {id:"alitas_gd_papas", nombre:"Alitas Gd con papas", precio:180, img:"img/ACPG.png", incluyePapas:true, tieneAderezo:true}
   ],
   palomitas: [
-    {id:"palomitas", nombre:"Palomitas", precio:65, img:"img/P.png", incluyePapas:false, tieneAderezo:true},
-    {id:"palomitas_papas", nombre:"Palomitas con papas", precio:80, img:"img/PCP.png", incluyePapas:true, tieneAderezo:true}
+    {id:"palomitas", nombre:"Palomitas", precio:70, img:"img/P.png", incluyePapas:false, tieneAderezo:true},
+    {id:"palomitas_papas", nombre:"Palomitas con papas", precio:85, img:"img/PCP.png", incluyePapas:true, tieneAderezo:true}
   ],
   dedos: [
     {id:"dedos_ch", nombre:"Dedos Ch (6pz)", precio:60, img:"img/DQ.png", incluyePapas:false, tieneAderezo:true},
-    {id:"dedos_gd", nombre:"Dedos Gd (14pz)", precio:115, img:"img/DQG.png", incluyePapas:false, tieneAderezo:true},
-    {id:"dedos_ch_papas", nombre:"Dedos Ch con papas", precio:75, img:"img/DQCP.png", incluyePapas:true, tieneAderezo:true},
-    {id:"dedos_gd_papas", nombre:"Dedos Gd con papas", precio:140, img:"img/DQCPG.png", incluyePapas:true, tieneAderezo:true}
+    {id:"dedos_gd", nombre:"Dedos Gd (14pz)", precio:120, img:"img/DQG.png", incluyePapas:false, tieneAderezo:true},
+    {id:"dedos_ch_papas", nombre:"Dedos Ch con papas", precio:80, img:"img/DQCP.png", incluyePapas:true, tieneAderezo:true},
+    {id:"dedos_gd_papas", nombre:"Dedos Gd con papas", precio:150, img:"img/DQCPG.png", incluyePapas:true, tieneAderezo:true}
   ],
   papas: [
-    {id:"papas_francesa", nombre:"Papas Francesa", precio:50, img:"img/PF.png", incluyePapas:true, tieneAderezo:false},
+    {id:"papas_francesa", nombre:"Papas Francesa", precio:55, img:"img/PF.png", incluyePapas:true, tieneAderezo:false},
     {id:"papas_curly", nombre:"Papas Curly", precio:60, img:"img/PC.png", incluyePapas:true, tieneAderezo:false},
     {id:"papas_waffle", nombre:"Papas Waffle", precio:60, img:"img/PW.png", incluyePapas:true, tieneAderezo:false},
     {id:"papas_gajo", nombre:"Papas Gajo", precio:60, img:"img/PG.png", incluyePapas:true, tieneAderezo:false},
@@ -65,25 +66,25 @@ const opciones = {
   }
   ],
   banderillas: [
-    {id:"band_salchicha", nombre:"Banderilla de salchicha", precio:25, img:"img/B.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
-    {id:"band_queso", nombre:"Banderilla de queso", precio:30, img:"img/B.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
+    {id:"band_salchicha", nombre:"Banderilla de salchicha", precio:30, img:"img/B.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
+    {id:"band_queso", nombre:"Banderilla de queso", precio:35, img:"img/B.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
     {id:"band_combinada", nombre:"Banderilla combinada", precio:35, img:"img/B.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true}
   ],
   mini_banderillas: [
-    {id:"mb_salchicha", nombre:"Mini salchicha (6pz)", precio:50, img:"img/MB.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
-    {id:"mb_salchicha_papas", nombre:"Mini salchicha con papas", precio:65, img:"img/MB.png", incluyePapas:true, tieneAderezo:false, esBanderilla:true},
-    {id:"mb_queso", nombre:"Mini queso (6pz)", precio:60, img:"img/MB.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
-    {id:"mb_queso_papas", nombre:"Mini queso con papas", precio:75, img:"img/MB.png", incluyePapas:true, tieneAderezo:false, esBanderilla:true},
+    {id:"mb_salchicha", nombre:"Mini salchicha (6pz)", precio:55, img:"img/MB.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
+    {id:"mb_salchicha_papas", nombre:"Mini salchicha con papas", precio:70, img:"img/MB.png", incluyePapas:true, tieneAderezo:false, esBanderilla:true},
+    {id:"mb_queso", nombre:"Mini queso (6pz)", precio:65, img:"img/MB.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
+    {id:"mb_queso_papas", nombre:"Mini queso con papas", precio:80, img:"img/MB.png", incluyePapas:true, tieneAderezo:false, esBanderilla:true},
     {id:"mb_comb", nombre:"Mini combinadas (6pz)", precio:65, img:"img/MB.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
     {id:"mb_comb_papas", nombre:"Mini combinadas con papas", precio:80, img:"img/MB.png", incluyePapas:true, tieneAderezo:false, esBanderilla:true}
   ],
   super: [
     {id:"super1", nombre:"Súper 1 (Boneless + Alitas + papas)", precio:145, img:"img/SC1.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
     {id:"super2", nombre:"Súper 2 (Tenders + Boneless + papas)", precio:135, img:"img/SC2.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
-    {id:"super3", nombre:"Súper 3 (Dedos + Palomitas + papas)", precio:115, img:"img/SC3.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
+    {id:"super3", nombre:"Súper 3 (Dedos + Palomitas + papas)", precio:120, img:"img/SC3.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
     {id:"super4", nombre:"Súper 4 (Dedos + Boneless + papas)", precio:135, img:"img/SC4.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
     {id:"super5", nombre:"Súper 5 (Alitas + Palomitas + papas)", precio:130, img:"img/SC5.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
-    {id:"super6", nombre:"Súper 6 (Palomitas + Tenders + papas)", precio:125, img:"img/SC6.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"}
+    {id:"super6", nombre:"Súper 6 (Palomitas + Tenders + papas)", precio:130, img:"img/SC6.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"}
   ],
   mega: [
     {id:"mega1", nombre:"Mega 1 (Boneless + Alitas + Dedos)", precio:180, img:"img/M1.png", incluyePapas:false, tieneAderezo:true, tipoCombo:"mega"},
@@ -105,12 +106,15 @@ const opciones = {
     {id:"ad_ranch", nombre:"Ranch", precio:8, img:"img/Aderezos.png"},
     {id:"ad_mango", nombre:"Mango habanero", precio:8, img:"img/Aderezos.png"},
     {id:"ad_buffalo", nombre:"Buffalo", precio:8, img:"img/Aderezos.png"},
-    {id:"ad_miel", nombre:"Miel habanero", precio:8, img:"img/Aderezos.png"},
     {id:"ad_bbq", nombre:"BBQ", precio:8, img:"img/Aderezos.png"},
     {id:"ad_tam", nombre:"Tamarindo habanero", precio:8, img:"img/Aderezos.png"},
     {id:"ad_ranchh", nombre:"Ranch habanero", precio:8, img:"img/Aderezos.png"},
     {id:"ad_ajo", nombre:"Ajo parmesano", precio:8, img:"img/Aderezos.png"}
-  ]
+  ],
+    salchipulpos: [
+  {id:"salchipulpos", nombre:"Salchipulpos (10pz)", precio:55, img:"img/salchipulpos.png", incluyePapas:false, tieneAderezo:false, esSalchi:true},
+  {id:"salchipapas", nombre:"Salchipapas",  precio:70, img:"img/salchipapas.png",  incluyePapas:true,  tieneAderezo:false, esSalchi:true}
+]
 };
 
 /* ===== ESTADO GLOBAL ===== */
@@ -491,7 +495,7 @@ if (p.esMixPapas) {
   /* ----------------------------------------
               PAPAS
      ---------------------------------------- */
-  if(p.incluyePapas || categoriaActual === "papas"){
+if((p.incluyePapas || categoriaActual === "papas") && !p.esSalchi){
     html += `
       <div class="modal-section">
         <div class="modal-section-title">Papas</div>
@@ -599,6 +603,72 @@ document.addEventListener("click", e => {
         label.classList.add("selected");
     }
 });
+/* ----------------------------------------
+   SALCHIPULPOS / SALCHIPAPAS
+   Incluye: mayonesa, queso, catsup y salsa
+---------------------------------------- */
+if (p.esSalchi) {
+  html += `
+  <div class="modal-section">
+    <div class="modal-section-title">Salsas en ${p.nombre.toLowerCase()}</div>
+
+    <div style="margin: 10px 0; display:flex; gap:8px; flex-wrap:wrap;">
+      <button type="button" id="btnSalchiTodo" class="btn-papas" onclick="selectSalchiModo('todo')">
+        Con todo
+      </button>
+
+      <button type="button" id="btnSalchiSolo" class="btn-papas" onclick="selectSalchiModo('solo')">
+        Solos
+      </button>
+
+      <button type="button" id="btnSalchiPers" class="btn-papas" onclick="selectSalchiModo('personalizar')">
+        Personalizar
+      </button>
+    </div>
+
+    <div id="boxPersonalizarSalchi" style="display:none;">
+
+      <div class="modal-label">Queso</div>
+      <div class="radio-bonito-papas-group">
+        <label class="radio-bonito-papas selected"><input type="radio" name="quesoSalchi" value="Untado" checked> Untado</label>
+        <label class="radio-bonito-papas"><input type="radio" name="quesoSalchi" value="Aparte"> Aparte</label>
+        <label class="radio-bonito-papas"><input type="radio" name="quesoSalchi" value="Sin"> Sin</label>
+      </div>
+
+      <div class="modal-label">Catsup</div>
+      <div class="radio-bonito-papas-group">
+        <label class="radio-bonito-papas selected"><input type="radio" name="catsupSalchi" value="Untado" checked> Untado</label>
+        <label class="radio-bonito-papas"><input type="radio" name="catsupSalchi" value="Aparte"> Aparte</label>
+        <label class="radio-bonito-papas"><input type="radio" name="catsupSalchi" value="Sin"> Sin</label>
+      </div>
+
+      <div class="modal-label">Mayonesa</div>
+      <div class="radio-bonito-papas-group">
+        <label class="radio-bonito-papas selected"><input type="radio" name="mayoSalchi" value="Untado" checked> Untado</label>
+        <label class="radio-bonito-papas"><input type="radio" name="mayoSalchi" value="Aparte"> Aparte</label>
+        <label class="radio-bonito-papas"><input type="radio" name="mayoSalchi" value="Sin"> Sin</label>
+      </div>
+
+      <div class="modal-label">Salsa</div>
+      <div class="radio-bonito-papas-group">
+        <label class="radio-bonito-papas selected"><input type="radio" name="salsaSalchi" value="Untado" checked> Untado</label>
+        <label class="radio-bonito-papas"><input type="radio" name="salsaSalchi" value="Aparte"> Aparte</label>
+        <label class="radio-bonito-papas"><input type="radio" name="salsaSalchi" value="Sin"> Sin</label>
+      </div>
+
+    </div>
+  </div>
+  `;
+}
+// ===============================
+// DEFAULT SALCHIS: CON TODO
+// ===============================
+setTimeout(() => {
+  if (p.esSalchi) {
+    selectSalchiModo("todo");
+  }
+}, 0);
+
 /* ----------------------------------------
    AROS DE CEBOLLA
 ---------------------------------------- */
@@ -855,6 +925,39 @@ document.addEventListener("change", e => {
       e.target.checked ? "block" : "none";
   }
 });
+function selectSalchiModo(tipo){
+  const btnTodo = document.getElementById("btnSalchiTodo");
+  const btnSolo = document.getElementById("btnSalchiSolo");
+  const btnPers = document.getElementById("btnSalchiPers");
+  const box = document.getElementById("boxPersonalizarSalchi");
+
+  [btnTodo, btnSolo, btnPers].forEach(b => b && b.classList.remove("active"));
+
+  if(tipo === "todo"){
+    btnTodo && btnTodo.classList.add("active");
+    if(box) box.style.display = "none";
+
+    document.querySelector("input[name='quesoSalchi'][value='Untado']")?.click();
+    document.querySelector("input[name='catsupSalchi'][value='Untado']")?.click();
+    document.querySelector("input[name='mayoSalchi'][value='Untado']")?.click();
+    document.querySelector("input[name='salsaSalchi'][value='Untado']")?.click();
+  }
+  else if(tipo === "solo"){
+    btnSolo && btnSolo.classList.add("active");
+    if(box) box.style.display = "none";
+
+    document.querySelector("input[name='quesoSalchi'][value='Sin']")?.click();
+    document.querySelector("input[name='catsupSalchi'][value='Sin']")?.click();
+    document.querySelector("input[name='mayoSalchi'][value='Sin']")?.click();
+    document.querySelector("input[name='salsaSalchi'][value='Sin']")?.click();
+  }
+  else {
+    btnPers && btnPers.classList.add("active");
+    if(box) box.style.display = "block";
+  }
+
+  actualizarPreviewPedido();
+}
 
 function selectMiniModo(tipo){
   const btnTodo = document.getElementById("btnMiniTodo");
@@ -1028,6 +1131,36 @@ if (categoriaActual === "aderezos") {
     precio: precioFinal
   };
 }
+/* ---- SALCHIPULPOS / SALCHIPAPAS ---- */
+if (p.esSalchi) {
+
+  const btnTodo = document.getElementById("btnSalchiTodo");
+  const btnSolo = document.getElementById("btnSalchiSolo");
+
+  if (btnTodo && btnTodo.classList.contains("active")) {
+    descDetalle += `Salsas: Con todo \n`;
+  }
+  else if (btnSolo && btnSolo.classList.contains("active")) {
+    descDetalle += `Salsas: solas\n`;
+  }
+  else {
+    let salsas = [];
+
+    const q = getRadioValue("quesoSalchi");
+    const c = getRadioValue("catsupSalchi");
+    const m = getRadioValue("mayoSalchi");
+    const s = getRadioValue("salsaSalchi");
+
+    if (q && q !== "Sin") salsas.push(`Queso ${q.toLowerCase()}`);
+    if (c && c !== "Sin") salsas.push(`Catsup ${c.toLowerCase()}`);
+    if (m && m !== "Sin") salsas.push(`Mayonesa ${m.toLowerCase()}`);
+    if (s && s !== "Sin") salsas.push(`Salsa ${s.toLowerCase()}`);
+
+    descDetalle += salsas.length
+      ? `Salsas: ${salsas.join(", ")}\n`
+      : `Salsas: solas\n`;
+  }
+}
 
 /* ---- AROS DE CEBOLLA ---- */
 if (p.esAros) {
@@ -1038,7 +1171,7 @@ if (p.esAros) {
 
   // 🔥 MODO CON TODO
   if (btnTodo && btnTodo.classList.contains("active")) {
-    descDetalle += `Con todo (queso, catsup y salsa)\n`;
+    descDetalle += `Con todo \n`;
   } 
   // 🔧 MODO PERSONALIZAR
   else {
@@ -1150,7 +1283,8 @@ if(p.tieneAderezo && !p.tipoCombo){
 
   /* ---- PAPAS ---- */
 /* ---- PAPAS (NORMALIZADO) ---- */
-if(p.incluyePapas || categoriaActual === "papas"){
+if((p.incluyePapas || categoriaActual === "papas") && !p.esSalchi){
+
 
 
   const tipo =
@@ -1359,6 +1493,7 @@ function agregarAlimentoCarrito(){
   }
 
   actualizarCarritoUI();
+  animarCarritoAgregado(1);
   closeModal();
   mostrarModalProductoAgregado();
 }
@@ -1550,13 +1685,23 @@ function abrirPasoPago(){
 
     <!-- MÉTODO DE ENTREGA -->
     <div class="pedido-section">
-      <div class="pedido-title">Método de entrega</div>
+  <div class="pedido-title">Método de entrega</div>
 
-      <label class="pedido-option">
-        <input type="radio" name="envio" value="domicilio" checked>
-        Envío a domicilio (+$10)
-      </label>
-    </div>
+  <label class="pedido-option">
+    <input type="radio" name="envio" value="domicilio" checked>
+    Envío a domicilio (+$10)
+  </label>
+
+  <label class="pedido-option">
+    <input type="radio" name="envio" value="pasar">
+    Pasar por mi pedido (sin costo)
+  </label>
+
+  <small style="display:block; margin-top:8px; color:#666; line-height:1.3;">
+    Si eliges <b>pasar</b>, te avisaremos por WhatsApp cuando esté listo (5–10 min antes).
+  </small>
+</div>
+
 
     <!-- MÉTODO DE PAGO -->
     <div class="pedido-section">
@@ -1600,7 +1745,7 @@ Tarjeta
 
   <label class="pedido-option" style="background:#ffeccc;">
     <input type="checkbox" name="mixtoMetodo" value="tarjeta" onclick="validarMixto()">
-    Tarjeta (3.5%)
+    Tarjeta
   </label>
 
   <!-- MONTO EN EFECTIVO SI SE SELECCIONA EFECTIVO -->
@@ -1630,15 +1775,21 @@ Tarjeta
          maxlength="10"
          required>
 
-    <div style="display:flex; gap:10px;">
-  <button class="btn-primary" style="flex:1;" onclick="obtenerUbicacion()">
+    <div id="boxUbicacionCliente">
+  <div style="display:flex; gap:10px;">
+    <button class="btn-primary" style="flex:1;" onclick="obtenerUbicacion()">
       Obtener mi ubicación 📍
-  </button>
+    </button>
 
-  <button class="btn-secondary" style="flex:1;" onclick="enviarUbicacionPorWhatsApp()">
+    <button class="btn-secondary" style="flex:1;" onclick="enviarUbicacionPorWhatsApp()">
       Enviar ubicación por WhatsApp 💬
-  </button>
+    </button>
+  </div>
+
+  <input type="hidden" id="direccionCliente">
+  <div id="ubicacionTexto" style="margin-top:10px; font-size:0.9rem; color:#444;"></div>
 </div>
+
 
 
 <input type="hidden" id="direccionCliente">
@@ -1686,6 +1837,8 @@ Tarjeta
   `;
 
   actualizarCostoPedido();
+  aplicarModoEntregaUI();
+
 }
 function enviarUbicacionPorWhatsApp(){
   const mensaje =
@@ -1769,6 +1922,7 @@ function limpiarTelefono(tel){
       WHATSAPP: ENVIAR PEDIDO
    ================================ */
 function enviarPedidoWhatsApp() {
+  const enviosel = document.querySelector('input[name="envio"]:checked')?.value;
     const nombre = document.getElementById("nombreCliente").value.trim();
 const telefonoRaw = document.getElementById("telefonoCliente").value.trim();
 const telefonoPedido = limpiarTelefono(telefonoRaw);
@@ -1793,10 +1947,13 @@ if (!telefonoPedido || telefonoPedido.length !== 10) {
         showToast("Ingresa tu nombre");
         return;
     }
-if (!dire) {
-  showToast("Comparte tu ubicación automática o por WhatsApp");
-  return;
+if(enviosel !== "pasar"){
+  if (!dire) {
+    showToast("Comparte tu ubicación automática o por WhatsApp");
+    return;
+  }
 }
+
 
     if (!metodoPago) {
         showToast("Selecciona un método de pago");
@@ -1881,9 +2038,13 @@ if (!dire) {
 
     const comMixto = baseTarjeta * COMISION_TARJETA;
 
-    total += comMixto;
+if (comMixto > 0) {
+  total += comMixto;
+  detalleMixto += `\n💳 Pago con tarjeta (${(COMISION_TARJETA*100).toFixed(1)}% extra): +$${comMixto.toFixed(2)}\n`;
+} else {
+  detalleMixto += `\n💳 Pago con tarjeta\n`;
+}
 
-    detalleMixto += `\n💳 Pago con tarjeta (3.5% extra): +$${comMixto.toFixed(2)}\n`;
 }
 
     }
@@ -1911,13 +2072,21 @@ if (!dire) {
     mensaje     += `👤 Nombre: *${nombre}*\n`;
 mensaje += `📞 Teléfono: *${telefonoPedido}*\n`;
 
-    // 🔹 AQUÍ VA LO DE LA IMAGEN (UBICACIÓN)
     // 🔹 UBICACIÓN
+if(envioSel !== "pasar"){
 if (ubicacionManual) {
     mensaje += "📍 Ubicación: *Se enviará manualmente por WhatsApp*\n";
 } else if (dire) {
     mensaje += "📍 Ubicación (Google Maps):\n";
     mensaje += `${dire}\n`;
+}
+}
+if(enviosel === "pasar"){
+  mensaje += `📦 Entrega: *Pasan por su pedido*\n`;
+  mensaje += `⏱️ *Te avisaremos por WhatsApp cuando esté listo (5–10 min antes)*\n`;
+  mensaje += `📍 Ubicación del punto de entrega (${UBICACION_NEGOCIO_TEXTO}):\n${UBICACION_NEGOCIO_URL}\n`;
+} else {
+  mensaje += `🚚 Entrega: *Envío a domicilio*\n`;
 }
 
 
@@ -1944,7 +2113,7 @@ else if (metodoPago === "transferencia") {
         "CLABE: 638180000136730578\n";
 }
 else if (metodoPago === "tarjeta") {
-    mensaje += "\n💳 Pago con tarjeta (3.5% extra)\n";
+    mensaje += "\n💳 Pago con tarjeta\n";
 }
 
     // Enviar a WhatsApp
@@ -2103,7 +2272,8 @@ function actualizarCostoPedido(){
 
   // COMISIÓN (solo tarjeta)
   const pagoSel = document.querySelector('input[name="pago"]:checked')?.value;
-  const costoComision = pagoSel === "tarjeta" ? subtotal * 0.035 : 0;
+  const costoComision = 0;
+
 
   const total = subtotal + costoEnvio + costoComision;
 
@@ -2538,6 +2708,7 @@ if(track){
 function sumarItem(index){
   carrito[index].cantidad++;
   actualizarCarritoUI();
+  animarCarritoAgregado(1);
   renderCarrito();
 }
 
@@ -2550,4 +2721,148 @@ function restarItem(index){
 
   actualizarCarritoUI();
   renderCarrito();
+}
+function aplicarModoEntregaUI(){
+  const envioSel = document.querySelector('input[name="envio"]:checked')?.value;
+  const box = document.getElementById("boxUbicacionCliente");
+  if(!box) return;
+
+  if(envioSel === "pasar"){
+    box.style.display = "none";
+    // limpiar para que no estorbe
+    ubicacionManual = false;
+    const dir = document.getElementById("direccionCliente");
+    if(dir) dir.value = "";
+    const txt = document.getElementById("ubicacionTexto");
+    if(txt) txt.innerHTML = "";
+  } else {
+    box.style.display = "block";
+  }
+}
+
+document.addEventListener("change", (e)=>{
+  if(e.target && e.target.name === "envio"){
+    aplicarModoEntregaUI();
+    actualizarCostoPedido();
+  }
+});
+
+// ===============================
+// HORARIO + CUENTA REGRESIVA
+// ===============================
+const SERVICIO = {
+  // 24h
+  inicio: { h: 19, m: 30 }, // 7:30 pm
+  fin:    { h: 22, m: 30 }  // 10:30 pm
+};
+
+function minutosDelDia(fecha){
+  return fecha.getHours() * 60 + fecha.getMinutes();
+}
+
+function formatearCuenta(ms){
+  const totalSeg = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(totalSeg / 3600);
+  const m = Math.floor((totalSeg % 3600) / 60);
+  const s = totalSeg % 60;
+
+  const hh = String(h).padStart(2, "0");
+  const mm = String(m).padStart(2, "0");
+  const ss = String(s).padStart(2, "0");
+  return `${hh}:${mm}:${ss}`;
+}
+
+function proxAperturaYCierre(){
+  const ahora = new Date();
+
+  const hoyInicio = new Date(ahora);
+  hoyInicio.setHours(SERVICIO.inicio.h, SERVICIO.inicio.m, 0, 0);
+
+  const hoyFin = new Date(ahora);
+  hoyFin.setHours(SERVICIO.fin.h, SERVICIO.fin.m, 0, 0);
+
+  // Si hoy ya pasó la hora de cierre → siguiente apertura mañana
+  const mananaInicio = new Date(ahora);
+  mananaInicio.setDate(mananaInicio.getDate() + 1);
+  mananaInicio.setHours(SERVICIO.inicio.h, SERVICIO.inicio.m, 0, 0);
+
+  return { ahora, hoyInicio, hoyFin, mananaInicio };
+}
+
+function actualizarBannerHorario(){
+  const banner = document.getElementById("bannerHorario");
+  const estado = document.getElementById("bhEstado");
+  if(!banner || !estado) return;
+
+  const { ahora, hoyInicio, hoyFin, mananaInicio } = proxAperturaYCierre();
+
+  const minAhora  = minutosDelDia(ahora);
+  const minInicio = SERVICIO.inicio.h * 60 + SERVICIO.inicio.m;
+  const minFin    = SERVICIO.fin.h * 60 + SERVICIO.fin.m;
+
+  // ✅ Dentro de horario
+  if(minAhora >= minInicio && minAhora <= minFin){
+    const faltaCerrar = hoyFin.getTime() - ahora.getTime();
+    estado.innerHTML =
+      `✅ <b>Estamos atendiendo</b>.<br>` +
+      `⏳ Cerramos en: <b>${formatearCuenta(faltaCerrar)}</b>`;
+    return;
+  }
+
+  // ⛔ Fuera de horario: calcular tiempo para abrir
+  let faltaAbrirMs;
+
+  // Si aún no llega la hora de inicio hoy
+  if(minAhora < minInicio){
+    faltaAbrirMs = hoyInicio.getTime() - ahora.getTime();
+    estado.innerHTML =
+      `⛔ <b>Aún no abrimos</b>.<br>` +
+      `🕒 Abrimos en: <b>${formatearCuenta(faltaAbrirMs)}</b>`;
+  } 
+  // Si ya pasó el cierre
+  else {
+    faltaAbrirMs = mananaInicio.getTime() - ahora.getTime();
+    estado.innerHTML =
+      `⛔ <b>Ya cerramos por hoy</b>.<br>` +
+      `🕒 Abrimos en: <b>${formatearCuenta(faltaAbrirMs)}</b>`;
+  }
+}
+
+function iniciarCuentaRegresivaHorario(){
+  actualizarBannerHorario();
+  setInterval(actualizarBannerHorario, 1000); // cada 1 segundo
+}
+
+document.addEventListener("DOMContentLoaded", iniciarCuentaRegresivaHorario);
+
+/* =========================
+   FX: Carrito bounce + +1
+========================= */
+function animarCarritoAgregado(cantidad = 1){
+  const btn = document.getElementById("btnCarritoFlotante");
+  const badge = document.getElementById("cart-count");
+  if(!btn || !badge) return;
+
+  // Reiniciar animaciones (por si agregas rápido)
+  btn.classList.remove("cart-pop");
+  badge.classList.remove("badge-pop");
+  // forzar reflow para reiniciar animación CSS
+  void btn.offsetWidth;
+
+  btn.classList.add("cart-pop");
+  badge.classList.add("badge-pop");
+
+  // +1 flotante (o +n)
+  const fx = document.createElement("div");
+  fx.className = "cart-fx-plus1";
+  fx.textContent = cantidad > 1 ? `+${cantidad}` : "+1";
+  btn.appendChild(fx);
+
+  fx.addEventListener("animationend", () => fx.remove());
+
+  // limpiar clases al terminar
+  setTimeout(() => {
+    btn.classList.remove("cart-pop");
+    badge.classList.remove("badge-pop");
+  }, 650);
 }
