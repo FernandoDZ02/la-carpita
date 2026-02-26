@@ -1,4 +1,3 @@
-
 /* ===== CONSTANTES ===== */
 const COSTO_DOBLE_ADEREZO = 8;
 const COSTO_ENVIO = 10;
@@ -232,10 +231,21 @@ function abrirPasoPersonalizacion(){
   let html = `
     <button class="modal-close-top" onclick="event.stopPropagation(); closeModal();">✕</button>
     <h2>Personaliza tu ${p.nombre}</h2>
+
   `;
+  if(promoBuilder.activo){
+  const paso = promoBuilder.cola[promoBuilder.idx];
+  html += `
+    <div style="background:#fff1d7;border:2px solid #ffd4a8;border-radius:14px;padding:10px;margin:10px 0;color:#6a2e00;font-weight:800;">
+      🎁 Promo: ${promoBuilder.titulo}<br>
+      Paso ${promoBuilder.idx + 1} de ${promoBuilder.cola.length}: ${paso?.label || ""}
+    </div>
+  `;
+}
+
 html += `
   <div class="modal-body">
-  
+
   <div id="previewPedido" class="preview-sticky">
     <strong>🧾 Así va tu pedido:</strong>
     <div id="previewContenido"></div>
@@ -512,7 +522,7 @@ if((p.incluyePapas || categoriaActual === "papas") && !p.esSalchi){
          `;
   }
 
-        
+
   html += `
           <!-- BOTONES DE PAPAS: CON TODO / PERSONALIZAR -->
 <div style="margin: 10px 0; display:flex; gap:8px; flex-wrap:wrap;">
@@ -528,7 +538,7 @@ if((p.incluyePapas || categoriaActual === "papas") && !p.esSalchi){
     Personalizar
   </button>
 </div>
-  
+
 
 <!-- CONTENEDOR DE PERSONALIZACIÓN -->
 <div id="boxPersonalizarPapas" style="display:none;">
@@ -734,7 +744,7 @@ if (p.esAros) {
         <input type="radio" name="salsaAros" value="Sin"> Sin
       </label>
     </div>
-    </div> 
+    </div>
 
     <!-- ADEREZO EXTRA -->
     <label class="checkbox-bonito" id="chkArosExtra">
@@ -1172,7 +1182,7 @@ if (p.esAros) {
   // 🔥 MODO CON TODO
   if (btnTodo && btnTodo.classList.contains("active")) {
     descDetalle += `Con todo \n`;
-  } 
+  }
   // 🔧 MODO PERSONALIZAR
   else {
 
@@ -1460,7 +1470,12 @@ if (checks.length > cantidad) {
 
     <div style="display:flex; gap:8px; margin-top:12px;">
       <button class="btn-secondary" onclick="abrirPasoPersonalizacion()">← Editar</button>
-      <button class="btn-primary" onclick="agregarAlimentoCarrito()">Agregar al carrito</button>
+      ${
+  promoBuilder.activo
+  ? `<button class="btn-primary" onclick="agregarItemAPromo()">Agregar a promo</button>`
+  : `<button class="btn-primary" onclick="agregarAlimentoCarrito()">Agregar al carrito</button>`
+}
+
     </div>
   `;
 }
@@ -1565,34 +1580,46 @@ function renderCarrito(){
     return;
   }
 
-  body.innerHTML = carrito.map((item, idx) => `
+  body.innerHTML = carrito.map((item, idx) => {
+  const promo = esPromoItem(item);
+
+  return `
     <div class="cart-item">
       <div class="cart-item-title">
         ${item.nombre}
         <small>${item.descripcion.replace(/\n/g, "<br>")}</small>
-   <!-- CONTROLES DE CANTIDAD -->
-      <div class="qty-control">
-        <button onclick="restarItem(${idx})">➖</button>
-        <span>${item.cantidad}</span>
-        <button onclick="sumarItem(${idx})">➕</button>
+
+        <!-- CONTROLES DE CANTIDAD -->
+        <div class="qty-control ${promo ? "qty-disabled" : ""}">
+          ${
+            promo
+              ? `<span style="font-weight:800;opacity:.75;">x${item.cantidad}</span>`
+              : `
+                <button onclick="restarItem(${idx})">➖</button>
+                <span>${item.cantidad}</span>
+                <button onclick="sumarItem(${idx})">➕</button>
+              `
+          }
+        </div>
       </div>
-    </div>
+
       <div>
         <strong>${precioFormato(item.precio * item.cantidad)}</strong>
         <br>
         <button onclick="editarItem(${idx})"
-        style="border:none;background:none;font-size:1.2rem;cursor:pointer;">
-  ✏️
-</button>
+          style="border:none;background:none;font-size:1.2rem;cursor:pointer;">
+          ✏️
+        </button>
 
-<button onclick="eliminarItem(${idx})"
-        style="border:none;background:none;color:#ff3b3b;font-size:1.3rem;cursor:pointer;">
-  ✕
-</button>
-
+        <button onclick="eliminarItem(${idx})"
+          style="border:none;background:none;color:#ff3b3b;font-size:1.3rem;cursor:pointer;">
+          ✕
+        </button>
       </div>
     </div>
-  `).join("");
+  `;
+}).join("");
+
 
   footer.innerHTML = `
     <div class="cart-total-line">
@@ -1708,19 +1735,19 @@ function abrirPasoPago(){
       <div class="pedido-title">Método de pago</div>
 
       <label class="pedido-option">
-        <input type="radio" name="pago" value="efectivo" 
+        <input type="radio" name="pago" value="efectivo"
 onclick="actualizarVisibilidadPagoCon(); ocultarMixtoSiNoCorresponde(); actualizarCostoPedido()">
 Efectivo
       </label>
 
       <label class="pedido-option">
-        <input type="radio" name="pago" value="transferencia" 
+        <input type="radio" name="pago" value="transferencia"
 onclick="actualizarVisibilidadPagoCon(); ocultarMixtoSiNoCorresponde(); actualizarCostoPedido()">
 Transferencia
       </label>
 
       <label class="pedido-option">
-        <input type="radio" name="pago" value="tarjeta" 
+        <input type="radio" name="pago" value="tarjeta"
 onclick="actualizarVisibilidadPagoCon(); ocultarMixtoSiNoCorresponde(); actualizarCostoPedido()">
 Tarjeta
       </label>
@@ -1917,6 +1944,35 @@ if (metodo === "Transferencia") {
 function limpiarTelefono(tel){
   return tel.replace(/\D/g, ""); // solo números
 }
+function formatearPromoParaWhats(item, index){
+  // item.descripcion viene así:
+  // ✅ titulo
+  // Precio promo...
+  // Extras...
+  // ----
+  // 🍽️ 1. ...
+  // 🍽️ 2. ...
+
+  const lines = String(item.descripcion || "").split("\n").map(x => x.trim());
+  const titulo = lines[0]?.replace("✅","").trim() || item.nombre;
+
+  // buscar “Precio promo”
+  const precioLine = lines.find(l => l.toLowerCase().includes("precio promo"));
+  const precio = precioLine ? precioLine.replace("Precio promo:", "").trim() : "";
+
+  // agarrar todo lo que está después de "-----------------"
+  const sepIndex = lines.findIndex(l => l.includes("----"));
+  const detalle = (sepIndex >= 0 ? lines.slice(sepIndex + 1) : lines.slice(1))
+    .filter(l => l && !l.toLowerCase().includes("extras:"))
+    .map(l => {
+      // normalizar bullets
+      if(l.startsWith("🍽️")) return "   • " + l.replace(/^🍽️\s*\d+\.\s*/,"");
+      if(/^\d+\./.test(l)) return "   • " + l.replace(/^\d+\.\s*/,"");
+      return "     - " + l;
+    });
+
+  return `🎁 *${index}. ${titulo}* ${precio ? ` • ${precio}` : ""}\n${detalle.join("\n")}`;
+}
 
 /* ================================
       WHATSAPP: ENVIAR PEDIDO
@@ -2050,16 +2106,30 @@ if (comMixto > 0) {
     }
 
     // ----- DETALLE DEL CARRITO (cómo va preparado) -----
-    const productosMensaje = carrito
-        .map((item, i) =>
-  `🍽️ *${i + 1}. ${item.nombre} (x${item.cantidad})*\n${item.descripcion}`
-)
+   let promoCount = 0;
 
-        .join("\n\n");
+const productosMensaje = carrito.map((item, i) => {
+
+  // ✅ si es promo
+  if(String(item.productoId || "").startsWith("PROMO_")){
+    promoCount++;
+    return formatearPromoParaWhats(item, promoCount);
+  }
+
+  // normal
+  return `🍽️ *${i + 1}. ${item.nombre} (x${item.cantidad})*\n${item.descripcion}`;
+}).join("\n\n");
+
 
     // ----- ARMAR MENSAJE FINAL -----
     let mensaje  = "📌 *Pedido La Carpita*\n\n";
     mensaje     += productosMensaje + "\n\n";
+    const hayPromo = carrito.some(it => String(it.productoId || "").startsWith("PROMO_"));
+
+if(hayPromo){
+  mensaje += "\n⚠️ *Nota:* Solo se permite *1 promoción por ticket* (no acumulable).\n";
+}
+
     mensaje     += "-----------------------\n";
     mensaje     += `🧾 Subtotal: ${precioFormato(subtotal)}\n`;
     mensaje     += `🚚 Envío: ${precioFormato(costoEnvio)}\n`;
@@ -2098,7 +2168,7 @@ if(enviosel === "pasar"){
 // 🔥 DETALLE DE PAGO ANTES DEL LINK
 if (metodoPago === "mixto" && detalleMixto) {
     mensaje += "\n💳 *Detalle pago mixto:*\n" + detalleMixto;
-} 
+}
 else if (metodoPago === "efectivo") {
     const pagoCon = Number(document.getElementById("pagoCon").value);
     const cambio  = pagoCon - total;
@@ -2140,7 +2210,7 @@ function nombreAderezoCombo(i, prod){
   // SUPER COMBOS – 2 alimentos + papas
   if(prod.tipoCombo === "super"){
       switch(prod.id){
-          case "super1": 
+          case "super1":
               return i === 1 ? "Boneless" : "Alitas";
           case "super2":
               return i === 1 ? "Tenders" : "Boneless";
@@ -2220,7 +2290,7 @@ function selectPapasModo(tipo){
     document.querySelector("input[name='catsupPapa'][value='Untado']").checked = true;
     document.querySelector("input[name='salsaPapa'][value='Untado']").checked = true;
 
-  } 
+  }
   else if(tipo === "solo"){
     btnSolo.classList.add("active");
     box.style.display = "none";
@@ -2228,7 +2298,7 @@ function selectPapasModo(tipo){
     document.querySelector("input[name='quesoPapa'][value='Sin']").checked = true;
     document.querySelector("input[name='catsupPapa'][value='Sin']").checked = true;
     document.querySelector("input[name='salsaPapa'][value='Sin']").checked = true;
-  } 
+  }
   else {
     btnPers.classList.add("active");
     box.style.display = "block";
@@ -2323,7 +2393,7 @@ document.addEventListener("change", (e)=>{
   }
 });
 document.addEventListener("input", (e)=>{
-    if(e.target.id === "pagoCon"){  
+    if(e.target.id === "pagoCon"){
         actualizarCostoPedido();
     }
 });
@@ -2589,14 +2659,14 @@ document.addEventListener("change", function (e) {
 
     const cantidad = Number(e.target.value);
     const checks = document.querySelectorAll("input[name='mixPapa']");
-    
+
     // 🔥 SI SELECCIONA 4 → MARCAR TODAS
     if (cantidad === 4) {
       checks.forEach(chk => {
         chk.checked = true;
         chk.closest(".checkbox-bonito")?.classList.add("selected");
       });
-    } 
+    }
     // 🔁 SI BAJA DE 4 → DESMARCAR TODAS
     else {
       checks.forEach(chk => {
@@ -2654,58 +2724,12 @@ document.addEventListener("click", function(e){
   setTimeout(actualizarPreviewPedido, 0);
 });
 
-/* =========================
-   SLIDER PROMOCIONES
-========================= */
-const track = document.getElementById("promoTrack");
-const dotsBox = document.getElementById("promoDots");
 
-if(track){
-
-  const slides = track.children;
-  let index = 0;
-  let startX = 0;
-
-  // Crear dots
-  [...slides].forEach((_, i)=>{
-    const dot = document.createElement("span");
-    if(i===0) dot.classList.add("active");
-    dotsBox.appendChild(dot);
-  });
-
-  const dots = dotsBox.children;
-
-  function updateSlider(){
-    track.style.transform = `translateX(-${index * 100}%)`;
-    [...dots].forEach(d => d.classList.remove("active"));
-    dots[index].classList.add("active");
-  }
-
-  // Auto slide
-  setInterval(()=>{
-    index = (index + 1) % slides.length;
-    updateSlider();
-  }, 4000);
-
-  // Swipe táctil
-  track.addEventListener("touchstart", e=>{
-    startX = e.touches[0].clientX;
-  });
-
-  track.addEventListener("touchend", e=>{
-    const endX = e.changedTouches[0].clientX;
-    const diff = startX - endX;
-
-    if(diff > 50 && index < slides.length - 1){
-      index++;
-    }
-    if(diff < -50 && index > 0){
-      index--;
-    }
-    updateSlider();
-  });
-}
 function sumarItem(index){
+  if(esPromoItem(carrito[index])){
+    showToast("Las promos no se pueden multiplicar 🔒");
+    return;
+  }
   carrito[index].cantidad++;
   actualizarCarritoUI();
   animarCarritoAgregado(1);
@@ -2713,15 +2737,16 @@ function sumarItem(index){
 }
 
 function restarItem(index){
-  carrito[index].cantidad--;
-
-  if(carrito[index].cantidad <= 0){
-    carrito.splice(index, 1);
+  if(esPromoItem(carrito[index])){
+    showToast("La promo no se puede reducir (solo eliminar) 🔒");
+    return;
   }
-
+  carrito[index].cantidad--;
+  if(carrito[index].cantidad <= 0) carrito.splice(index, 1);
   actualizarCarritoUI();
   renderCarrito();
 }
+
 function aplicarModoEntregaUI(){
   const envioSel = document.querySelector('input[name="envio"]:checked')?.value;
   const box = document.getElementById("boxUbicacionCliente");
@@ -2818,7 +2843,7 @@ function actualizarBannerHorario(){
     estado.innerHTML =
       `⛔ <b>Aún no abrimos</b>.<br>` +
       `🕒 Abrimos en: <b>${formatearCuenta(faltaAbrirMs)}</b>`;
-  } 
+  }
   // Si ya pasó el cierre
   else {
     faltaAbrirMs = mananaInicio.getTime() - ahora.getTime();
@@ -2866,3 +2891,584 @@ function animarCarritoAgregado(cantidad = 1){
     badge.classList.remove("badge-pop");
   }, 650);
 }
+
+
+/* =========================
+   PROMOS POR DÍA (LAS TUYAS)
+========================= */
+const PROMOS_POR_DIA = {
+  lunes: [
+    { id:"L1", titulo:"Boneless con papas + aros", antes:135, precio:125 },
+    { id:"L2", titulo:"Tenders con papas + banderilla salchicha", antes:115, precio:105 },
+    { id:"L3", titulo:"Alitas Ch con papas + mini salchicha", antes:145, precio:135 }
+  ],
+  martes: [
+    { id:"M1", titulo:"Mix de papas (2) + aros", antes:165, precio:155 },
+    { id:"M2", titulo:"2 Boneless", antes:140, precio:130 },
+    { id:"M3", titulo:"Súper 3 + banderilla queso", antes:155, precio:145 }
+  ],
+  miercoles: [
+    { id:"X1", titulo:"Alitas Gd (14pz) + papas francesa", antes:205, precio:195 },
+    { id:"X2", titulo:"Mega 2 + aros", antes:220, precio:210 },
+    { id:"X3", titulo:"Dedos Ch con papas + banderilla combinada", antes:115, precio:105 }
+  ]
+};
+
+// ✅ Solo 1 promo total (no por día)
+let promoSeleccionada = null; // { dia, promoId, titulo, precio }
+/* =========================
+   PROMO BUILDER (paso a paso)
+========================= */
+let promoBuilder = {
+  activo: false,
+  dia: "",
+  promoId: "",
+  titulo: "",
+  basePrecio: 0,
+  cola: [],
+  idx: 0,
+  items: [] // cada item: {nombre, descripcion, base, total, extra}
+};
+
+function iniciarPromoBuilder(dia, promoId){
+  const receta = PROMO_RECETAS[promoId];
+  const promo = (PROMOS_POR_DIA[dia] || []).find(x => x.id === promoId);
+  if(!receta || !promo){
+    mostrarAlert("No se encontró la receta de esta promo.", "Error promo");
+    return;
+  }
+
+  promoBuilder.activo = true;
+  promoBuilder.dia = dia;
+  promoBuilder.promoId = promoId;
+  promoBuilder.titulo = promo.titulo;
+  promoBuilder.basePrecio = promo.precio;
+  promoBuilder.cola = receta.slice();
+  promoBuilder.idx = 0;
+  promoBuilder.items = [];
+
+  cerrarPromoModal(); // cerrar modal promos
+  abrirSiguientePasoPromo();
+}
+
+function abrirSiguientePasoPromo(){
+  const paso = promoBuilder.cola[promoBuilder.idx];
+  if(!paso){
+    finalizarPromoBuilder();
+    return;
+  }
+
+  // Abrir directamente la variante (sin lista)
+  abrirProductoDirecto(paso.cat, paso.id);
+
+  // Ajustes especiales (ej: Mix de papas fijo en 2)
+  setTimeout(() => {
+    if(productoSeleccionado?.esMixPapas && promoBuilder.activo){
+      const sel = document.getElementById("mixCantidad");
+      if(sel){
+        sel.value = "2";
+        sel.dispatchEvent(new Event("change"));
+        sel.disabled = true; // 🔒 promo: mix (2)
+      }
+    }
+  }, 50);
+}
+
+function finalizarPromoBuilder(){
+  // sumar extras (doble aderezo, cambios de papas, etc.)
+  const extras = promoBuilder.items.reduce((s, it) => s + (it.extra || 0), 0);
+  const totalPromo = promoBuilder.basePrecio + extras;
+
+  // Armar descripción bonita
+  const detalle = promoBuilder.items.map((it, i) => {
+    // quitamos el precio del primer renglón para que no confunda
+    const lineas = String(it.descripcion || "").split("\n");
+    const sinPrecio = [lineas[0].replace(/—\s*\$\d+(\.\d+)?/g,"").trim(), ...lineas.slice(1)]
+      .filter(x => x && x.trim()).join("\n");
+
+    return `🍽️ ${i+1}. ${sinPrecio}`;
+  }).join("\n\n");
+
+  const descFinal =
+    `✅ ${promoBuilder.titulo}\n` +
+    `Precio promo: ${precioFormato(promoBuilder.basePrecio)}\n` +
+    (extras > 0 ? `Extras: ${precioFormato(extras)}\n` : "") +
+    `-----------------\n` +
+    `${detalle}`;
+
+  // meter al carrito como 1 solo item
+  carrito.push({
+    nombre: `🎁 Promo ${promoBuilder.dia.toUpperCase()}`,
+    descripcion: descFinal,
+    precio: totalPromo,
+    cantidad: 1,
+    productoId: `PROMO_${promoBuilder.promoId}`,
+    categoria: "promo",
+    estadoFormulario: { promoItems: promoBuilder.items }
+  });
+
+  actualizarCarritoUI();
+  renderCarrito();
+  animarCarritoAgregado(1);
+  showToast("Promo agregada al carrito ✔");
+
+  // reset
+  promoBuilder.activo = false;
+}
+
+/* =========================
+   ABRIR MODAL AL TOCAR IMAGEN
+========================= */
+document.addEventListener("click", (e) => {
+  const img = e.target.closest("#promoImagenDia");
+  if(!img) return;
+
+  const hoy = getDiaHoyMX(); // lunes/martes/...
+  const hayPromosHoy = (PROMOS_POR_DIA[hoy] || []).length > 0;
+
+  if(!hayPromosHoy){
+    mostrarAlert("Hoy no hay promos activas. Vuelve a revisar mañana 😉", "Promos");
+    return;
+  }
+
+  // ✅ siempre abre el modal del día de HOY
+  abrirModalPromos(hoy);
+});
+
+
+function abrirModalPromos(dia){
+  const modal = document.getElementById("promoModal");
+  const content = document.getElementById("promoModalContent");
+
+  const lista = PROMOS_POR_DIA[dia] || [];
+
+  // ⛔ Si ya hay promo y es de otro día, NO dejar abrir otras
+  if(promoSeleccionada && promoSeleccionada.dia !== dia){
+    mostrarAlert(
+      `Ya elegiste una promo de ${promoSeleccionada.dia.toUpperCase()}. Quita esa promo para poder elegir otra.`,
+      "Promo bloqueada"
+    );
+    return;
+  }
+
+  const tituloDia = dia.charAt(0).toUpperCase() + dia.slice(1);
+
+  const hoy = getDiaHoyMX();
+
+const cards = lista.map(p => {
+  const activa = promoSeleccionada && promoSeleccionada.promoId === p.id;
+  const noEsHoy = (dia !== hoy);
+
+  return `
+    <div class="promo-pick-card ${activa ? "selected" : ""} ${noEsHoy ? "disabled" : ""}"
+         onclick="elegirPromo('${dia}','${p.id}')">
+
+        <div class="promo-pick-top">
+          <div class="promo-pick-title">${p.titulo}</div>
+          <div class="promo-pick-price">${precioFormato(p.precio)}</div>
+        </div>
+        <div class="promo-pick-sub">
+          Antes: <s>${precioFormato(p.antes)}</s>  •  Hoy: <b>${precioFormato(p.precio)}</b>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const botonQuitar = promoSeleccionada
+    ? `<button class="btn-secondary" onclick="quitarPromo()">Quitar promo</button>`
+    : ``;
+
+  content.innerHTML = `
+    <button class="modal-close-top" onclick="cerrarPromoModal()">✕</button>
+    <h2>Promos ${tituloDia}</h2>
+    <p style="color:#6a2e00; font-weight:700; font-size:.9rem; margin-bottom:10px;">
+      Elige <b>solo 1</b> promo (se bloquearán los otros días).
+    </p>
+
+    ${cards}
+
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      ${botonQuitar}
+      <button class="btn-primary" onclick="cerrarPromoModal()">Listo</button>
+    </div>
+  `;
+
+  modal.style.display = "flex";
+}
+
+function cerrarPromoModal(){
+  document.getElementById("promoModal").style.display = "none";
+}
+
+/* =========================
+   ELEGIR PROMO (SOLO 1 TOTAL)
+========================= */
+function elegirPromo(dia, promoId){
+
+  const hoy = getDiaHoyMX();
+// 🔒 SOLO 1 PROMO POR TICKET
+if(hayPromoEnCarrito()){
+  mostrarAlert(
+    "⚠️ Solo se permite 1 promoción por ticket.\n\n" +
+    "Si quieres elegir otra, primero elimina la promo actual del carrito.",
+    "Promoción no acumulable"
+  );
+  return;
+}
+
+  // ⛔ Bloquear selección si NO es hoy
+  if(dia !== hoy){
+    mostrarAlert(
+      `Esta promo es para ${nombreDiaBonito(dia)}.\nHoy es ${nombreDiaBonito(hoy)} 😅`,
+      "Promo no disponible"
+    );
+    return;
+  }
+
+  // 🔒 Tu regla: solo 1 promo total (no por día)
+  if(promoSeleccionada && promoSeleccionada.dia !== dia){
+    mostrarAlert(
+      `Ya elegiste una promo de ${promoSeleccionada.dia.toUpperCase()}. Quita esa promo para cambiar.`,
+      "Promo bloqueada"
+    );
+    return;
+  }
+
+  const promo = (PROMOS_POR_DIA[dia] || []).find(x => x.id === promoId);
+  if(!promo) return;
+
+  promoSeleccionada = { dia, promoId, titulo: promo.titulo, precio: promo.precio };
+
+  showToast(`Promo aplicada: ${promo.titulo} ✔`);
+
+  // ✅ arranca el flujo
+  iniciarPromoBuilder(dia, promoId);
+}
+
+/* =========================
+   QUITAR PROMO
+========================= */
+function quitarPromo(){
+  // borrar la promo del carrito
+  carrito = carrito.filter(it => !String(it.productoId || "").startsWith("PROMO_"));
+
+  promoSeleccionada = null;
+  showToast("Promo eliminada ✖");
+
+  actualizarCarritoUI();
+  renderCarrito();
+  cerrarPromoModal();
+}
+
+
+/* =========================
+   (OPCIONAL) USAR LA PROMO EN EL PEDIDO
+========================= */
+// Si quieres que la promo se agregue al carrito como un item especial,
+// puedes llamar esto desde donde quieras (por ejemplo un botón "Agregar promo").
+function agregarPromoAlCarrito(){
+  if(!promoSeleccionada){
+    mostrarAlert("Primero elige una promo del carrusel.", "Sin promo");
+    return;
+  }
+
+  carrito.push({
+    nombre: `🎁 Promo ${promoSeleccionada.dia.toUpperCase()}`,
+    descripcion: promoSeleccionada.titulo,
+    precio: promoSeleccionada.precio,
+    cantidad: 1,
+    productoId: `PROMO_${promoSeleccionada.promoId}`,
+    categoria: "promo",
+    estadoFormulario: {}
+  });
+
+  actualizarCarritoUI();
+  renderCarrito();
+  animarCarritoAgregado(1);
+  showToast("Promo agregada al carrito ✔");
+}
+
+
+/* =========================
+   RECETAS: qué incluye cada promo
+   (categoria + id de tus "opciones")
+========================= */
+const PROMO_RECETAS = {
+  L1: [
+    {cat:"boneless", id:"boneless_papas", label:"Boneless con papas"},
+    {cat:"aros",     id:"aros_cebolla",   label:"Aros de cebolla"}
+  ],
+  L2: [
+    {cat:"tenders",      id:"tenders_papas",   label:"Tenders con papas"},
+    {cat:"banderillas",  id:"band_salchicha",  label:"Banderilla salchicha"}
+  ],
+  L3: [
+    {cat:"alitas",           id:"alitas_ch_papas", label:"Alitas Ch con papas"},
+    {cat:"mini_banderillas", id:"mb_salchicha",    label:"Mini salchicha"}
+  ],
+
+  M1: [
+    {cat:"papas", id:"papas_mix",    label:"Mix de papas (2)"},
+    {cat:"aros",  id:"aros_cebolla", label:"Aros de cebolla"}
+  ],
+  M2: [
+    {cat:"boneless", id:"boneless", label:"Boneless #1"},
+    {cat:"boneless", id:"boneless", label:"Boneless #2"}
+  ],
+  M3: [
+    {cat:"super",       id:"super3",     label:"Súper 3"},
+    {cat:"banderillas", id:"band_queso", label:"Banderilla queso"}
+  ],
+
+  X1: [
+  { cat:"alitas", id:"alitas_gd",       label:"Alitas Gd (14pz)" },
+  { cat:"papas",  id:"papas_francesa",  label:"Papas Francesa" }
+  ],
+  X2: [
+    {cat:"mega", id:"mega2",       label:"Mega 2"},
+    {cat:"aros", id:"aros_cebolla",label:"Aros de cebolla"}
+  ],
+  X3: [
+    {cat:"dedos",       id:"dedos_ch_papas", label:"Dedos Ch con papas"},
+    {cat:"banderillas", id:"band_combinada", label:"Banderilla combinada"}
+  ]
+};
+
+function abrirProductoDirecto(categoria, id){
+  const lista = opciones[categoria];
+  if(!lista){
+    mostrarAlert("No hay opciones para esta categoría", "Error");
+    return;
+  }
+  const prod = lista.find(p => p.id === id);
+  if(!prod){
+    mostrarAlert("No se encontró el producto de la promo", "Error");
+    return;
+  }
+
+  categoriaActual = categoria;
+  productoSeleccionado = prod;
+
+  abrirPasoPersonalizacion();
+}
+function agregarItemAPromo(){
+  if(!promoBuilder.activo){
+    agregarAlimentoCarrito();
+    return;
+  }
+
+  if(!productoSeleccionado || !detalleTemporal) return;
+
+  const base = Number(productoSeleccionado.precio || 0);
+  const total = Number(detalleTemporal.precio || 0);
+  const extra = Math.max(0, total - base);
+
+  promoBuilder.items.push({
+    nombre: productoSeleccionado.nombre,
+    descripcion: detalleTemporal.descripcion,
+    base,
+    total,
+    extra
+  });
+
+  // cerrar modal y avanzar paso
+  closeModal();
+
+  promoBuilder.idx++;
+  abrirSiguientePasoPromo();
+}
+
+function normalizarDia(d){
+  return (d || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,""); // quita acentos
+}
+
+function getDiaHoyMX(){
+  const fmt = new Intl.DateTimeFormat("es-MX", {
+    timeZone: "America/Mexico_City",
+    weekday: "long"
+  });
+  return normalizarDia(fmt.format(new Date())); // "miercoles" sin acento
+}
+
+function prepararPromosDelDia(){
+  const track = document.getElementById("promoTrack");
+  const dotsBox = document.getElementById("promoDots");
+  if(!track || !dotsBox) return;
+
+  const hoy = getDiaHoyMX(); // lunes, martes, miercoles
+  const slides = [...track.querySelectorAll(".promo-slide")];
+
+  let visibles = 0;
+  let primerVisible = null;
+
+  slides.forEach(slide => {
+    const img = slide.querySelector("img");
+    const dia = normalizarDia(img?.dataset?.dia);
+
+    if(dia === hoy){
+      slide.style.display = "block";
+      primerVisible = slide;
+      visibles++;
+    }else{
+      slide.style.display = "none";
+    }
+  });
+
+  // mover track al inicio
+  track.style.transform = "translateX(0%)";
+
+  // limpiar dots
+  dotsBox.innerHTML = "";
+
+  // si solo hay una imagen → no dots
+  if(visibles <= 1) return;
+
+  for(let i=0; i<visibles; i++){
+    const dot = document.createElement("span");
+    if(i === 0) dot.classList.add("active");
+    dotsBox.appendChild(dot);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", prepararPromosDelDia);
+
+document.addEventListener("click", (e) => {
+  const img = e.target.closest("#promoImagenDia");
+  if(!img) return;
+
+  const hoy = getDiaHoyMX();
+  const lista = PROMOS_POR_DIA[hoy] || [];
+
+  if(!lista.length){
+    mostrarAlert("Hoy no hay promos activas. Vuelve a revisar mañana 😉", "Promos");
+    return;
+  }
+
+  // ✅ Siempre abre el día de hoy
+  abrirModalPromos(hoy);
+});
+
+
+function cargarPromoDelDia(){
+
+  const img = document.getElementById("promoImagenDia");
+  if(!img) return;
+
+  const hoy = getDiaHoyMX();
+
+  const promos = {
+    lunes: "img/promolunes.png",
+    martes: "img/promomartes.png",
+    miercoles: "img/promomiercoles.png"
+  };
+
+  img.src = promos[hoy] || "img/promomiercoles.png";
+}
+
+document.addEventListener("DOMContentLoaded", cargarPromoDelDia);
+
+document.addEventListener("click", (e) => {
+  const img = e.target.closest(".promo-img");
+  if(!img) return;
+
+  const dia = normalizarDia(img.dataset.dia);
+  const lista = PROMOS_POR_DIA[dia] || [];
+
+  if(!lista.length){
+    mostrarAlert("Ese día no tiene promos cargadas 😅", "Promos");
+    return;
+  }
+
+  // abre el modal del día que tocó (lunes/martes/miercoles)
+  abrirModalPromos(dia);
+});
+function nombreDiaBonito(dia){
+  const map = { lunes:"Lunes", martes:"Martes", miercoles:"Miércoles" };
+  return map[dia] || (dia.charAt(0).toUpperCase() + dia.slice(1));
+}
+
+function hayPromoEnCarrito(){
+  return carrito.some(it => String(it.productoId || "").startsWith("PROMO_"));
+}
+
+function esPromoItem(item){
+  return String(item?.productoId || "").startsWith("PROMO_") || item?.categoria === "promo";
+}
+
+
+/* =========================
+   BLOQUEO SIN SERVICIO (MIÉ-DOM)
+========================= */
+function normalizarDia(d){
+  return (d || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+
+function getDiaHoyMX(){
+  const fmt = new Intl.DateTimeFormat("es-MX", {
+    timeZone: "America/Mexico_City",
+    weekday: "long"
+  });
+  return normalizarDia(fmt.format(new Date())); // lunes/martes/miercoles...
+}
+
+function mostrarModalCerrado(){
+  const modal = document.getElementById("modalCerrado");
+  if(!modal) return;
+
+  modal.style.display = "flex";
+  document.body.classList.add("modal-bloqueado");
+
+  // Bloquear teclas típicas (esc, tab, etc.)
+  document.addEventListener("keydown", bloquearTeclasCerrado, true);
+
+  // Bloquear clicks fuera (por si tu CSS permite cerrar por overlay)
+  modal.addEventListener("click", (e)=> {
+    e.stopPropagation();
+    e.preventDefault();
+  }, true);
+}
+
+function ocultarModalCerrado(){
+  const modal = document.getElementById("modalCerrado");
+  if(!modal) return;
+
+  modal.style.display = "none";
+  document.body.classList.remove("modal-bloqueado");
+  document.removeEventListener("keydown", bloquearTeclasCerrado, true);
+}
+
+function bloquearTeclasCerrado(e){
+  // bloquea todo mientras esté el modal
+  const modal = document.getElementById("modalCerrado");
+  if(modal && modal.style.display === "flex"){
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}
+
+function estaEnRangoCerrado(){
+  // Cerrar desde MIÉRCOLES hasta DOMINGO (incluidos)
+  // getDay(): 0=domingo,1=lunes,...6=sábado
+  const hoy = new Date();
+  const d = hoy.getDay();
+
+  const esMiercoles = (d === 3);
+  const esJueves    = (d === 4);
+  const esViernes   = (d === 5);
+  const esSabado    = (d === 6);
+  const esDomingo   = (d === 0);
+
+  return esMiercoles || esJueves || esViernes || esSabado || esDomingo;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if(estaEnRangoCerrado()){
+    mostrarModalCerrado();
+  }else{
+    ocultarModalCerrado();
+  }
+});
