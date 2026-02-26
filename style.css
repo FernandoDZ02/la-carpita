@@ -1516,3 +1516,152 @@ html[data-theme="dark"] .btn-primary{
   20%  { opacity: 1; transform: translateY(0) scale(1); }
   100% { opacity: 0; transform: translateY(-18px) scale(1.05); }
 }
+
+
+.promo-pick-card{
+  background: linear-gradient(180deg,#fff8ea 0%, #fff1d7 100%);
+  border: 2px solid #ffd4a8;
+  border-radius: 18px;
+  padding: 14px;
+  margin: 10px 0;
+  cursor:pointer;
+  box-shadow: 0 10px 18px rgba(0,0,0,0.08);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.promo-pick-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 16px 26px rgba(0,0,0,0.12);
+}
+
+.promo-pick-card.selected{
+  border-color:#ff7a00;
+  box-shadow: 0 18px 28px rgba(255,122,0,0.22);
+}
+
+.promo-pick-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.promo-pick-title{
+  font-weight:900;
+  color:#5a3212;
+  font-size:1rem;
+  line-height:1.2;
+  flex:1;
+}
+
+.promo-pick-price{
+  font-weight:900;
+  color:#ff6a00;
+  font-size:1.1rem;
+  white-space:nowrap;
+}
+
+.promo-pick-sub{
+  margin-top:8px;
+  color:#6a2e00;
+  font-size:.88rem;
+  font-weight:700;
+}
+
+.promo-fija{
+  width:100%;
+  border-radius:24px;
+  overflow:hidden;
+  margin:12px 0 18px;
+}
+
+.promo-fija img{
+  width:100%;
+  display:block;
+  object-fit:cover;
+  cursor:pointer;
+}
+
+/* =========================
+   PROMOS 3 DÍAS HORIZONTAL
+========================= */
+.promos-row{
+  display:flex;
+  gap:12px;
+  padding:12px 14px;
+  margin: 10px 0 0;
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.promos-row::-webkit-scrollbar{
+  height: 8px;
+}
+.promos-row::-webkit-scrollbar-thumb{
+  background: rgba(0,0,0,.15);
+  border-radius: 10px;
+}
+
+.promo-img{
+  flex: 0 0 auto;
+  width: min(320px, 85vw);
+  height: 140px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.12);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.promo-img:active{
+  transform: scale(.99);
+}
+
+/* en pantallas grandes que quepan 3 sin scroll */
+@media (min-width: 980px){
+  .promos-row{
+    overflow-x: hidden;
+  }
+  .promo-img{
+    width: calc((100% - 24px) / 3);
+    height: 150px;
+  }
+}
+
+.promo-pick-card.disabled {
+  opacity: .55;
+  filter: grayscale(0.4);
+  position: relative;
+}
+
+.promo-pick-card.disabled::after{
+  content: "No disponible hoy";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #fff1d7;
+  border: 1px solid #ffd4a8;
+  color: #6a2e00;
+  font-weight: 900;
+  font-size: .75rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+
+/* Modal bloqueo: siempre encima de TODO */
+#modalCerrado.modal-overlay{
+  position: fixed;
+  inset: 0;
+  display: none;              /* se prende por JS */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.75);
+  z-index: 99999;             /* más alto que cualquier cosa */
+}
+
+/* Evitar que el usuario interactúe detrás */
+body.modal-bloqueado{
+  overflow: hidden;
+  touch-action: none;
+}
