@@ -20,7 +20,7 @@
      id="logoSecreto">
 
     </div>
-    
+
 <div id="bannerHorario" class="banner-horario">
   <div class="bh-top">
     <span class="bh-dot"></span>
@@ -28,6 +28,13 @@
   </div>
 
   <div id="bhEstado" class="bh-estado">Cargando estado...</div>
+</div>
+
+<!-- PROMOS (LUN - MAR - MIE) EN HORIZONTAL -->
+<div class="promos-row" id="promosRow">
+  <img class="promo-img" data-dia="lunes"     src="img/promolunes.png"     alt="Promo Lunes">
+  <img class="promo-img" data-dia="martes"    src="img/promomartes.png"    alt="Promo Martes">
+  <img class="promo-img" data-dia="miercoles" src="img/promomiercoles.png" alt="Promo Miércoles">
 </div>
 
     <div class="title-row">
@@ -61,31 +68,6 @@
 
   </header>
 
-  
-<!-- PROMOCIONES -->
-<div class="promo-slider">
-
-  <div class="promo-track" id="promoTrack">
-
-    <div class="promo-slide">
-      <img src="img/promo.png" alt="Promo 1">
-    </div>
-
-    <div class="promo-slide">
-      <img src="img/promo.png" alt="Promo 2">
-    </div>
-
-    <div class="promo-slide">
-      <img src="img/promo.png" alt="Promo 3">
-    </div>
-
-  </div>
-
-  <!-- indicadores -->
-  <div class="promo-dots" id="promoDots"></div>
-</div>
-
-
   <!-- GRID DE CATEGORÍAS -->
   <div class="menu-grid">
     <div class="menu-card" onclick="openModal('boneless')">
@@ -112,7 +94,7 @@
       <img src="img/DQ.png" alt="Dedos de queso">
       <span>Dedos de queso</span>
     </div>
-    
+
     <div class="menu-card" onclick="openModal('salchipulpos')">
       <img src="img/salchipulpos.png" alt="Salchipulpos">
       <span>Salchipulpos</span>
@@ -221,13 +203,30 @@
   </div>
 </div>
 
+<!-- MODAL PROMOS -->
+<div class="modal" id="promoModal">
+  <div class="modal-content" id="promoModalContent"></div>
+</div>
+
+
+<!-- MODAL BLOQUEO POR NO SERVICIO -->
+<div id="modalCerrado" class="modal-overlay" style="display:none;">
+  <div class="modal-envio-box" style="max-width:520px;">
+    <h3 style="margin-top:0;">⛔ Sin servicio</h3>
+
+    <p id="modalCerradoMsg" style="line-height:1.4;">
+      No habrá servicio desde <b>hoy miércoles</b> hasta <b>domingo</b>.<br>
+      <b>El lunes</b> regresamos con servicio normal ✅
+    </p>
+
+    <!-- Sin botón (para que NO puedan cerrar) -->
+    <div style="margin-top:14px; font-size:.9rem; color:#666;">
+      Este aviso se quitará automáticamente el <b>lunes</b>.
+    </div>
+  </div>
+</div>
+
 <script src="fn.js"></script>
-
-
 
 </body>
 </html>
-
-
-
-
