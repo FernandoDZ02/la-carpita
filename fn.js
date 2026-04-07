@@ -3398,7 +3398,7 @@ function esPromoItem(item){
 }
 
 /* =========================
-   BLOQUEO SIN SERVICIO (MIÉ-DOM)
+   BLOQUEO SIN SERVICIO
 ========================= */
 function normalizarDia(d){
   return (d || "")
@@ -3455,9 +3455,9 @@ function estaEnRangoCerrado(){
   const hoy = new Date();
   const d = hoy.getDay();
 
-  const esSabado = (d ===6);
+  const esLunes = (d ===1);
 
-  return esSabado;
+  return esLunes;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
