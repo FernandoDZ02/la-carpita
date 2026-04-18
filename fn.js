@@ -3455,9 +3455,9 @@ function estaEnRangoCerrado(){
   const hoy = new Date();
   const d = hoy.getDay();
 
-  const esViernes = (d ===5);
+  const esSabado = (d ===6);
 
-  return esViernes;
+  return esSabado;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
