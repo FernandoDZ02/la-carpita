@@ -14,18 +14,18 @@ const UBICACION_NEGOCIO_TEXTO = "Punto de entrega La Carpita"; // opcional
 
 const ADEREZOS = [
   "Ranch",
-  "Mango habanero",
+  "Mango Habanero",
   "Buffalo",
   "Tamarindo Habanero",
-  "BBQ",
-  "Ranch habanero",
+  "BBQ","Miel Habanero",
+  "Ranch Habanero",
   "Adobadas",
   "Ajo Parmesano"
 ];
 
 /* ===== OPCIONES DE PRODUCTOS ===== */
 const opciones = {
-  boneless: [
+ boneless: [
     {id:"boneless", nombre:"Boneless", precio:70, img:"img/BS.png", incluyePapas:false, tieneAderezo:true},
     {id:"boneless_papas", nombre:"Boneless con papas", precio:85, img:"img/BCP.png", incluyePapas:true, tieneAderezo:true}
   ],
@@ -35,9 +35,9 @@ const opciones = {
   ],
   alitas: [
     {id:"alitas_ch", nombre:"Alitas Ch (6pz)", precio:75, img:"img/A.png", incluyePapas:false, tieneAderezo:true},
-    {id:"alitas_gd", nombre:"Alitas Gd (14pz)", precio:150, img:"img/AG.png", incluyePapas:false, tieneAderezo:true},
+    {id:"alitas_gd", nombre:"Alitas Gd (14pz)", precio:175, img:"img/AG.png", incluyePapas:false, tieneAderezo:true},
     {id:"alitas_ch_papas", nombre:"Alitas Ch con papas", precio:90, img:"img/ACP.png", incluyePapas:true, tieneAderezo:true},
-    {id:"alitas_gd_papas", nombre:"Alitas Gd con papas", precio:180, img:"img/ACPG.png", incluyePapas:true, tieneAderezo:true}
+    {id:"alitas_gd_papas", nombre:"Alitas Gd con papas", precio:195, img:"img/ACPG.png", incluyePapas:true, tieneAderezo:true}
   ],
   palomitas: [
     {id:"palomitas", nombre:"Palomitas", precio:70, img:"img/P.png", incluyePapas:false, tieneAderezo:true},
@@ -45,9 +45,9 @@ const opciones = {
   ],
   dedos: [
     {id:"dedos_ch", nombre:"Dedos Ch (6pz)", precio:60, img:"img/DQ.png", incluyePapas:false, tieneAderezo:true},
-    {id:"dedos_gd", nombre:"Dedos Gd (14pz)", precio:120, img:"img/DQG.png", incluyePapas:false, tieneAderezo:true},
+    {id:"dedos_gd", nombre:"Dedos Gd (14pz)", precio:135, img:"img/DQG.png", incluyePapas:false, tieneAderezo:true},
     {id:"dedos_ch_papas", nombre:"Dedos Ch con papas", precio:80, img:"img/DQCP.png", incluyePapas:true, tieneAderezo:true},
-    {id:"dedos_gd_papas", nombre:"Dedos Gd con papas", precio:150, img:"img/DQCPG.png", incluyePapas:true, tieneAderezo:true}
+    {id:"dedos_gd_papas", nombre:"Dedos Gd con papas", precio:155, img:"img/DQCPG.png", incluyePapas:true, tieneAderezo:true}
   ],
   papas: [
     {id:"papas_francesa", nombre:"Papas Francesa", precio:55, img:"img/PF.png", incluyePapas:true, tieneAderezo:false},
@@ -70,31 +70,31 @@ const opciones = {
     {id:"band_combinada", nombre:"Banderilla combinada", precio:35, img:"img/B.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true}
   ],
   mini_banderillas: [
-    {id:"mb_salchicha", nombre:"Mini salchicha (6pz)", precio:55, img:"img/MB.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
-    {id:"mb_salchicha_papas", nombre:"Mini salchicha con papas", precio:70, img:"img/MB.png", incluyePapas:true, tieneAderezo:false, esBanderilla:true},
+    {id:"mb_salchicha", nombre:"Mini salchicha (6pz)", precio:60, img:"img/MB.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
+    {id:"mb_salchicha_papas", nombre:"Mini salchicha con papas", precio:75, img:"img/MB.png", incluyePapas:true, tieneAderezo:false, esBanderilla:true},
     {id:"mb_queso", nombre:"Mini queso (6pz)", precio:65, img:"img/MB.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
     {id:"mb_queso_papas", nombre:"Mini queso con papas", precio:80, img:"img/MB.png", incluyePapas:true, tieneAderezo:false, esBanderilla:true},
     {id:"mb_comb", nombre:"Mini combinadas (6pz)", precio:65, img:"img/MB.png", incluyePapas:false, tieneAderezo:false, esBanderilla:true},
     {id:"mb_comb_papas", nombre:"Mini combinadas con papas", precio:80, img:"img/MB.png", incluyePapas:true, tieneAderezo:false, esBanderilla:true}
   ],
   super: [
-    {id:"super1", nombre:"Súper 1 (Boneless + Alitas + papas)", precio:145, img:"img/SC1.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
-    {id:"super2", nombre:"Súper 2 (Tenders + Boneless + papas)", precio:135, img:"img/SC2.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
-    {id:"super3", nombre:"Súper 3 (Dedos + Palomitas + papas)", precio:120, img:"img/SC3.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
-    {id:"super4", nombre:"Súper 4 (Dedos + Boneless + papas)", precio:135, img:"img/SC4.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
-    {id:"super5", nombre:"Súper 5 (Alitas + Palomitas + papas)", precio:130, img:"img/SC5.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
-    {id:"super6", nombre:"Súper 6 (Palomitas + Tenders + papas)", precio:130, img:"img/SC6.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"}
+    {id:"super1", nombre:"Súper 1 (Boneless + Alitas + papas)", precio:150, img:"img/SC1.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
+    {id:"super2", nombre:"Súper 2 (Tenders + Boneless + papas)", precio:140, img:"img/SC2.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
+    {id:"super3", nombre:"Súper 3 (Dedos + Palomitas + papas)", precio:125, img:"img/SC3.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
+    {id:"super4", nombre:"Súper 4 (Dedos + Boneless + papas)", precio:140, img:"img/SC4.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
+    {id:"super5", nombre:"Súper 5 (Alitas + Palomitas + papas)", precio:135, img:"img/SC5.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"},
+    {id:"super6", nombre:"Súper 6 (Palomitas + Tenders + papas)", precio:135, img:"img/SC6.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"super"}
   ],
   mega: [
-    {id:"mega1", nombre:"Mega 1 (Boneless + Alitas + Dedos)", precio:180, img:"img/M1.png", incluyePapas:false, tieneAderezo:true, tipoCombo:"mega"},
-    {id:"mega2", nombre:"Mega 2 (Tenders + Palomitas + Boneless)", precio:170, img:"img/M2.png", incluyePapas:false, tieneAderezo:true, tipoCombo:"mega"},
-    {id:"mega3", nombre:"Súper Mega (Tenders + Dedos + Boneless + Papas)", precio:195, img:"img/SM.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"mega"}
+    {id:"mega1", nombre:"Mega 1 (Boneless + Alitas + Dedos)", precio:185, img:"img/M1.png", incluyePapas:false, tieneAderezo:true, tipoCombo:"mega"},
+    {id:"mega2", nombre:"Mega 2 (Tenders + Palomitas + Boneless)", precio:175, img:"img/M2.png", incluyePapas:false, tieneAderezo:true, tipoCombo:"mega"},
+    {id:"mega3", nombre:"Súper Mega (Tenders + Dedos + Boneless + Papas)", precio:200, img:"img/SM.png", incluyePapas:true, tieneAderezo:true, tipoCombo:"mega"}
   ],
   aros: [
   {
     id: "aros_cebolla",
     nombre: "Aros de cebolla (15 pz)",
-    precio: 50,
+    precio: 55,
     img: "img/aros.png",
     incluyePapas: false,
     tieneAderezo: false,
@@ -3396,75 +3396,3 @@ function hayPromoEnCarrito(){
 function esPromoItem(item){
   return String(item?.productoId || "").startsWith("PROMO_") || item?.categoria === "promo";
 }
-
-/* =========================
-   BLOQUEO SIN SERVICIO
-========================= */
-function normalizarDia(d){
-  return (d || "")
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-}
-
-function getDiaHoyMX(){
-  const fmt = new Intl.DateTimeFormat("es-MX", {
-    timeZone: "America/Mexico_City",
-    weekday: "long"
-  });
-  return normalizarDia(fmt.format(new Date())); // lunes/martes/miercoles...
-}
-
-function mostrarModalCerrado(){
-  const modal = document.getElementById("modalCerrado");
-  if(!modal) return;
-
-  modal.style.display = "flex";
-  document.body.classList.add("modal-bloqueado");
-
-  // Bloquear teclas típicas (esc, tab, etc.)
-  document.addEventListener("keydown", bloquearTeclasCerrado, true);
-
-  // Bloquear clicks fuera (por si tu CSS permite cerrar por overlay)
-  modal.addEventListener("click", (e)=> {
-    e.stopPropagation();
-    e.preventDefault();
-  }, true);
-}
-
-function ocultarModalCerrado(){
-  const modal = document.getElementById("modalCerrado");
-  if(!modal) return;
-
-  modal.style.display = "none";
-  document.body.classList.remove("modal-bloqueado");
-  document.removeEventListener("keydown", bloquearTeclasCerrado, true);
-}
-
-function bloquearTeclasCerrado(e){
-  // bloquea todo mientras esté el modal
-  const modal = document.getElementById("modalCerrado");
-  if(modal && modal.style.display === "flex"){
-    e.preventDefault();
-    e.stopPropagation();
-  }
-}
-
-function estaEnRangoCerrado(){
-  // Cerrar desde MIÉRCOLES hasta DOMINGO (incluidos)
-  // getDay(): 0=domingo,1=lunes,...6=sábado
-  const hoy = new Date();
-  const d = hoy.getDay();
-
-  const esMiercoles = (d ===3);
-
-  return esMiercoles;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  if(estaEnRangoCerrado()){
-    mostrarModalCerrado();
-  }else{
-    ocultarModalCerrado();
-  }
-});
-
