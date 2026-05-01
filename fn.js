@@ -3396,3 +3396,73 @@ function hayPromoEnCarrito(){
 function esPromoItem(item){
   return String(item?.productoId || "").startsWith("PROMO_") || item?.categoria === "promo";
 }
+/* =========================
+   BLOQUEO SIN SERVICIO
+========================= */
+function normalizarDia(d){
+  return (d || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+
+function getDiaHoyMX(){
+  const fmt = new Intl.DateTimeFormat("es-MX", {
+    timeZone: "America/Mexico_City",
+    weekday: "long"
+  });
+  return normalizarDia(fmt.format(new Date())); // lunes/martes/miercoles...
+}
+
+function mostrarModalCerrado(){
+  const modal = document.getElementById("modalCerrado");
+  if(!modal) return;
+
+  modal.style.display = "flex";
+  document.body.classList.add("modal-bloqueado");
+
+  // Bloquear teclas típicas (esc, tab, etc.)
+  document.addEventListener("keydown", bloquearTeclasCerrado, true);
+
+  // Bloquear clicks fuera (por si tu CSS permite cerrar por overlay)
+  modal.addEventListener("click", (e)=> {
+    e.stopPropagation();
+    e.preventDefault();
+  }, true);
+}
+
+function ocultarModalCerrado(){
+  const modal = document.getElementById("modalCerrado");
+  if(!modal) return;
+
+  modal.style.display = "none";
+  document.body.classList.remove("modal-bloqueado");
+  document.removeEventListener("keydown", bloquearTeclasCerrado, true);
+}
+
+function bloquearTeclasCerrado(e){
+  // bloquea todo mientras esté el modal
+  const modal = document.getElementById("modalCerrado");
+  if(modal && modal.style.display === "flex"){
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}
+
+function estaEnRangoCerrado(){
+  // Cerrar desde MIÉRCOLES hasta DOMINGO (incluidos)
+  // getDay(): 0=domingo,1=lunes,...6=sábado
+  const hoy = new Date();
+  const d = hoy.getDay();
+
+  const esJueves = (d ===4);
+
+  return esJueves;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if(estaEnRangoCerrado()){
+    mostrarModalCerrado();
+  }else{
+    ocultarModalCerrado();
+  }
+});
