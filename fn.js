@@ -3454,9 +3454,9 @@ function estaEnRangoCerrado(){
   const hoy = new Date();
   const d = hoy.getDay();
 
-  const esLunes = (d ===1);
+  const esMartes = (d ===2);
 
-  return esLunes;
+  return esMartes;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
