@@ -3454,7 +3454,7 @@ function estaEnRangoCerrado(){
   const hoy = new Date();
   const d = hoy.getDay();
 
-  const esJueves = (d ===4);
+  const esJueves = (d ===6);
 
   return esJueves;
 }
