@@ -1665,3 +1665,55 @@ body.modal-bloqueado{
   overflow: hidden;
   touch-action: none;
 }
+
+.qty-control{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.qty-btn{
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:10px;
+  background:#ffb300;
+  color:#fff;
+  font-size:20px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.2s ease;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+
+.qty-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 4px 10px rgba(0,0,0,.2);
+}
+
+.qty-btn:active{
+  transform:scale(.95);
+}
+
+.qty-minus{
+  background:#e53935;
+}
+
+.qty-plus{
+  background:#43a047;
+}
+
+.qty-value{
+  min-width:28px;
+  text-align:center;
+  font-size:18px;
+  font-weight:700;
+  color:#333;
+}
+
+.qty-disabled{
+  opacity:.8;
+}
