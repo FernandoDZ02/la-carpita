@@ -1589,18 +1589,17 @@ function renderCarrito(){
         ${item.nombre}
         <small>${item.descripcion.replace(/\n/g, "<br>")}</small>
 
-        <!-- CONTROLES DE CANTIDAD -->
-        <div class="qty-control ${promo ? "qty-disabled" : ""}">
-          ${
-            promo
-              ? `<span style="font-weight:800;opacity:.75;">x${item.cantidad}</span>`
-              : `
-                <button onclick="restarItem(${idx})">➖</button>
-                <span>${item.cantidad}</span>
-                <button onclick="sumarItem(${idx})">➕</button>
-              `
-          }
-        </div>
+       <div class="qty-control ${promo ? "qty-disabled" : ""}">
+  ${
+    promo
+      ? `<span class="qty-value">x${item.cantidad}</span>`
+      : `
+        <button class="qty-btn qty-minus" onclick="restarItem(${idx})">−</button>
+        <span class="qty-value">${item.cantidad}</span>
+        <button class="qty-btn qty-plus" onclick="sumarItem(${idx})">+</button>
+      `
+  }
+</div>
       </div>
 
       <div>
@@ -1739,7 +1738,11 @@ function abrirPasoPago(){
 onclick="actualizarVisibilidadPagoCon(); ocultarMixtoSiNoCorresponde(); actualizarCostoPedido()">
 Efectivo
       </label>
-
+ <div id="contenedorPagoCon" style="display:none; margin-top:10px;">
+    <input type="number" id="pagoCon" class="pedido-input"
+           placeholder="¿Con cuánto pagas?"
+           oninput="actualizarCostoPedido()">
+</div>
       <label class="pedido-option">
         <input type="radio" name="pago" value="transferencia"
 onclick="actualizarVisibilidadPagoCon(); ocultarMixtoSiNoCorresponde(); actualizarCostoPedido()">
@@ -1755,8 +1758,6 @@ Tarjeta
   <input type="radio" name="pago" value="mixto" onclick="mostrarOpcionesMixto(); actualizarCostoPedido()">
   Mixto (Selecciona 2 métodos)
 </label>
-
-    </div>
 <!-- OPCIONES INTERNAS PARA MIXTO -->
 <div id="pagoMixtoOpciones" style="display:none; margin-top:15px;">
 
@@ -1780,6 +1781,8 @@ Tarjeta
     <input type="number" id="mixtoEfectivo" class="pedido-input" placeholder="Cantidad a pagar en efectivo" oninput="actualizarCostoPedido()">
   </div>
 </div>
+    </div>
+
 
     <!-- TUS DATOS -->
     <div class="pedido-section">
@@ -1824,11 +1827,7 @@ Tarjeta
 
       <input type="text" id="referenciasCliente" class="pedido-input" placeholder="Referencias">
       <input type="text" id="notasCliente" class="pedido-input" placeholder="Notas">
-     <div id="contenedorPagoCon" style="display:none; margin-top:10px;">
-    <input type="number" id="pagoCon" class="pedido-input"
-           placeholder="¿Con cuánto pagas?"
-           oninput="actualizarCostoPedido()">
-</div>
+
 
     </div>
   `;
@@ -2120,6 +2119,16 @@ const productosMensaje = carrito.map((item, i) => {
   return `🍽️ *${i + 1}. ${item.nombre} (x${item.cantidad})*\n${item.descripcion}`;
 }).join("\n\n");
 
+// Obtener fecha y hora actual
+const ahora = new Date();
+
+const fechaHora = ahora.toLocaleString('es-MX', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    hour: '2-digit',
+    minute: '2-digit'
+});
 
     // ----- ARMAR MENSAJE FINAL -----
     let mensaje  = "📌 *Pedido La Carpita*\n\n";
@@ -2141,7 +2150,7 @@ if(hayPromo){
 
     mensaje     += `👤 Nombre: *${nombre}*\n`;
 mensaje += `📞 Teléfono: *${telefonoPedido}*\n`;
-
+mensaje += `\n🕒 Fecha y hora del pedido: *${fechaHora}*\n`;
     // 🔹 UBICACIÓN
 if(envioSel !== "pasar"){
 if (ubicacionManual) {
@@ -2162,7 +2171,7 @@ if(enviosel === "pasar"){
 
     if (ref)   mensaje += `📌 Referencias: ${ref}\n`;
     if (notas) mensaje += `📝 Notas: ${notas}\n`;
-
+    mensaje += `\n Tiempo de preparacion: *15 min a 30 min dependiendo cantidad de producto y clientes en espera*\n`;
     mensaje += `\n💳 Método de pago: *${metodoPago}*\n`;
 
 // 🔥 DETALLE DE PAGO ANTES DEL LINK
