@@ -1758,6 +1758,7 @@ Tarjeta
   <input type="radio" name="pago" value="mixto" onclick="mostrarOpcionesMixto(); actualizarCostoPedido()">
   Mixto (Selecciona 2 métodos)
 </label>
+
 <!-- OPCIONES INTERNAS PARA MIXTO -->
 <div id="pagoMixtoOpciones" style="display:none; margin-top:15px;">
 
@@ -1776,10 +1777,18 @@ Tarjeta
     Tarjeta
   </label>
 
-  <!-- MONTO EN EFECTIVO SI SE SELECCIONA EFECTIVO -->
+  <!-- MONTO EN EFECTIVO -->
   <div id="mixtoEfectivoBox" style="display:none; margin-top:10px;">
     <input type="number" id="mixtoEfectivo" class="pedido-input" placeholder="Cantidad a pagar en efectivo" oninput="actualizarCostoPedido()">
   </div>
+
+  <!-- NUEVO: MONTO EN TRANSFERENCIA -->
+  <div id="mixtoTransferenciaBox" style="display:none; margin-top:10px;">
+    <input type="number" id="mixtoTransferencia" class="pedido-input" placeholder="Cantidad a pagar por transferencia" oninput="actualizarCostoPedido()">
+  </div>
+
+</div>
+  
 </div>
     </div>
 
@@ -2047,6 +2056,7 @@ if(enviosel !== "pasar"){
     }
 
     // PAGO MIXTO
+ // PAGO MIXTO
     if (metodoPago === "mixto") {
         const seleccionados = [...document.querySelectorAll("input[name='mixtoMetodo']:checked")];
 
@@ -2057,8 +2067,38 @@ if(enviosel !== "pasar"){
 
         metodosMixtos = seleccionados.map(x => x.value);
 
-        // Efectivo dentro de mixto → obligatorio monto
-        if (metodosMixtos.includes("efectivo")) {
+        // 1. Identificar qué combinación de 2 métodos se eligió
+        const tieneEfectivo = metodosMixtos.includes("efectivo");
+        const tieneTarjeta = metodosMixtos.includes("tarjeta");
+        const tieneTransferencia = metodosMixtos.includes("transferencia");
+
+        // --- CASO A: EFECTIVO + TRANSFERENCIA ---
+        if (tieneEfectivo && tieneTransferencia) {
+            const efInput = document.getElementById("mixtoEfectivo");
+            const ef = Number(efInput ? efInput.value : 0);
+
+            if (!ef || ef <= 0) {
+                showToast("Indica cuánto pagas en efectivo (pago mixto)");
+                return;
+            }
+            if (ef >= total) {
+                showToast("El monto en efectivo debe ser menor al total en un pago mixto");
+                return;
+            }
+
+            // El restante va directo a transferencia
+            const restanteTransferencia = total - ef;
+
+            detalleMixto += `• 💵 Efectivo: $${ef.toFixed(2)}\n`;
+            detalleMixto += `• 🏦 Transferencia (Restante): $${restanteTransferencia.toFixed(2)}\n`;
+            detalleMixto += "\n🏦 *Datos para Transferencia:*\n" +
+                            "Banco: Nu\n" +
+                            "Nombre: Fernando Gael Duran Zamora\n" +
+                            "CLABE: 638180000136730578\n";
+        }
+
+        // --- CASO B: EFECTIVO + TARJETA ---
+        else if (tieneEfectivo && tieneTarjeta) {
             const efInput = document.getElementById("mixtoEfectivo");
             const ef = Number(efInput ? efInput.value : 0);
 
@@ -2067,41 +2107,49 @@ if(enviosel !== "pasar"){
                 return;
             }
 
-            detalleMixto += `• Efectivo: $${ef.toFixed(2)}\n`;
+            // La base de la tarjeta es lo que falta del subtotal + envío antes de la comisión
+            let baseTarjeta = (subtotal + costoEnvio) - ef;
+
+            if (baseTarjeta <= 0) {
+                showToast("El efectivo cubre la totalidad, no es necesario usar tarjeta.");
+                return;
+            }
+
+            // Calculamos la comisión solo sobre el restante de la tarjeta
+            const comMixto = baseTarjeta * COMISION_TARJETA;
+            const restanteTarjetaConComision = baseTarjeta + comMixto;
+            
+            // Actualizamos el total general sumándole la comisión
+            total += comMixto; 
+
+            detalleMixto += `• 💵 Efectivo: $${ef.toFixed(2)}\n`;
+            detalleMixto += `• 💳 Tarjeta (Restante): $${restanteTarjetaConComision.toFixed(2)}\n`;
         }
 
-        // Transferencia dentro de mixto
-        if (metodosMixtos.includes("transferencia")) {
-            detalleMixto +=
-                "\n🏦 *Transferencia*\n" +
-                "Banco: Nu\n" +
-                "Nombre: Fernando Gael Duran Zamora\n" +
-                "CLABE: 638180000136730578\n";
+        // --- CASO C: TRANSFERENCIA + TARJETA ---
+        // (Asumiendo que definen el monto de transferencia primero en un input, ej: "mixtoTransferencia")
+        else if (tieneTransferencia && tieneTarjeta) {
+            const transInput = document.getElementById("mixtoTransferencia"); // Asegúrate de tener este input en tu HTML si usas esta combinación
+            const trans = Number(transInput ? transInput.value : 0);
+
+            if (!trans || trans <= 0) {
+                showToast("Indica cuánto pagarás por transferencia");
+                return;
+            }
+
+            let baseTarjeta = (subtotal + costoEnvio) - trans;
+            const comMixto = baseTarjeta * COMISION_TARJETA;
+            const restanteTarjetaConComision = baseTarjeta + comMixto;
+
+            total += comMixto;
+
+            detalleMixto += `• 🏦 Transferencia: $${trans.toFixed(2)}\n`;
+            detalleMixto += `• 💳 Tarjeta (Restante): $${restanteTarjetaConComision.toFixed(2)}\n`;
+            detalleMixto += "\n🏦 *Datos para Transferencia:*\n" +
+                            "Banco: Nu\n" +
+                            "Nombre: Fernando Gael Duran Zamora\n" +
+                            "CLABE: 638180000136730578\n";
         }
-
-        // Tarjeta dentro de mixto
-        if (metodosMixtos.includes("tarjeta")) {
-
-    // Lo que sí se pagará con tarjeta (subtotal - efectivo + envío)
-    let baseTarjeta = subtotal + costoEnvio;
-
-    // Si hay efectivo en mixto → se descuenta
-    if (metodosMixtos.includes("efectivo")) {
-        const ef = Number(document.getElementById("mixtoEfectivo").value);
-        baseTarjeta -= ef;
-    }
-
-    const comMixto = baseTarjeta * COMISION_TARJETA;
-
-if (comMixto > 0) {
-  total += comMixto;
-  detalleMixto += `\n💳 Pago con tarjeta (${(COMISION_TARJETA*100).toFixed(1)}% extra): +$${comMixto.toFixed(2)}\n`;
-} else {
-  detalleMixto += `\n💳 Pago con tarjeta\n`;
-}
-
-}
-
     }
 
     // ----- DETALLE DEL CARRITO (cómo va preparado) -----
@@ -2131,8 +2179,10 @@ const fechaHora = ahora.toLocaleString('es-MX', {
 });
 
     // ----- ARMAR MENSAJE FINAL -----
-    let mensaje  = "📌 *Pedido La Carpita*\n\n";
-    mensaje     += productosMensaje + "\n\n";
+    let mensaje  = "📌 *Pedido La Carpita*\n";
+    mensaje += `🕒 Fecha y hora del pedido: *${fechaHora}*\n\n`;
+    mensaje     += productosMensaje + "\n";
+        if (notas) mensaje += `📝 Notas: ${notas}\n`;
     const hayPromo = carrito.some(it => String(it.productoId || "").startsWith("PROMO_"));
 
 if(hayPromo){
@@ -2142,15 +2192,33 @@ if(hayPromo){
     mensaje     += "-----------------------\n";
     mensaje     += `🧾 Subtotal: ${precioFormato(subtotal)}\n`;
     mensaje     += `🚚 Envío: ${precioFormato(costoEnvio)}\n`;
-    if (comisionTarjeta > 0) {
-        mensaje += `💳 Comisión tarjeta: ${precioFormato(comisionTarjeta)}\n`;
-    }
     mensaje     += `💰 Total: ${precioFormato(total)}\n`;
+     mensaje     += "-----------------------\n";
+    mensaje += `💳 Método de pago: *${metodoPago}*\n`;
+    if (metodoPago === "mixto" && detalleMixto) {
+    mensaje += "\n💳 *Detalle pago mixto:*\n" + detalleMixto;
+}
+else if (metodoPago === "efectivo") {
+    const pagoCon = Number(document.getElementById("pagoCon").value);
+    const cambio  = pagoCon - total;
+    mensaje += `💵 Pagas con: $${pagoCon.toFixed(2)}\n`;
+    mensaje += `🔁 Cambio: $${cambio.toFixed(2)}\n`;
+}
+else if (metodoPago === "transferencia") {
+    mensaje +=
+        "\n🏦 *Datos para transferir:*\n" +
+        "Banco: Nu\n" +
+        "Nombre: Fernando Gael Duran Zamora\n" +
+        "CLABE: 638180000136730578\n";
+}
+else if (metodoPago === "tarjeta") {
+    mensaje += "\n💳 Pago con tarjeta\n";
+}
     mensaje     += "-----------------------\n";
 
     mensaje     += `👤 Nombre: *${nombre}*\n`;
 mensaje += `📞 Teléfono: *${telefonoPedido}*\n`;
-mensaje += `\n🕒 Fecha y hora del pedido: *${fechaHora}*\n`;
+
     // 🔹 UBICACIÓN
 if(envioSel !== "pasar"){
 if (ubicacionManual) {
@@ -2167,47 +2235,15 @@ if(enviosel === "pasar"){
 } else {
   mensaje += `🚚 Entrega: *Envío a domicilio*\n`;
 }
-
-
     if (ref)   mensaje += `📌 Referencias: ${ref}\n`;
-    if (notas) mensaje += `📝 Notas: ${notas}\n`;
-    mensaje += `\n Tiempo de preparacion: *15 min a 30 min dependiendo cantidad de producto y clientes en espera*\n`;
-    mensaje += `\n💳 Método de pago: *${metodoPago}*\n`;
+     mensaje     += "-----------------------\n";
 
-// 🔥 DETALLE DE PAGO ANTES DEL LINK
-if (metodoPago === "mixto" && detalleMixto) {
-    mensaje += "\n💳 *Detalle pago mixto:*\n" + detalleMixto;
-}
-else if (metodoPago === "efectivo") {
-    const pagoCon = Number(document.getElementById("pagoCon").value);
-    const cambio  = pagoCon - total;
-    mensaje += `\n💵 Pagas con: $${pagoCon.toFixed(2)}\n`;
-    mensaje += `🔁 Cambio: $${cambio.toFixed(2)}\n`;
-}
-else if (metodoPago === "transferencia") {
-    mensaje +=
-        "\n🏦 *Datos para transferir:*\n" +
-        "Banco: Nu\n" +
-        "Nombre: Fernando Gael Duran Zamora\n" +
-        "CLABE: 638180000136730578\n";
-}
-else if (metodoPago === "tarjeta") {
-    mensaje += "\n💳 Pago con tarjeta\n";
-}
-
+    mensaje += `Tiempo de preparacion: *15 min a 30 min dependiendo cantidad de producto y clientes en espera*\n`;
+    mensaje += `💡 *Todo alimento se prepara al momento de su orden*\n`;
     // Enviar a WhatsApp
   const url = `https://wa.me/${NUM_WHATSAPP_LA_CARPITA}?text=${encodeURIComponent(mensaje)}`;
 
     window.open(url, "_blank");
-}
-
-/* ================================
-      CÓDIGO VERIFICADOR
-   ================================ */
-
-function generarCodigo(){
-  const r = Math.floor(Math.random() * 90000) + 10000;
-  return "LC-" + r;
 }
 
 /* ================================
@@ -2511,21 +2547,63 @@ function actualizarVisibilidadPagoCon() {
     }
 }
 function mostrarOpcionesMixto() {
-    document.getElementById("pagoMixtoOpciones").style.display = "block";
-    document.getElementById("contenedorPagoCon").style.display = "none"; // evita confusión
+    const pagoMixtoOpciones = document.getElementById("pagoMixtoOpciones");
+    const metodoPago = document.querySelector('input[name="pago"]:checked')?.value;
+
+    if (metodoPago === "mixto") {
+        pagoMixtoOpciones.style.display = "block";
+    } else {
+        pagoMixtoOpciones.style.display = "none";
+        // Limpiamos los checkboxes e inputs si cambian a otro método normal
+        document.querySelectorAll("input[name='mixtoMetodo']").forEach(x => x.checked = false);
+        document.getElementById("mixtoEfectivoBox").style.display = "none";
+        document.getElementById("mixtoTransferenciaBox").style.display = "none";
+    }
 }
 function validarMixto() {
-    const metodos = document.querySelectorAll("input[name='mixtoMetodo']:checked");
+    // 1. Obtener cuáles checkboxes están marcados actualmente
+    const checkboxes = document.querySelectorAll("input[name='mixtoMetodo']:checked");
+    const seleccionados = [...checkboxes].map(x => x.value);
 
-    if (metodos.length > 2) {
-        mostrarAlert("Solo puedes elegir dos métodos en pago mixto", "Límite alcanzado");
-        event.target.checked = false;
-        return;
+    // 2. Obtener los contenedores del HTML
+    const boxEfectivo = document.getElementById("mixtoEfectivoBox");
+    const boxTransferencia = document.getElementById("mixtoTransferenciaBox");
+
+    // Control de seguridad: Si intentan marcar un 3er método, lo desmarcamos
+    if (seleccionados.length > 2) {
+        if (typeof showToast === "function") {
+            showToast("Solo puedes seleccionar exactamente 2 métodos de pago");
+        } else {
+            alert("Solo puedes seleccionar exactamente 2 métodos de pago");
+        }
+        // Desmarcar el último que se intentó seleccionar
+        const ultimoChecked = [...checkboxes].pop();
+        if (ultimoChecked) ultimoChecked.checked = false;
+        return; // Detener la ejecución para que no altere los campos visibles
     }
 
-    // Mostrar caja de efectivo solo si seleccionó EFECTIVO
-    const efectivo = [...metodos].some(m => m.value === "efectivo");
-    document.getElementById("mixtoEfectivoBox").style.display = efectivo ? "block" : "none";
+    // 3. MOSTRAR U OCULTAR LOS CAMPOS SEGÚN LA COMBINACIÓN
+    
+    // CASO A: Si incluye Efectivo (ya sea con Tarjeta o con Transferencia)
+    if (seleccionados.includes("efectivo")) {
+        boxEfectivo.style.display = "block";
+        boxTransferencia.style.display = "none";
+    } 
+    // CASO B: Si es la combinación exacta de Transferencia + Tarjeta (sin efectivo)
+    else if (seleccionados.includes("transferencia") && seleccionados.includes("tarjeta")) {
+        boxEfectivo.style.display = "none";
+        boxTransferencia.style.display = "block";
+    } 
+    // CASO C: Si solo hay 1 seleccionado o ninguno válido, escondemos ambos campos
+    else {
+        boxEfectivo.style.display = "none";
+        boxTransferencia.style.display = "none";
+    }
+
+    // 4. Forzar la actualización de los números en el ticket de compra
+    if (typeof actualizarCostoPedido === "function") {
+        actualizarCostoPedido();
+    }
 }
 function ocultarMixtoSiNoCorresponde() {
     const pagoMixtoOpciones = document.getElementById("pagoMixtoOpciones");
