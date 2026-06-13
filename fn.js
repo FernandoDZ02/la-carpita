@@ -3541,7 +3541,7 @@ function estaEnRangoCerrado(){
   const hoy = new Date();
   const d = hoy.getDay();
 
-  const esLunes = (d ===1);
+  const esLunes = (d ===5);
 
   return esLunes;
 }
