@@ -19,7 +19,7 @@ const ADEREZOS = [
   "Tamarindo Habanero",
   "BBQ","Miel Habanero",
   "Ranch Habanero",
-  "Adobadas(Maggi,Inglesa,Salsa y Tajin)",Mostaza y Miel
+  "Adobadas(Maggi,Inglesa,Salsa y Tajin)",Mostaza y Miel,
   "Ajo Parmesano"
 ];
 
