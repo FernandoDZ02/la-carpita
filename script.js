@@ -1637,8 +1637,8 @@ function finalCheckoutSubmit() {
                 especificacionesPago += `   - Efectivo: $${mCash}.00 (Cubre el total)\n   - Cambio en efectivo: $${Math.abs(mTransfer).toFixed(2)}\n   - Transferencia: $0.00\n`;
             } else {
                 especificacionesPago += `   - Efectivo: $${mCash}.00\n   - Transferencia: $${mTransfer.toFixed(2)}\n`;
-                especificacionesPago += `🏦 *Cuenta BBVA:* 638180000136730578\n`;
-                especificacionesPago += `🏦 *Nombre:* Nu\n`;
+                especificacionesPago += `🏦 *Cuenta:* 638180000136730578\n`;
+                especificacionesPago += `🏦 *Banco:* Nu\n`;
                 especificacionesPago += `🏦 *Beneficiario:* Fernando Gael Duran Zamora\n`;
             }
         }
@@ -1649,7 +1649,7 @@ function finalCheckoutSubmit() {
             const mCard = totalFinal - mTransfer;
 
             especificacionesPago = `🎛️ *Desglose Mixto:*\n   - Transferencia: $${mTransfer.toFixed(2)}\n   - Tarjeta (Terminal): $${mCard.toFixed(2)}\n`;
-            especificacionesPago += `🏦 *Cuenta BBVA:* 1234 5678 9012 3456\n`;
+            especificacionesPago += `🏦 *Cuenta NU:* 1234 5678 9012 3456\n`;
             especificacionesPago += `🏦 *Nombre:* Fernando Gael Duran Zamora\n`;
         }
         else if (checkedMixPayments.includes('Efectivo') && checkedMixPayments.includes('Tarjeta')) {
@@ -1666,7 +1666,7 @@ function finalCheckoutSubmit() {
         }
     }
 
-    const phoneNumber = '525541051524';
+    const phoneNumber = '525657861068';
 
     let message = '¡NUEVO PEDIDO LA CARPITA!\n';
     message += '========================================\n';
