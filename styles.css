@@ -1,0 +1,1035 @@
+/* ==========================================
+   VARIABLES Y CONFIGURACIÓN DE TEMAS
+   ========================================== */
+:root {
+    --bg-color: #f8f9fa;
+    --surface-color: #ffffff;
+    --text-main: #1a1a1a;
+    --text-muted: #707070;
+    --accent-color: #ff4757;
+    --accent-hover: #ee3545;
+    --border-color: #e2e8f0;
+    --overlay-bg: rgba(0, 0, 0, 0.4);
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --transition: all 0.25s ease;
+}
+
+body.dark-mode {
+    --bg-color: #0f172a;
+    --surface-color: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================
+   ESTILOS BASE
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    transition: background-color 0.3s ease;
+    padding-bottom: 40px;
+}
+
+/* Header */
+.main-header {
+    background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    border-radius: var(--radius-md);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: var(--radius-md);
+}
+
+.logo-area h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.logo-area p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: var(--transition);
+}
+
+.icon-btn:hover {
+    transform: scale(1.05);
+}
+
+.cart-btn {
+    background-color: var(--text-main);
+    color: var(--surface-color);
+}
+
+.badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 2px solid var(--surface-color);
+}
+
+/* Menú de Categorías */
+.categories-nav {
+    display: flex;
+    gap: 12px;
+    padding: 12px 24px;
+    overflow-x: auto; /* Permite scroll horizontal si los botones no caben */
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ocultar la barra de scroll para que se vea más limpio */
+.categories-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.category-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 20px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+}
+
+.category-btn.active {
+    background-color: #ff0000; /* Cambia por tu color principal */
+    color: #ffffff;
+    border-color: #000000;
+}
+
+.nav-separator {
+    border: none;
+    border-left: 1px solid #ccc;
+    height: 25px;
+    margin: 5px 4px;
+}
+
+/* Barra de Búsqueda */
+.search-container {
+    padding: 16px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--bg-color);
+    border-radius: var(--radius-md);
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    pointer-events: none;
+}
+
+.search-wrapper input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    font-size: 0.95rem;
+    background-color: var(--surface-color);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: var(--transition);
+}
+
+.search-wrapper input:focus {
+    border-color: var(--text-main);
+}
+
+/* Cuadrícula de Productos */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+}
+
+.product-image-container {
+    width: 100%;
+    height: 180px;
+    background-color: var(--bg-color);
+}
+
+.product-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.product-info h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.product-info p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+    margin-bottom: 16px;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.add-btn {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.add-btn:hover {
+    background-color: var(--text-main);
+    color: var(--surface-color);
+}
+
+/* No Resultados */
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+/* ==========================================
+   MODAL DE PERSONALIZACIÓN MINIMALISTA
+   ========================================== */
+/* 1. El fondo difuminado debe estar por encima del contenido base (Header/Grid) */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-bg);
+    backdrop-filter: blur(4px);
+    z-index: 5000; /* Incrementado para dominar la cuadrícula base */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+.overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* 2. El modal de personalización de alimentos o checkout se posiciona justo arriba del overlay */
+.custom-modal {
+    position: fixed;
+    bottom: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--surface-color);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    z-index: 5001; /* 1 punto arriba del overlay */
+    transition: bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    visibility: hidden;
+    pointer-events: none;
+}
+.custom-modal.open {
+    visibility: visible;
+    pointer-events: auto;
+    bottom: 0;
+}
+@media (min-width: 600px) {
+
+    .custom-modal {
+        bottom: 50%;
+        transform: translate(-50%, 50%);
+        opacity: 0;
+        scale: 0.95;
+    }
+
+    .custom-modal.open {
+        bottom: 50%;
+        opacity: 1;
+        scale: 1;
+    }
+
+}
+#custom-product-modal {
+    z-index: 5002;
+}
+
+#checkout-modal {
+    z-index: 5001;
+}
+.custom-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.custom-modal-body {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.modal-product-summary h4 {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.modal-product-summary p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.custom-section {
+    margin-bottom: 24px;
+}
+
+.border-top {
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+.section-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.minimal-select {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    outline: none;
+    margin-bottom: 14px;
+}
+
+/* Grupo de botones tipo "Tile" (Minimalistas) */
+.radio-tile-group {
+    display: flex;
+    gap: 8px;
+}
+
+.radio-tile {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.radio-tile input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.radio-tile:has(input:checked) {
+    border-color: var(--text-main);
+    background-color: var(--surface-color);
+    box-shadow: 0 0 0 1px var(--text-main);
+}
+
+.addon-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.addon-row > span {
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.small-group .radio-tile {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+}
+
+.custom-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.action-btn-primary {
+    width: 100%;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.action-btn-primary:hover {
+    background-color: var(--accent-hover);
+}
+
+/* ==========================================
+   CARRITO DE COMPRAS SIDEBAR
+   ========================================== */
+/* 3. El Carrito Lateral (Sidebar) debe tener prioridad absoluta sobre los modales comunes */
+.cart-sidebar {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    background-color: var(--surface-color);
+    box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+    z-index: 6000; /* Capa superior para que domine al modal de alimentos */
+    display: flex;
+    flex-direction: column;
+    transition: right 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cart-sidebar.open {
+    right: 0;
+}
+
+.cart-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-cart-btn {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.cart-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.empty-cart-msg {
+    text-align: center;
+    color: var(--text-muted);
+    margin-top: 40px;
+    font-size: 0.95rem;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.cart-item-info h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.cart-item-info span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.cart-item-details {
+    font-size: 0.78rem;
+    color: var(--accent-color);
+    margin-top: 6px;
+    line-height: 1.4;
+    background-color: var(--bg-color);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-color);
+    padding: 4px 8px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.quantity-controls button {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    color: var(--text-main);
+}
+
+.quantity-controls span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-width: 16px;
+    text-align: center;
+}
+
+.cart-footer {
+    padding: 24px;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--surface-color);
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.checkout-btn {
+    width: 100%;
+    background-color: #25d366;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.checkout-btn:hover {
+    background-color: #20ba5a;
+}
+/* Notificación Flotante Minimalista */
+/* 4. Las alertas flotantes (Toasts) SIEMPRE deben ser el elemento más alto de toda la página */
+.custom-toast {
+    position: fixed;
+    top: 24px; /* Un poco más de aire en la parte superior */
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background-color: var(--surface-color, #ffffff);
+    color: var(--text-main, #333333);
+    padding: 14px 24px;
+    border-radius: var(--radius-sm, 8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    z-index: 99999 !important; /* El rey de las capas, nada se le puede encimar */
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+}
+
+/* Ajuste automático para Modo Oscuro si usas una clase en el body */
+body.dark-mode .custom-toast {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    background-color: #1e1e1e; /* Color oscuro alternativo por si no usas var */
+    color: #ffffff;
+}
+
+.custom-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+.custom-toast i {
+    color: var(--accent-color, #ff4757); /* Icono con el color de tu marca */
+}
+/* Contenedor del Aderezo Extra Dinámico */
+.extra-sauce-addon-container {
+    background-color: var(--bg-color, #f8f9fa);
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: var(--radius-sm, 8px);
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.extra-sauce-subform {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, margin-top 0.3s ease;
+    opacity: 0;
+}
+
+.extra-sauce-subform.show {
+    max-height: 200px; /* Espacio suficiente para el select y los botones */
+    margin-top: 12px;
+    opacity: 1;
+}
+
+/* Ajuste visual para el checkbox tipo Tile */
+.checkbox-tile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+/* =======================================================
+   OPTIMIZACIONES EXCLUSIVAS PARA COMPUTADORA (HOVERS Y INTERACCIÓN)
+   ======================================================= */
+@media screen and (min-width: 769px) {
+    /* Forzar el cursor clásico de click a todos los elementos interactivos */
+    .radio-tile,
+    .radio-tile span,
+    .minimal-select,
+    .action-btn-primary,
+    .checkout-btn,
+    .category-btn,
+    .checkbox-tile-trigger {
+        cursor: pointer !important;
+    }
+
+    /* Hover suave para los botones tipo azulejo (Métodos de entrega/pago) */
+    .radio-tile:hover {
+        border-color: var(--text-muted);
+        background-color: var(--bg-color);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Cuando ya están seleccionados y pasas el mouse por encima */
+    .radio-tile:has(input:checked):hover {
+        border-color: var(--text-main);
+        background-color: var(--surface-color);
+        box-shadow: 0 0 0 1px var(--text-main), 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: none; /* No se mueve si ya está activo */
+    }
+
+    /* Animación fluida para los botones de las categorías superiores */
+    .category-btn:hover:not(.active) {
+        background-color: var(--border-color);
+        color: var(--text-main);
+        transform: translateY(-1px);
+    }
+
+    /* CORREGIDO: Evita que los textos/iconos rompan el click, pero permite que el input funcione */
+    .radio-tile * {
+        pointer-events: none;
+    }
+
+    /* Forzamos que el input (que es el interactivo real) sí reciba el evento de click */
+    .radio-tile input {
+        pointer-events: auto !important;
+        cursor: pointer;
+    }
+
+    /* Efecto hover moderno al botón verde de Checkout de WhatsApp */
+    .checkout-btn:hover {
+        background-color: #20ba5a;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.25);
+    }
+
+    .checkout-btn:active {
+        transform: translateY(0);
+    }
+
+    /* Estilo hover para el select desplegable minimalista */
+    .minimal-select:hover {
+        border-color: var(--text-muted);
+    }
+    .minimal-select:focus {
+        border-color: var(--text-main);
+        box-shadow: 0 0 0 1px var(--text-main);
+    }
+
+    /* Scrollbars elegantes y delgadas para los menús horizontales en PC */
+    .categories-nav {
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
+    }
+
+    .categories-nav::-webkit-scrollbar {
+        display: block;
+        height: 5px;
+    }
+
+    .categories-nav::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 10px;
+    }
+}
+/* Asegurar que los placeholders cambien de color correctamente según el tema */
+.minimal-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Color del borde cuando el cliente hace click para escribir */
+.minimal-input:focus {
+    border-color: var(--text-main) !important;
+}
+
+/* Evitar que el botón GPS pierda el texto oscuro en modo claro si hereda estilos globales */
+.action-btn-secondary {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.action-btn-secondary:hover {
+    background-color: var(--border-color) !important;
+}
+
+/* ==========================
+   MODAL AGREGADO AL CARRITO
+   ========================== */
+
+.success-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(3px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+
+    opacity:0;
+    visibility:hidden;
+    transition:.3s;
+}
+
+.success-modal.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.success-content{
+    background:var(--surface-color);
+    padding:30px;
+    border-radius:20px;
+    text-align:center;
+    width:90%;
+    max-width:320px;
+
+    transform:scale(.8);
+    transition:.3s;
+}
+
+.success-modal.show .success-content{
+    transform:scale(1);
+}
+
+.success-content i{
+    font-size:4rem;
+    color:#22c55e;
+    margin-bottom:15px;
+}
+
+.success-content h3{
+    margin-bottom:8px;
+    color:var(--text-main);
+}
+
+.success-content p{
+    color:var(--text-muted);
+}
+
+/* ==========================
+   MODAL DE BIENVENIDA
+   ========================== */
+
+.welcome-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(5px);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:10000;
+
+    opacity:1;
+    visibility:visible;
+
+    animation:fadeIn .4s ease;
+}
+
+.welcome-content{
+    width:90%;
+    max-width:420px;
+
+    background:var(--surface-color);
+    color:var(--text-main);
+
+    padding:30px;
+    border-radius:24px;
+
+    text-align:center;
+
+    animation:slideUp .4s ease;
+}
+
+.welcome-logo{
+    width:120px;
+    margin-bottom:15px;
+}
+
+.welcome-content h2{
+    margin-bottom:10px;
+}
+
+.welcome-content p{
+    color:var(--text-muted);
+    line-height:1.5;
+    margin-bottom:20px;
+}
+
+.welcome-btn{
+    width:100%;
+    border:none;
+    background:var(--accent-color);
+    color:white;
+    padding:14px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.welcome-btn:hover{
+    background:var(--accent-hover);
+}
+
+.welcome-modal.hide{
+    opacity:0;
+    visibility:hidden;
+}
+
+@keyframes slideUp{
+    from{
+        transform:translateY(30px);
+        opacity:0;
+    }
+    to{
+        transform:translateY(0);
+        opacity:1;
+    }
+}
+
+@keyframes fadeIn{
+    from{opacity:0;}
+    to{opacity:1;}
+}
+
+/* ==========================
+   MODAL SIN SERVICIO
+   ========================== */
+
+.service-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    backdrop-filter:blur(5px);
+
+    display:none;
+    justify-content:center;
+    align-items:center;
+
+    z-index:15000;
+}
+
+.service-modal.show{
+    display:flex;
+}
+
+.service-content{
+    width:90%;
+    max-width:400px;
+    background:var(--surface-color);
+    padding:30px;
+    border-radius:20px;
+    text-align:center;
+    animation:modalPop .3s ease;
+}
+
+.service-content i{
+    font-size:4rem;
+    color:#ff4757;
+    margin-bottom:15px;
+}
+
+.service-content h2{
+    margin-bottom:10px;
+    color:var(--text-main);
+}
+
+.service-content p{
+    color:var(--text-muted);
+    margin-bottom:20px;
+    line-height:1.5;
+}
+
+.service-btn{
+    width:100%;
+    border:none;
+    background:#ff4757;
+    color:white;
+    padding:14px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+@keyframes modalPop{
+    from{
+        transform:scale(.8);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}

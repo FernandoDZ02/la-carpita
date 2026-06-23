@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Carpita - Menú Digital</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <h1>La Carpita</h1>
+                <p>Snacks</p>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle-btn" class="icon-btn" onclick="toggleTheme()" aria-label="Cambiar tema">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button id="cart-toggle-btn" class="icon-btn cart-btn" onclick="toggleCart()" aria-label="Ver carrito">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span id="cart-count" class="badge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="categories-nav">
+    <button class="category-btn active" onclick="filterMenu('todos')">Todos</button>
+    <button class="category-btn" onclick="filterMenu('paquetes', true)">Paquetes</button>
+    <hr class="nav-separator"> <button class="category-btn" onclick="filterMenu('boneless', true)">Boneless</button>
+    <button class="category-btn" onclick="filterMenu('alitas', true)">Alitas</button>
+    <button class="category-btn" onclick="filterMenu('tenders', true)">Tenders</button>
+    <button class="category-btn" onclick="filterMenu('palomitas', true)">Palomitas</button>
+    <button class="category-btn" onclick="filterMenu('dedos', true)">Dedos de Queso</button>
+    <button class="category-btn" onclick="filterMenu('banderillas', true)">Banderillas & Salchis</button>
+    <button class="category-btn" onclick="filterMenu('papas', true)">Papas</button>
+    <button class="category-btn" onclick="filterMenu('aderezos', true)">Aderezos</button>
+
+</nav>
+
+    <div class="search-container">
+        <div class="search-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="search-input" placeholder="Buscar boneless, alitas, papas..." oninput="handleSearch()">
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div id="products-grid" class="products-grid">
+            </div>
+    </main>
+
+    <div id="overlay" class="overlay"></div>
+
+    <div id="custom-product-modal" class="custom-modal"></div>
+
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Tu Pedido</h3>
+            <button class="close-cart-btn" onclick="toggleCart()">&times;</button>
+        </div>
+        <div id="cart-items-container" class="cart-body">
+            <p class="empty-cart-msg">Tu carrito está vacío.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="total-row">
+                <span>Total:</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="sendWhatsAppOrder()">
+                <i class="fa-brands fa-whatsapp"></i> Enviar Pedido por WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Datos de Envío y Pago -->
+
+    <div id="checkout-modal" class="custom-modal">
+        <div class="custom-modal-header">
+            <h3>Datos de Entrega y Pago</h3>
+            <button class="close-modal-btn" onclick="closeCheckoutModal()">&times;</button>
+        </div>
+        <div class="custom-modal-body">
+
+     <!-- Tus Datos -->
+<div class="custom-section">
+    <label class="section-title"><i class="fa-solid fa-user"></i> Tus Datos:</label>
+    <input type="text" id="client-name" class="minimal-input" placeholder="Nombre completo" style="margin-bottom: 10px; width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background-color: var(--surface-color); color: var(--text-main); outline: none;">
+
+    <input type="text" id="client-phone" class="minimal-input" placeholder="Teléfono (10 dígitos)" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background-color: var(--surface-color); color: var(--text-main); outline: none;">
+</div>
+
+<div class="custom-section border-top">
+    <label class="section-title"><i class="fa-solid fa-truck"></i> Método de Entrega:</label>
+    <div class="radio-tile-group" id="delivery-method-group" onchange="handleDeliveryChange()">
+        <label class="radio-tile"><input type="radio" name="delivery-method" value="Domicilio" checked><span style="color: var(--text-main);">Envío a Domicilio (+$10)</span></label>
+        <label class="radio-tile"><input type="radio" name="delivery-method" value="Sucursal"><span style="color: var(--text-main);">Pasar por el pedido</span></label>
+    </div>
+
+    <!-- Contenedor de dirección corregido -->
+    <div id="address-container" style="margin-top: 12px; display: block;">
+        <!-- Input de dirección indispensable -->
+        <input type="text" id="client-address" class="minimal-input" placeholder="Calle, número, colonia o referencias" style="width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background-color: var(--surface-color); color: var(--text-main); outline: none; margin-bottom: 10px;">
+
+        <!-- Opción 1: GPS del Navegador -->
+        <button type="button" id="gps-button" class="action-btn-secondary" onclick="getUserLocation()" style="width: 100%; padding: 12px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-main); cursor: pointer; margin-bottom: 10px;">
+            <i class="fa-solid fa-location-crosshairs"></i> Compartir mi ubicación GPS actual
+        </button>
+
+        <!-- NUEVA Opción 2: Botón para Enviar Ubicación directamente por WhatsApp -->
+        <button type="button" id="whatsapp-geo-button" class="action-btn-secondary" onclick="sendLocationViaWhatsApp()" style="width: 100%; padding: 12px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-sm); border: 1px solid #25D366; background-color: rgba(37, 211, 102, 0.1); color: #25D366; cursor: pointer; margin-bottom: 10px; transition: background-color 0.2s;">
+            <i class="fa-brands fa-whatsapp"></i> Mandar ubicación en chat de WhatsApp
+        </button>
+    </div>
+</div>
+
+        <div class="custom-section border-top">
+    <label class="section-title"><i class="fa-solid fa-credit-card"></i> Método de Pago:</label>
+    <select id="payment-method-select" class="minimal-select" onchange="handlePaymentMethodChange()" style="width: 100%; padding: 8px; border-radius: var(--radius-sm); border: 1px solid #ccc; font-weight: 600;">
+        <option value="Efectivo">1. Efectivo</option>
+        <option value="Tarjeta">2. Tarjeta</option>
+        <option value="Transferencia">3. Transferencia</option>
+        <option value="Mixto">4. Mixto (Hasta 2 métodos de pago)</option>
+    </select>
+
+    <div id="panel-efectivo-solo" style="display: none; margin-top: 12px; background-color: var(--bg-color); padding: 12px; border-radius: var(--radius-sm);">
+        <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 5px; color: var(--text-main);">¿Con cuánto vas a pagar?</label>
+        <input type="number" id="pay-cash-amount" class="minimal-input" placeholder="Ej. 200" oninput="calculateSoloChange()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: var(--radius-sm); background-color: var(--surface-color); color: var(--text-main);">
+        <p id="cash-change-feedback" style="margin-top: 8px; font-weight: 700; color: var(--accent-color); font-size: 0.9rem;"></p>
+    </div>
+
+    <div id="panel-transferencia-solo" style="display: none; margin-top: 12px; background-color: var(--bg-color); padding: 12px; border-radius: var(--radius-sm); border-left: 4px solid #007bff;">
+        <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--text-main);">📋 Datos de cuenta para tu transferencia:</p>
+        <p style="margin: 4px 0 0 0; font-size: 0.85rem; font-family: monospace; color: var(--text-muted); line-height: 1.4;">
+            <strong style="color: var(--text-main);">Banco:</strong> BBVA<br>
+            <strong style="color: var(--text-main);">Cuenta/CLABE:</strong> 1234 5678 9012 3456<br>
+            <strong style="color: var(--text-main);">A nombre de:</strong> La Carpita S.A.
+        </p>
+    </div>
+
+    <div id="panel-mixto" style="display: none; margin-top: 12px; background-color: var(--bg-color); padding: 12px; border-radius: var(--radius-sm);">
+        <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px; color: var(--text-main);"><i class="fa-solid fa-sliders"></i> Selecciona la combinación (Máximo 2):</label>
+
+        <div style="display: flex; gap: 15px; margin-bottom: 12px;">
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: 600; color: var(--text-main);">
+                <input type="checkbox" name="mix-payment-type" value="Efectivo" onchange="handleMixCheckboxLogic()"> Efectivo
+            </label>
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: 600; color: var(--text-main);">
+                <input type="checkbox" name="mix-payment-type" value="Transferencia" onchange="handleMixCheckboxLogic()"> Transferencia
+            </label>
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: 600; color: var(--text-main);">
+                <input type="checkbox" name="mix-payment-type" value="Tarjeta" onchange="handleMixCheckboxLogic()"> Tarjeta
+            </label>
+        </div>
+
+        <div id="mix-inputs-container" style="display: flex; flex-direction: column; gap: 10px;">
+            <div id="mix-field-efectivo" style="display: block;">
+                <label style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted);">Monto en Efectivo ($):</label>
+                <input type="number" id="mix-amount-cash" class="minimal-input" oninput="calculateMixOutputs()" placeholder="¿Cuánto pagas en efectivo?" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: var(--radius-sm); background-color: var(--surface-color); color: var(--text-main);">
+            </div>
+
+            <div id="mix-field-transferencia" style="display: none;">
+                <label style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted);">Monto en Transferencia ($):</label>
+                <input type="number" id="mix-amount-transfer" class="minimal-input" oninput="calculateMixOutputs()" placeholder="¿Cuánto pagas por transferencia?" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: var(--radius-sm); background-color: var(--surface-color); color: var(--text-main);">
+            </div>
+        </div>
+
+        <p id="mix-calculations-feedback" style="margin: 8px 0 0 0; font-weight: bold; font-size: 0.85rem; color: var(--accent-color); white-space: pre-line;"></p>
+
+        <div id="mix-bank-details" style="display: none; margin-top: 8px; background-color: var(--surface-color); color: var(--text-muted); padding: 10px; border-radius: 4px; border-left: 3px solid #007bff; font-size: 0.82rem; line-height: 1.4;">
+            <strong style="color: var(--text-main);">Datos BBVA:</strong> Cuenta <span style="font-family: monospace;">1234 5678 9012 3456</span> a nombre de <span style="color: var(--text-main);">La Carpita</span>.
+        </div>
+    </div>
+</div>
+
+        <!-- Notas Adicionales -->
+        <div class="custom-section border-top">
+    <label class="section-title"><i class="fa-solid fa-comment-dots"></i> Notas del Pedido:</label>
+    <textarea id="order-notes" class="minimal-input" placeholder="¿Alguna especificación extra? (Ej. cambiar aderezo por catsup, sin cebolla...)" style="width: 100%; height: 80px; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background-color: var(--surface-color); color: var(--text-main); resize: none; outline: none; line-height: 1.4;"></textarea>
+</div>
+        </div>
+    <div class="custom-modal-footer">
+        <button id="checkout-submit-btn" class="action-btn-primary" onclick="finalCheckoutSubmit()">
+            <i class="fa-brands fa-whatsapp"></i> Enviar por WhatsApp
+        </button>
+    </div>
+</div>
+
+<!-- Modal Agregado al Carrito -->
+<div id="success-modal" class="success-modal">
+    <div class="success-content">
+        <i class="fa-solid fa-circle-check"></i>
+        <h3>¡Agregado al carrito!</h3>
+        <p id="success-product-name">Producto agregado correctamente.</p>
+    </div>
+</div>
+
+<!-- Modal de Bienvenida -->
+<div id="welcome-modal" class="welcome-modal">
+    <div class="welcome-content">
+        <img src="img/LC.png" alt="La Carpita" class="welcome-logo">
+
+        <h2>¡Bienvenido a La Carpita! 🎉</h2>
+
+        <p>
+            Disfruta nuestros boneless, alitas, tenders, dedos de queso,
+            banderillas y mucho más.
+        </p>
+
+        <button onclick="closeWelcomeModal()" class="welcome-btn">
+            Ver Menú
+        </button>
+    </div>
+</div>
+
+<!-- Modal Sin Servicio -->
+<div id="service-modal" class="service-modal">
+    <div class="service-content">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+
+        <h2>Sin Servicio</h2>
+
+        <p id="service-message">
+            Hoy no contamos con servicio una disculpa
+        </p>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
