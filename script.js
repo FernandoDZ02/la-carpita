@@ -1668,48 +1668,59 @@ function finalCheckoutSubmit() {
 
     const phoneNumber = '525657861068';
 
-    let message = '¡NUEVO PEDIDO LA CARPITA!\n';
-    message += '========================================\n';
-    message += `👤 *Cliente:* ${name}\n`;
-    message += `📞 *Teléfono:* ${phone}\n`;
-    message += `🛵 *Entrega:* ${deliveryMethod === 'Domicilio' ? 'Envío a Domicilio' : 'Pasar por Sucursal'}\n`;
+// --- NUEVO: Capturar fecha y hora actual ---
+const ahora = new Date();
+const fechaHora = ahora.toLocaleString('es-MX', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+    hour12: true
+}); // Resultado ej: "24/06/2026, 04:10 p. m."
 
-    if (deliveryMethod === 'Domicilio') {
-        message += `📍 *Dirección:* ${address}\n`;
-        if (gpsLocationUrl) message += `🗺️ *Mapa:* ${gpsLocationUrl}\n`;
-    } else {
-        // CAMBIO AÑADIDO: Incluye los datos fijos del local cuando pasan a recoger
-        message += `📍 *Lugar de Entrega:* Sucursal La Carpita\n`;
-        message += `🏪 https://maps.app.goo.gl/U6CCBt3FCJ4TdgNs9\n`;
-        message += `📍 *Le aviasaremos 5-10 min antes para que pase por su pedido\n`;
+let message = '¡NUEVO PEDIDO LA CARPITA!\n';
+message += `*Nota:* Todo alimento se realiza al momento\n`;
+message += `*Tiempo de estimado de preparacion: 15 a 30 minutos (Dependiendo cantidad de alimentos)* \n`;
+message += '========================================\n';
+message += `📅 *Fecha y Hora:* ${fechaHora}\n`; // <-- NUEVA LÍNEA EN EL MENSAJE
+message += `👤 *Cliente:* ${name}\n`;
+message += `📞 *Teléfono:* ${phone}\n`;
+message += `🛵 *Entrega:* ${deliveryMethod === 'Domicilio' ? 'Envío a Domicilio' : 'Pasar por Sucursal'}\n`;
 
+if (deliveryMethod === 'Domicilio') {
+    message += `📍 *Dirección:* ${address}\n`;
+    if (gpsLocationUrl) message += `🗺️ *Mapa:* ${gpsLocationUrl}\n`;
+} else {
+    // CAMBIO AÑADIDO: Incluye los datos fijos del local cuando pasan a recoger
+    message += `📍 *Lugar de Entrega:* Sucursal La Carpita\n`;
+    message += `🏪 https://maps.app.goo.gl/U6CCBt3FCJ4TdgNs9\n`;
+    message += `📍 *Le avisaremos 5-10 min antes para que pase por su pedido\n`;
+}
+
+if (notes) message += `📝 *Notas:* ${notes}\n`;
+message += '===============================\n\n';
+message += '🛒 *DETALLE DEL PEDIDO:*\n';
+
+cart.forEach(item => {
+    message += `• *${item.quantity}x ${item.name}* ($${item.price * item.quantity}.00)\n`;
+    if (item.customization) {
+        const lines = item.customization.split(' | ');
+        lines.forEach(line => {
+            message += `   └ _${line}_\n`;
+        });
     }
-    if (notes) message += `📝 *Notas:* ${notes}\n`;
-    message += '===============================\n\n';
-    message += '🛒 *DETALLE DEL PEDIDO:*\n';
+});
 
-    cart.forEach(item => {
-        message += `• *${item.quantity}x ${item.name}* ($${item.price * item.quantity}.00)\n`;
-        if (item.customization) {
-            const lines = item.customization.split(' | ');
-            lines.forEach(line => {
-                message += `   └ _${line}_\n`;
-            });
-        }
-    });
+message += '\n===================================\n';
+message += `💰 *Subtotal:* $${totalCarrito}.00\n`;
+if (costoEnvio > 0) message += `🛵 *Envío:* $${costoEnvio}.00\n`;
+message += `🛍️ *TOTAL A PAGAR:* *$${totalFinal}.00*\n`;
+message += `💳 *Método de Pago:* ${metodoPagoTexto}\n`;
+message += especificacionesPago;
 
-    message += '\n===================================\n';
-    message += `💰 *Subtotal:* $${totalCarrito}.00\n`;
-    if (costoEnvio > 0) message += `🛵 *Envío:* $${costoEnvio}.00\n`;
-    message += `🛍️ *TOTAL A PAGAR:* *$${totalFinal}.00*`;
-    message += '\n=================================\n';
-    message += `💳 *Método de Pago:* ${metodoPagoTexto}\n`;
-    message += especificacionesPago;
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+const encodedMessage = encodeURIComponent(message);
+const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 
-    window.open(whatsappUrl, '_blank');
-    closeCheckoutModal();
+window.open(whatsappUrl, '_blank');
+closeCheckoutModal();
 }
 // ==========================================
 // INICIALIZACIÓN
