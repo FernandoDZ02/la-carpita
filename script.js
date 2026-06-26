@@ -74,6 +74,7 @@ const sauceOptions = ['Ranch', 'Ranch Habanero', 'Mango Habanero', 'Buffalo', 'B
 let cart = [];
 let currentCategory = 'todos';
 let selectedProductForModal = null;
+let editingCartItem = null; // NUEVA VARIABLE PARA CONTROLAR LA EDICIÓN
 
 // ==========================================
 // RENDERIZADO DE PRODUCTOS
@@ -848,7 +849,11 @@ if (
 
     const submitBtn = document.getElementById('modal-submit-btn');
     if (submitBtn) {
-        submitBtn.innerHTML = `Agregar al Carrito • $${currentPrice}.00`;
+        if (editingCartItem) {
+            submitBtn.innerHTML = `<i class="fa-solid fa-pen"></i> Actualizar Pedido • $${currentPrice}.00`;
+        } else {
+            submitBtn.innerHTML = `Agregar al Carrito • $${currentPrice}.00`;
+        }
     }
 }
 
@@ -914,6 +919,9 @@ function closeCustomModal() {
     const modalWindow = document.getElementById('custom-product-modal');
     modalWindow.classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
+
+    // Limpiamos el estado por si el usuario canceló la edición
+    editingCartItem = null;
 }
 
 function showMinimalAlert(message) {
@@ -970,7 +978,7 @@ function confirmCustomization() {
     if (isExtraSauce) {
         const selectedSize = document.querySelector('input[name="sauce-size"]:checked').value;
         finalPrice = (selectedSize === '4oz') ? 16 : 8;
-        specs.push(`Tamaño: Porción de ${selectedSize}`);
+        specs.push(`Tamaño: ${selectedSize}`);
     }
 
     // 2. CONFIGURACIÓN DEL MIX DE PAPAS
@@ -988,140 +996,152 @@ function confirmCustomization() {
         else if (requiredCount === 3) finalPrice = 165;
         else if (requiredCount === 4) finalPrice = 215;
 
-        specs.push(`Mix de ${requiredCount} Papas (${selectedChips.join(', ')})`);
+        specs.push(`Mix ${requiredCount} Papas: ${selectedChips.join(', ')}`);
     }
 
     // 3. CONFIGURACIÓN DE SALCHIPAPAS / SALCHIPULPOS
     if (isSalchi) {
         const sMode = document.querySelector('input[name="salchi-mode"]:checked').value;
-        if (sMode === 'Con Todo') specs.push('Preparación: Con todo');
-        else if (sMode === 'Todo Aparte') specs.push('Preparación: Todo aparte');
-        else if (sMode === 'Solos') specs.push('Preparación: Solo');
+        if (sMode === 'Con Todo') specs.push('Con todo');
+        else if (sMode === 'Todo Aparte') specs.push('Todo aparte');
+        else if (sMode === 'Solos') specs.push('Solos');
         else if (sMode === 'Personalizar') {
             const mayo = document.querySelector('input[name="s-mayo"]:checked').value;
             const queso = document.querySelector('input[name="s-queso"]:checked').value;
             const catsup = document.querySelector('input[name="s-catsup"]:checked').value;
             const salsa = document.querySelector('input[name="s-salsa"]:checked').value;
 
-            if (mayo === 'Untado' && queso === 'Untado' && catsup === 'Untado' && salsa === 'Untado') specs.push('Preparación: Con todo');
-            else if (mayo === 'Aparte' && queso === 'Aparte' && catsup === 'Aparte' && salsa === 'Aparte') specs.push('Preparación: Todo aparte');
-            else if (mayo === 'Solo' && queso === 'Solo' && catsup === 'Solo' && salsa === 'Solo') specs.push('Preparación: Solo');
+            if (mayo === 'Untado' && queso === 'Untado' && catsup === 'Untado' && salsa === 'Untado') specs.push('Con todo');
+            else if (mayo === 'Aparte' && queso === 'Aparte' && catsup === 'Aparte' && salsa === 'Aparte') specs.push('Todo aparte');
+            else if (mayo === 'Solo' && queso === 'Solo' && catsup === 'Solo' && salsa === 'Solo') specs.push('Solos');
             else {
                 let sActivos = [];
                 if (mayo !== 'Solo') sActivos.push(`Mayonesa: ${mayo}`);
                 if (queso !== 'Solo') sActivos.push(`Queso: ${queso}`);
                 if (catsup !== 'Solo') sActivos.push(`Catsup: ${catsup}`);
                 if (salsa !== 'Solo') sActivos.push(`Salsa: ${salsa}`);
-                specs.push(`Personalizado -> ${sActivos.join(' | ')}`);
+                specs.push(`${sActivos.join(', ')}`);
             }
         }
     }
     // 4. CONFIGURACIÓN DE BANDERILLAS
     else if (isBanderilla) {
         const bMode = document.querySelector('input[name="banderilla-mode"]:checked').value;
-        if (bMode === 'Con Todo') specs.push('Banderilla: Con Todo');
-        else if (bMode === 'Todo Aparte') specs.push('Banderilla: Con Todo Aparte');
-        else if (bMode === 'Solas') specs.push('Banderilla: Sola (Sin condimentos)');
+        if (bMode === 'Con Todo') specs.push('Con Todo');
+        else if (bMode === 'Todo Aparte') specs.push('Todo Aparte');
+        else if (bMode === 'Solas') specs.push('Solas');
         else if (bMode === 'Personalizar') {
             const mayo = document.querySelector('input[name="b-mayo"]:checked').value;
             const queso = document.querySelector('input[name="b-queso"]:checked').value;
             const catsup = document.querySelector('input[name="b-catsup"]:checked').value;
             const salsa = document.querySelector('input[name="b-salsa"]:checked').value;
 
-            if (mayo === 'Untado' && queso === 'Untado' && catsup === 'Untado' && salsa === 'Untado') specs.push('Banderilla: Con Todo');
-            else if (mayo === 'Aparte' && queso === 'Aparte' && catsup === 'Aparte' && salsa === 'Aparte') specs.push('Banderilla: Con Todo Aparte');
-            else if (mayo === 'Solo' && queso === 'Solo' && catsup === 'Solo' && salsa === 'Solo') specs.push('Banderilla: Sola');
+            if (mayo === 'Untado' && queso === 'Untado' && catsup === 'Untado' && salsa === 'Untado') specs.push('Con Todo');
+            else if (mayo === 'Aparte' && queso === 'Aparte' && catsup === 'Aparte' && salsa === 'Aparte') specs.push('Todo Aparte');
+            else if (mayo === 'Solo' && queso === 'Solo' && catsup === 'Solo' && salsa === 'Solo') specs.push('Solas');
             else {
                 let bActivos = [];
                 if (mayo !== 'Solo') bActivos.push(`Mayonesa: ${mayo}`);
                 if (queso !== 'Solo') bActivos.push(`Queso: ${queso}`);
                 if (catsup !== 'Solo') bActivos.push(`Catsup: ${catsup}`);
                 if (salsa !== 'Solo') bActivos.push(`Salsa: ${salsa}`);
-                specs.push(`Banderilla personalizada -> ${bActivos.join(' | ')}`);
+                specs.push(`${bActivos.join(', ')}`);
             }
         }
     }
-    // 5. CAPTURA DE LOS ADEREZOS INCLUIDOS POR DEFECTO
+    // 5. CAPTURA AGRUPADA DE LOS ADEREZOS INCLUIDOS Y EXTRAS
     else if (!isIndividualChips && !isMixPapas && !isArosCebolla && !isExtraSauce) {
-        const sauceSelected = document.getElementById('modal-sauce-select').value;
-        const saucePrep = document.querySelector('input[name="sauce-prep"]:checked').value;
+        const sauceSelected1 = document.getElementById('modal-sauce-select').value;
+        const saucePrep1 = document.querySelector('input[name="sauce-prep"]:checked').value;
 
+        // Títulos simplificados para el ticket
         let label1 = isLargeSize ? 'Aderezo 1' : 'Aderezo';
         let label2 = 'Aderezo 2';
         let label3 = 'Aderezo 3';
 
-        if (selectedProductForModal.id === 9 || selectedProductForModal.id === 10) { label1 = 'Aderezo 1 Alitas'; label2 = 'Aderezo 2 Alitas'; }
-        else if (selectedProductForModal.id === 13 || selectedProductForModal.id === 14) { label1 = 'Aderezo 1 Dedos'; label2 = 'Aderezo 2 Dedos'; }
-        else if (selectedProductForModal.id === 26) { label1 = 'Aderezo Boneless'; label2 = 'Aderezo Alitas'; }
-        else if (selectedProductForModal.id === 27) { label1 = 'Aderezo Tenders'; label2 = 'Aderezo Boneless'; }
-        else if (selectedProductForModal.id === 28) { label1 = 'Aderezo Dedos'; label2 = 'Aderezo Palomitas'; }
-        else if (selectedProductForModal.id === 29) { label1 = 'Aderezo Dedos'; label2 = 'Aderezo Boneless'; }
-        else if (selectedProductForModal.id === 30) { label1 = 'Aderezo Alitas'; label2 = 'Aderezo Palomitas'; }
-        else if (selectedProductForModal.id === 31) { label1 = 'Aderezo Palomitas'; label2 = 'Aderezo Tenders'; }
-        else if (selectedProductForModal.id === 32) { label1 = 'Aderezo Boneless'; label2 = 'Aderezo Alitas'; label3 = 'Aderezo Dedos'; }
-        else if (selectedProductForModal.id === 33) { label1 = 'Aderezo Tenders'; label2 = 'Aderezo Palomitas'; label3 = 'Aderezo Boneless'; }
-        else if (selectedProductForModal.id === 34) { label1 = 'Aderezo Tenders'; label2 = 'Aderezo Dedos'; label3 = 'Aderezo Boneless'; }
-
-        if (saucePrep === 'Solo') specs.push(`${label1}: Solos`);
-        else specs.push(`${label1}: ${sauceSelected} (${saucePrep})`);
-
-        if (isLargeSize || isMegaSize) {
-            const sauceSelected2 = document.getElementById('modal-sauce-select-2').value;
-            const saucePrep2 = document.querySelector('input[name="sauce-prep-2"]:checked').value;
-            if (saucePrep2 === 'Solo') specs.push(`${label2}: Solos`);
-            else specs.push(`${label2}: ${sauceSelected2} (${saucePrep2})`);
-        }
-
-        if (isMegaSize) {
-            const sauceSelected3 = document.getElementById('modal-sauce-select-3').value;
-            const saucePrep3 = document.querySelector('input[name="sauce-prep-3"]:checked').value;
-            if (saucePrep3 === 'Solo') specs.push(`${label3}: Solos`);
-            else specs.push(`${label3}: ${sauceSelected3} (${saucePrep3})`);
-        }
-    }
-
-    // --- SOLUCIÓN: CAPTURA DINÁMICA DE ADEREZOS COMPLEMENTARIOS DE $8.00 ---
-    // Mapeamos de forma idéntica a como lo hace openCustomModal
-    if (!isBanderilla && !isIndividualChips && !isMixPapas && !isArosCebolla && !isExtraSauce) {
         let subItemNames = ["Alimento"];
-        if (selectedProductForModal.id === 9 || selectedProductForModal.id === 10) subItemNames = ["Alitas"];
-        else if (selectedProductForModal.id === 13 || selectedProductForModal.id === 14) subItemNames = ["Dedos de Queso"];
-        else if (selectedProductForModal.id === 26) subItemNames = ["Boneless", "Alitas"];
-        else if (selectedProductForModal.id === 27) subItemNames = ["Tenders", "Boneless"];
-        else if (selectedProductForModal.id === 28) subItemNames = ["Dedos de Queso", "Palomitas de Pollo"];
-        else if (selectedProductForModal.id === 29) subItemNames = ["Dedos", "Boneless"];
-        else if (selectedProductForModal.id === 30) subItemNames = ["Alitas", "Palomitas de Pollo"];
-        else if (selectedProductForModal.id === 31) subItemNames = ["Palomitas de Pollo", "Tenders"];
-        else if (selectedProductForModal.id === 32) subItemNames = ["Boneless", "Alitas", "Dedos de Queso"];
-        else if (selectedProductForModal.id === 33) subItemNames = ["Tenders", "Palomitas de Pollo", "Boneless"];
-        else if (selectedProductForModal.id === 34) subItemNames = ["Tenders", "Dedos de Queso", "Boneless"];
 
-        // Recorremos los checkboxes dinámicos que se crearon en el DOM
-        subItemNames.forEach((name, index) => {
+        if (selectedProductForModal.id === 9 || selectedProductForModal.id === 10) { label1 = 'Alitas (1)'; label2 = 'Alitas (2)'; subItemNames = ["Alitas"]; }
+        else if (selectedProductForModal.id === 13 || selectedProductForModal.id === 14) { label1 = 'Dedos (1)'; label2 = 'Dedos (2)'; subItemNames = ["Dedos de Queso"]; }
+        else if (selectedProductForModal.id === 26) { label1 = 'Boneless'; label2 = 'Alitas'; subItemNames = ["Boneless", "Alitas"]; }
+        else if (selectedProductForModal.id === 27) { label1 = 'Tenders'; label2 = 'Boneless'; subItemNames = ["Tenders", "Boneless"]; }
+        else if (selectedProductForModal.id === 28) { label1 = 'Dedos'; label2 = 'Palomitas'; subItemNames = ["Dedos de Queso", "Palomitas de Pollo"]; }
+        else if (selectedProductForModal.id === 29) { label1 = 'Dedos'; label2 = 'Boneless'; subItemNames = ["Dedos", "Boneless"]; }
+        else if (selectedProductForModal.id === 30) { label1 = 'Alitas'; label2 = 'Palomitas'; subItemNames = ["Alitas", "Palomitas de Pollo"]; }
+        else if (selectedProductForModal.id === 31) { label1 = 'Palomitas'; label2 = 'Tenders'; subItemNames = ["Palomitas de Pollo", "Tenders"]; }
+        else if (selectedProductForModal.id === 32) { label1 = 'Boneless'; label2 = 'Alitas'; label3 = 'Dedos'; subItemNames = ["Boneless", "Alitas", "Dedos de Queso"]; }
+        else if (selectedProductForModal.id === 33) { label1 = 'Tenders'; label2 = 'Palomitas'; label3 = 'Boneless'; subItemNames = ["Tenders", "Palomitas de Pollo", "Boneless"]; }
+        else if (selectedProductForModal.id === 34) { label1 = 'Tenders'; label2 = 'Dedos'; label3 = 'Boneless'; subItemNames = ["Tenders", "Dedos de Queso", "Boneless"]; }
+
+        // Formato ultra corto para extras: "+ Extra: Ranch (Untado)"
+        const getExtraSauceText = (index) => {
             const targetId = `subitem-${index}`;
             const extraSauceCheckbox = document.getElementById(`checkbox-extra-${targetId}`);
-
             if (extraSauceCheckbox && extraSauceCheckbox.checked) {
-                const extraSauceName = document.getElementById(`select-extra-${targetId}`).value;
-                const extraSaucePrep = document.querySelector(`input[name="prep-extra-${targetId}"]:checked`).value;
-
+                const extraName = document.getElementById(`select-extra-${targetId}`).value;
+                const extraPrep = document.querySelector(`input[name="prep-extra-${targetId}"]:checked`).value;
                 finalPrice += 8;
-                specs.push(`Aderezo Extra (${name}): ${extraSauceName} (${extraSaucePrep})`);
+                return `+ Extra: ${extraName} (${extraPrep})`;
             }
-        });
+            return null;
+        };
+
+        if (subItemNames.length === 1) {
+            if (saucePrep1 === 'Solo') specs.push(`${label1}: Solos`);
+            else specs.push(`${label1}: ${sauceSelected1} (${saucePrep1})`);
+
+            if (isLargeSize || isMegaSize) {
+                const sauceSelected2 = document.getElementById('modal-sauce-select-2').value;
+                const saucePrep2 = document.querySelector('input[name="sauce-prep-2"]:checked').value;
+                if (saucePrep2 === 'Solo') specs.push(`${label2}: Solos`);
+                else specs.push(`${label2}: ${sauceSelected2} (${saucePrep2})`);
+            }
+
+            const extra = getExtraSauceText(0);
+            if (extra) specs.push(extra);
+        } else {
+            // Alimento 1
+            if (saucePrep1 === 'Solo') specs.push(`${label1}: Solos`);
+            else specs.push(`${label1}: ${sauceSelected1} (${saucePrep1})`);
+            const extra0 = getExtraSauceText(0);
+            if (extra0) specs.push(extra0);
+
+            // Alimento 2
+            if (isLargeSize || isMegaSize) {
+                const sauceSelected2 = document.getElementById('modal-sauce-select-2').value;
+                const saucePrep2 = document.querySelector('input[name="sauce-prep-2"]:checked').value;
+                if (saucePrep2 === 'Solo') specs.push(`${label2}: Solos`);
+                else specs.push(`${label2}: ${sauceSelected2} (${saucePrep2})`);
+
+                const extra1 = getExtraSauceText(1);
+                if (extra1) specs.push(extra1);
+            }
+
+            // Alimento 3
+            if (isMegaSize) {
+                const sauceSelected3 = document.getElementById('modal-sauce-select-3').value;
+                const saucePrep3 = document.querySelector('input[name="sauce-prep-3"]:checked').value;
+                if (saucePrep3 === 'Solo') specs.push(`${label3}: Solos`);
+                else specs.push(`${label3}: ${sauceSelected3} (${saucePrep3})`);
+
+                const extra2 = getExtraSauceText(2);
+                if (extra2) specs.push(extra2);
+            }
+        }
     }
 
-    // 6. CONFIGURACIÓN DE COMPLEMENTOS FRITOS (PAPAS / AROS)
+    // 6. CONFIGURACIÓN DE COMPLEMENTOS FRITOS (PAPAS / AROS) SIMPLIFICADO
     if (((selectedProductForModal.hasChips && !isSalchi) || isIndividualChips || isMixPapas || isArosCebolla) && !isExtraSauce) {
         const chipSelect = document.getElementById('modal-chip-type-select');
-        const prefixLabel = isArosCebolla ? 'Aros' : 'Papas';
+        let chipName = isArosCebolla ? 'Aros' : 'Papas'; // Nombre base
 
+        // Si se puede elegir tipo, adjuntamos el tipo al nombre (Ej. "Papas Curly")
         if (chipSelect && !isIndividualChips && !isMixPapas && !isArosCebolla) {
             const chipType = chipSelect.value;
+            chipName = `Papas ${chipType}`;
             if (chipType !== 'Francesa') {
                 finalPrice += [10, 14, 26, 27, 28, 29, 30, 31, 34].includes(selectedProductForModal.id) ? 10 : 5;
             }
-            specs.push(`Tipo de papa: ${chipType}`);
         }
 
         const chipsModeRadio = document.querySelector('input[name="chips-mode"]:checked');
@@ -1129,68 +1149,99 @@ function confirmCustomization() {
             const chipsMode = chipsModeRadio.value;
 
             if (chipsMode === 'Con Todo') {
-                specs.push(`${prefixLabel}: Con Todo`);
+                specs.push(`${chipName}: Con todo`);
             } else if (chipsMode === 'Todo Aparte') {
-                specs.push(`${prefixLabel}: Todo Aparte`);
+                specs.push(`${chipName}: Todo aparte`);
             } else if (chipsMode === 'Solas') {
-                specs.push(`${prefixLabel}: Solos (Sin condimentos)`);
+                specs.push(`${chipName}: Solas`);
             } else if (chipsMode === 'Personalizar') {
                 const catsupPapas = document.querySelector('input[name="prep-catsup"]:checked').value;
                 const quesoPapas = document.querySelector('input[name="prep-queso"]:checked').value;
                 const salsaPapas = document.querySelector('input[name="prep-salsa"]:checked').value;
 
-                if (catsupPapas === 'Untado' && quesoPapas === 'Untado' && salsaPapas === 'Untado') specs.push(`${prefixLabel}: Con todo`);
-                else if (catsupPapas === 'Aparte' && quesoPapas === 'Aparte' && salsaPapas === 'Aparte') specs.push(`${prefixLabel}: Todo aparte`);
-                else if (catsupPapas === 'Solo' && quesoPapas === 'Solo' && salsaPapas === 'Solo') specs.push(`${prefixLabel}: Solos`);
+                if (catsupPapas === 'Untado' && quesoPapas === 'Untado' && salsaPapas === 'Untado') specs.push(`${chipName}: Con todo`);
+                else if (catsupPapas === 'Aparte' && quesoPapas === 'Aparte' && salsaPapas === 'Aparte') specs.push(`${chipName}: Todo aparte`);
+                else if (catsupPapas === 'Solo' && quesoPapas === 'Solo' && salsaPapas === 'Solo') specs.push(`${chipName}: Solas`);
                 else {
                     let condimentosActivos = [];
                     if (catsupPapas !== 'Solo') condimentosActivos.push(`Catsup: ${catsupPapas}`);
                     if (quesoPapas !== 'Solo') condimentosActivos.push(`Queso: ${quesoPapas}`);
                     if (salsaPapas !== 'Solo') condimentosActivos.push(`Salsa: ${salsaPapas}`);
-                    specs.push(`${prefixLabel} personalizados -> ${condimentosActivos.join(' | ')}`);
+                    specs.push(`${chipName} :${condimentosActivos.join(', ')}`);
                 }
             }
         }
     }
 
-    const megaFriesCheck =
-    document.getElementById('mega-extra-fries');
+    // 7. PAPAS EXTRA EN PAQUETES MEGA SIMPLIFICADO
+    const megaFriesCheck = document.getElementById('mega-extra-fries');
+    if (megaFriesCheck && megaFriesCheck.checked) {
+        finalPrice += 20;
+        const friesType = document.getElementById('mega-fries-type').value;
+        const mode = document.querySelector('input[name="mega-fries-mode"]:checked')?.value;
 
-if (
-    megaFriesCheck &&
-    megaFriesCheck.checked
-) {
-    finalPrice += 20;
+        let megaName = `Extra Papas ${friesType}`;
 
-    const friesType =
-        document.getElementById('mega-fries-type').value;
+        if (mode === 'Con Todo') specs.push(`${megaName}: Con todo`);
+        else if (mode === 'Todo Aparte') specs.push(`${megaName}: Todo aparte`);
+        else if (mode === 'Solas') specs.push(`${megaName}: Solas`);
+        else if (mode === 'Personalizar') {
+            const mCatsup = document.querySelector('input[name="mega-catsup"]:checked').value;
+            const mQueso = document.querySelector('input[name="mega-queso"]:checked').value;
+            const mSalsa = document.querySelector('input[name="mega-salsa"]:checked').value;
 
-    specs.push(
-        `Papas Extra: ${friesType}`
-    );
-
-    const mode =
-        document.querySelector(
-            'input[name="mega-fries-mode"]:checked'
-        )?.value;
-
-    specs.push(
-        `Preparación Papas: ${mode}`
-    );
-}
+            let mActivos = [];
+            if (mCatsup !== 'Solo') mActivos.push(`Catsup: ${mCatsup}`);
+            if (mQueso !== 'Solo') mActivos.push(`Queso: ${mQueso}`);
+            if (mSalsa !== 'Solo') mActivos.push(`Salsa: ${mSalsa}`);
+            specs.push(`${megaName} :${mActivos.join(', ')}`);
+        }
+    }
 
     const finalDetails = specs.join(' | ');
 
     if (typeof cart !== 'undefined') {
-        const existing = cart.find(item => item.id === selectedProductForModal.id && item.customization === finalDetails && item.price === finalPrice);
-        if (existing) existing.quantity += 1;
-        else {
-            cart.push({
-                ...selectedProductForModal,
-                price: finalPrice,
-                quantity: 1,
-                customization: finalDetails
-            });
+        if (editingCartItem !== null) {
+            // === PROCESO DE EDICIÓN ===
+            const originalIndex = editingCartItem.index;
+            const originalQty = editingCartItem.quantity;
+
+            cart.splice(originalIndex, 1);
+
+            const existing = cart.find(item => item.id === selectedProductForModal.id && item.customization === finalDetails && item.price === finalPrice);
+
+            if (existing) {
+                existing.quantity += originalQty;
+            } else {
+                cart.splice(originalIndex, 0, {
+                    ...selectedProductForModal,
+                    price: finalPrice,
+                    quantity: originalQty,
+                    customization: finalDetails
+                });
+            }
+
+            editingCartItem = null;
+
+            if (typeof showAddedToCartModal === 'function') {
+                showAddedToCartModal("Pedido actualizado");
+            }
+
+        } else {
+            // === PROCESO NORMAL (Agregar nuevo) ===
+            const existing = cart.find(item => item.id === selectedProductForModal.id && item.customization === finalDetails && item.price === finalPrice);
+            if (existing) existing.quantity += 1;
+            else {
+                cart.push({
+                    ...selectedProductForModal,
+                    price: finalPrice,
+                    quantity: 1,
+                    customization: finalDetails
+                });
+            }
+            if (typeof showAddedToCartModal === 'function') {
+                showAddedToCartModal(selectedProductForModal.name);
+            }
         }
     }
 
@@ -1249,7 +1300,7 @@ function updateCartUI() {
     if (cart.length === 0) {
         container.innerHTML = '<p class="empty-cart-msg">Tu carrito está vacío.</p>';
     } else {
-        cart.forEach(item => {
+       cart.forEach((item, index) => { // <-- Agrega el parámetro 'index' aquí
             total += item.price * item.quantity;
             itemCount += item.quantity;
 
@@ -1266,10 +1317,16 @@ function updateCartUI() {
                     <span>$${item.price}.00 c/u</span>
                     ${detailsDisplay}
                 </div>
-                <div class="quantity-controls">
-                    <button onclick="changeQuantity(${item.id}, '${item.customization}', -1)">-</button>
-                    <span>${item.quantity}</span>
-                    <button onclick="changeQuantity(${item.id}, '${item.customization}', 1)">+</button>
+                <!-- CONTENEDOR MODIFICADO PARA INCLUIR EL BOTÓN EDITAR -->
+                <div class="cart-item-actions" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                    <button onclick="editCartItem(${index})" style="background: none; border: none; color: var(--accent-color); cursor: pointer; font-size: 0.85rem; font-weight: 600; display: flex; gap: 5px; align-items: center;">
+                        <i class="fa-solid fa-pen"></i> Editar
+                    </button>
+                    <div class="quantity-controls">
+                        <button onclick="changeQuantity(${item.id}, '${item.customization}', -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="changeQuantity(${item.id}, '${item.customization}', 1)">+</button>
+                    </div>
                 </div>
             `;
             container.appendChild(itemEl);
@@ -1278,6 +1335,20 @@ function updateCartUI() {
 
     countBadge.innerText = itemCount;
     totalSpan.innerText = `$${total}.00`;
+}
+
+function editCartItem(index) {
+    const item = cart[index];
+    if (!item) return;
+
+    // Guardamos el índice y la cantidad original en nuestra variable global
+    editingCartItem = { index: index, quantity: item.quantity };
+
+    // Cerramos el carrito lateral para evitar que estorbe visualmente
+    document.getElementById('cart-sidebar').classList.remove('open');
+
+    // Abrimos el modal de configuración de este producto
+    openCustomModal(item.id);
 }
 
 // ==========================================
@@ -1578,17 +1649,16 @@ function finalCheckoutSubmit() {
     const phone = document.getElementById('client-phone').value.trim();
     const deliveryMethod = document.querySelector('input[name="delivery-method"]:checked').value;
 
-    // SOLUCIÓN: Validamos si el elemento existe en el DOM antes de extraer el valor
+    // Validación de la dirección
     const addressInput = document.getElementById('client-address');
     const address = addressInput ? addressInput.value.trim() : "";
-
     const notes = document.getElementById('order-notes').value.trim();
 
     const paymentMethodSelect = document.getElementById('payment-method-select').value;
     const mixCheckboxes = document.querySelectorAll('input[name="mix-payment-type"]:checked');
     const checkedMixPayments = Array.from(mixCheckboxes).map(cb => cb.value);
 
-    // --- VALIDACIONES CON TOAST EN LUGAR DE ALERT ---
+    // Alertas de Validación
     if (!name) { showMinimalAlert("Por favor, ingresa tu nombre.", "error"); return; }
     if (phone.length !== 10) { showMinimalAlert("El número de teléfono debe tener exactamente 10 dígitos numéricos.", "error"); return; }
     if (deliveryMethod === 'Domicilio' && !address && !gpsLocationUrl) {
@@ -1603,125 +1673,147 @@ function finalCheckoutSubmit() {
     let metodoPagoTexto = "";
     let especificacionesPago = "";
 
+    // Lógica para estructurar el mensaje del Método de Pago
     if (paymentMethodSelect === 'Efectivo') {
         const cashValue = parseFloat(document.getElementById('pay-cash-amount').value) || 0;
         if (cashValue <= 0) { showMinimalAlert("Por favor ingresa la cantidad con la que vas a pagar en efectivo.", "error"); return; }
         if (cashValue < totalFinal) { showMinimalAlert(`El efectivo ingresado ($${cashValue}) es menor al costo total del pedido ($${totalFinal}).`, "error"); return; }
 
-        metodoPagoTexto = "1. Efectivo";
-        especificacionesPago = `💵 Paga con: $${cashValue}.00\n🪙 Cambio estimado: $${(cashValue - totalFinal).toFixed(2)}\n`;
+        metodoPagoTexto = "Efectivo";
+        especificacionesPago = `💵 Pagas con: $${cashValue.toFixed(2)}\n🔁 Cambio: $${(cashValue - totalFinal).toFixed(2)}\n`;
 
     } else if (paymentMethodSelect === 'Tarjeta') {
-        metodoPagoTexto = "2. Tarjeta (Pago al recibir/entregar)";
-        especificacionesPago = "💳 Se requiere terminal para cobro con tarjeta.\n";
+        metodoPagoTexto = "Tarjeta (Pago al recibir/entregar)";
+        especificacionesPago = "💳 Se requiere terminal para cobro.\n";
 
     } else if (paymentMethodSelect === 'Transferencia') {
-        metodoPagoTexto = "3. Transferencia Bancaria";
-        especificacionesPago = "🏦 *Datos de Cuenta enviados al cliente:*\n   - Banco: Nu\n   - CLABE: 638180000136730578\n   - Beneficiario: Fernando Gael Duran Zamora\n⚠️ _Favor de compartir su comprobante por este chat._\n";
+        metodoPagoTexto = "Transferencia Bancaria";
+        especificacionesPago = "🏦 *Cuenta NU:* 638180000136730578\n   - Beneficiario: Fernando Gael Duran Zamora\n⚠️ _Favor de compartir su comprobante por este chat._\n";
 
     } else if (paymentMethodSelect === 'Mixto') {
         if (checkedMixPayments.length !== 2) {
-            showMinimalAlert("Para el pago Mixto, debes seleccionar exactamente 2 métodos de pago de las casillas.", "error");
+            showMinimalAlert("Para el pago Mixto, debes seleccionar exactamente 2 métodos de pago.", "error");
             return;
         }
 
-        metodoPagoTexto = `4. Mixto (${checkedMixPayments.join(' + ')})`;
+        metodoPagoTexto = `Mixto (${checkedMixPayments.join(' + ')})`;
 
         if (checkedMixPayments.includes('Efectivo') && checkedMixPayments.includes('Transferencia')) {
             const mCash = parseFloat(document.getElementById('mix-amount-cash').value) || 0;
-            if (mCash <= 0) { showMinimalAlert("Ingresa el monto a cubrir en efectivo para la mezcla de pago.", "error"); return; }
+            if (mCash <= 0) { showMinimalAlert("Ingresa el monto a cubrir en efectivo.", "error"); return; }
             const mTransfer = totalFinal - mCash;
 
-            especificacionesPago = `🎛️ *Desglose Mixto:*\n`;
             if (mTransfer < 0) {
-                especificacionesPago += `   - Efectivo: $${mCash}.00 (Cubre el total)\n   - Cambio en efectivo: $${Math.abs(mTransfer).toFixed(2)}\n   - Transferencia: $0.00\n`;
+                especificacionesPago = `💵 Pagas con: $${mCash}.00 (Cubre el total)\n🔁 Cambio: $${Math.abs(mTransfer).toFixed(2)}\n🏦 Transferencia: $0.00\n`;
             } else {
-                especificacionesPago += `   - Efectivo: $${mCash}.00\n   - Transferencia: $${mTransfer.toFixed(2)}\n`;
-                especificacionesPago += `🏦 *Cuenta:* 638180000136730578\n`;
-                especificacionesPago += `🏦 *Banco:* Nu\n`;
-                especificacionesPago += `🏦 *Beneficiario:* Fernando Gael Duran Zamora\n`;
+                especificacionesPago = `💵 Efectivo: $${mCash}.00\n🏦 Transferencia: $${mTransfer.toFixed(2)}\n🏦 *Cuenta NU:* 638180000136730578\n`;
             }
         }
         else if (checkedMixPayments.includes('Transferencia') && checkedMixPayments.includes('Tarjeta')) {
             const mTransfer = parseFloat(document.getElementById('mix-amount-transfer').value) || 0;
-            if (mTransfer <= 0) { showMinimalAlert("Ingresa el monto que se pagará vía transferencia electrónica.", "error"); return; }
-            if (mTransfer > totalFinal) { showMinimalAlert("El monto por transferencia no puede ser mayor que el total de la orden.", "error"); return; }
+            if (mTransfer <= 0) { showMinimalAlert("Ingresa el monto a transferir.", "error"); return; }
+            if (mTransfer > totalFinal) { showMinimalAlert("El monto por transferencia no puede ser mayor que el total.", "error"); return; }
             const mCard = totalFinal - mTransfer;
 
-            especificacionesPago = `🎛️ *Desglose Mixto:*\n   - Transferencia: $${mTransfer.toFixed(2)}\n   - Tarjeta (Terminal): $${mCard.toFixed(2)}\n`;
-            especificacionesPago += `🏦 *Cuenta NU:* 1234 5678 9012 3456\n`;
-            especificacionesPago += `🏦 *Nombre:* Fernando Gael Duran Zamora\n`;
+            especificacionesPago = `🏦 Transferencia: $${mTransfer.toFixed(2)}\n💳 Tarjeta (Terminal): $${mCard.toFixed(2)}\n🏦 *Cuenta NU:* 638180000136730578\n`;
         }
         else if (checkedMixPayments.includes('Efectivo') && checkedMixPayments.includes('Tarjeta')) {
             const mCash = parseFloat(document.getElementById('mix-amount-cash').value) || 0;
             if (mCash <= 0) { showMinimalAlert("Ingresa el monto a cubrir en efectivo.", "error"); return; }
             const mCard = totalFinal - mCash;
 
-            especificacionesPago = `🎛️ *Desglose Mixto:*\n`;
             if (mCard < 0) {
-                especificacionesPago += `   - Efectivo: $${mCash}.00 (Cubre el total)\n   - Cambio en efectivo: $${Math.abs(mCard).toFixed(2)}\n   - Tarjeta: $0.00\n`;
+                especificacionesPago = `💵 Efectivo: $${mCash}.00 (Cubre el total)\n🔁 Cambio: $${Math.abs(mCard).toFixed(2)}\n💳 Tarjeta: $0.00\n`;
             } else {
-                especificacionesPago += `   - Efectivo: $${mCash}.00\n   - Tarjeta (Terminal): $${mCard.toFixed(2)}\n`;
+                especificacionesPago = `💵 Efectivo: $${mCash}.00\n💳 Tarjeta: $${mCard.toFixed(2)}\n`;
             }
         }
     }
 
     const phoneNumber = '525657861068';
 
-// --- NUEVO: Capturar fecha y hora actual ---
-const ahora = new Date();
-const fechaHora = ahora.toLocaleString('es-MX', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-    hour12: true
-}); // Resultado ej: "24/06/2026, 04:10 p. m."
+    // Generar la fecha con el nuevo formato
+    const ahora = new Date();
+    const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', hour12: true };
+    const fechaHora = ahora.toLocaleString('es-MX', opcionesFecha);
 
-let message = '¡NUEVO PEDIDO LA CARPITA!\n';
-message += `*Nota:* Todo alimento se realiza al momento\n`;
-message += `*Tiempo de estimado de preparacion: 15 a 30 minutos (Dependiendo cantidad de alimentos)* \n`;
-message += '========================================\n';
-message += `📅 *Fecha y Hora:* ${fechaHora}\n`; // <-- NUEVA LÍNEA EN EL MENSAJE
-message += `👤 *Cliente:* ${name}\n`;
-message += `📞 *Teléfono:* ${phone}\n`;
-message += `🛵 *Entrega:* ${deliveryMethod === 'Domicilio' ? 'Envío a Domicilio' : 'Pasar por Sucursal'}\n`;
+    // ==========================================
+    // CONSTRUCCIÓN DEL NUEVO MENSAJE DE WHATSAPP
+    // ==========================================
+    let message = '📌 *Pedido La Carpita*\n';
+    message += `🕒 Fecha y hora del pedido: *${fechaHora}*\n\n`;
 
-if (deliveryMethod === 'Domicilio') {
-    message += `📍 *Dirección:* ${address}\n`;
-    if (gpsLocationUrl) message += `🗺️ *Mapa:* ${gpsLocationUrl}\n`;
-} else {
-    // CAMBIO AÑADIDO: Incluye los datos fijos del local cuando pasan a recoger
-    message += `📍 *Lugar de Entrega:* Sucursal La Carpita\n`;
-    message += `🏪 https://maps.app.goo.gl/U6CCBt3FCJ4TdgNs9\n`;
-    message += `📍 *Le avisaremos 5-10 min antes para que pase por su pedido\n`;
-}
+    // Iteración de productos más limpia
+    cart.forEach((item, index) => {
+        // Variable para controlar qué nombre imprimimos en el WhatsApp
+        let displayName = item.name;
 
-if (notes) message += `📝 *Notas:* ${notes}\n`;
-message += '===============================\n\n';
-message += '🛒 *DETALLE DEL PEDIDO:*\n';
+        // Añadimos el subtítulo con los alimentos correspondientes si detecta un Paquete
+        if (item.id === 26) displayName += " (Boneless y Alitas)";
+        else if (item.id === 27) displayName += " (Tenders y Boneless)";
+        else if (item.id === 28) displayName += " (Dedos y Palomitas)";
+        else if (item.id === 29) displayName += " (Dedos y Boneless)";
+        else if (item.id === 30) displayName += " (Alitas y Palomitas)";
+        else if (item.id === 31) displayName += " (Palomitas y Tenders)";
+        else if (item.id === 32) displayName += " (Boneless, Alitas y Dedos)";
+        else if (item.id === 33) displayName += " (Tenders, Palomitas y Boneless)";
+        else if (item.id === 34) displayName += " (Tenders, Dedos y Boneless)";
 
-cart.forEach(item => {
-    message += `• *${item.quantity}x ${item.name}* ($${item.price * item.quantity}.00)\n`;
-    if (item.customization) {
-        const lines = item.customization.split(' | ');
-        lines.forEach(line => {
-            message += `   └ _${line}_\n`;
-        });
+        message += `🍽️ *${index + 1}- (x${item.quantity}) ${displayName} — $${item.price * item.quantity}.00*\n`;
+
+        if (item.customization) {
+            const lines = item.customization.split(' | ');
+            lines.forEach(line => {
+                message += `${line}\n`;
+            });
+        }
+        message += '\n'; // Espacio vital para separar visualmente cada platillo
+    });
+
+    message += '-----------------------\n';
+    message += `🧾 Subtotal: $${totalCarrito}.00\n`;
+    if (costoEnvio > 0) message += `🚚 Envío: $${costoEnvio}.00\n`;
+    message += `💰 Total: $${totalFinal}.00\n`;
+    message += '-----------------------\n';
+
+    // Área de Pago
+    message += `💳 Método de pago: *${metodoPagoTexto}*\n`;
+    message += especificacionesPago;
+    message += '-----------------------\n';
+
+    // Información del Cliente
+    message += `👤 Nombre: *${name}*\n`;
+    message += `📞 Teléfono: *${phone}*\n`;
+
+    // Manejo de la ubicación para envíos a domicilio vs sucursal
+    let dirEnvio = "Se enviará manualmente por WhatsApp";
+    if (address && address !== "[Enviaré mi ubicación actual directo por el chat de WhatsApp]") {
+        dirEnvio = address;
     }
-});
 
-message += '\n===================================\n';
-message += `💰 *Subtotal:* $${totalCarrito}.00\n`;
-if (costoEnvio > 0) message += `🛵 *Envío:* $${costoEnvio}.00\n`;
-message += `🛍️ *TOTAL A PAGAR:* *$${totalFinal}.00*\n`;
-message += `💳 *Método de Pago:* ${metodoPagoTexto}\n`;
-message += especificacionesPago;
+    if (deliveryMethod === 'Domicilio') {
+        message += `📍 Ubicación: *${dirEnvio}*\n`;
+        if (gpsLocationUrl) message += `📍 Link GPS: ${gpsLocationUrl}\n`;
+        message += `🚚 Entrega: *Envío a domicilio*\n`;
+    } else {
+        message += `📍 Ubicación: *Sucursal La Carpita*\n`;
+        message += `🚚 Entrega: *Pasar por Sucursal*\n`;
+    }
 
-const encodedMessage = encodeURIComponent(message);
-const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    if (notes) message += `📝 Notas Extras: *${notes}*\n`;
 
-window.open(whatsappUrl, '_blank');
-closeCheckoutModal();
+    // Footer de la orden
+    message += '-----------------------\n';
+    message += `Tiempo de preparacion: *15 min a 30 min dependiendo cantidad de producto y clientes en espera*\n`;
+    message += `💡 *Todo alimento se prepara al momento de su orden*\n`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+    closeCheckoutModal();
 }
+
 // ==========================================
 // INICIALIZACIÓN
 // ==========================================
