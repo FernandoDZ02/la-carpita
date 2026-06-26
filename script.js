@@ -52,7 +52,7 @@ const products = [
     { id: 36, name: 'Papas Curly', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Papas sazonadas en espiral.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDg8lJ0xBVThwuCjQSxS6bNgav9lLNKsfIgiTSgSmYlX1E7fERwyWz9RL7&s=10' },
     { id: 37, name: 'Papas Waffle', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Papas en corte rejilla crujientes.', hasChips: true, image: 'https://carnesmag.mx/storage/app/media/products/papas-waffle.jpg' },
     { id: 38, name: 'Papas Gajo', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Gajos de papa sazonados con piel.', hasChips: true, image: 'https://thecookinglab.es/wp-content/uploads/2024/09/Patatas-gajo-en-freidora-de-aire.jpg' },
-    { id: 39, name: 'Mix de Papas', price: 115, category: 'paquetes', subCategory: 'papas', desc: 'Combinación especial de todos nuestros cortes.', hasChips: true, image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=400&q=80' },
+    { id: 39, name: 'Mix de Papas', price: 115, category: 'paquetes', subCategory: 'papas', desc: 'Combinación especial de todos nuestros cortes.', hasChips: true, image: 'https://luisarturoacademy.com/wp-content/uploads/2022/04/Tipos-de-papas.png' },
     { id: 40, name: 'Aros de Cebolla (15 pz)', price: 55, category: 'paquetes', subCategory: 'papas', desc: '15 aros de cebolla empanizados extra crujientes.', hasChips: false, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL1B0r_sw54Mv63DkMvY5iNcTfbTmxTf8hqghN1U4UR7_2auoxlhUmeiU&s=10' },
 
     // --- ADEREZOS / SALSAS ---
