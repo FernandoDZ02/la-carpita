@@ -26,7 +26,7 @@ const products = [
     // --- BANDERILLAS Y SALCHIS ---
     { id: 15, name: 'Banderilla Salchicha', price: 30, category: 'banderillas', subCategory: 'banderillas', desc: 'Banderilla clásica frita al momento.', hasChips: false, image: 'img/BS.jpg' },
     { id: 16, name: 'Banderilla Queso', price: 35, category: 'banderillas', subCategory: 'banderillas', desc: 'Rellena completamente de queso derretido.', hasChips: false, image: 'img/BQ.jpg' },
-    { id: 17, name: 'Banderilla Combinada', price: 30, category: 'banderillas', subCategory: 'banderillas', desc: 'Mitad salchicha y mitad queso mozzarella.', hasChips: false, image: 'img/BC.jpg' },
+    { id: 17, name: 'Banderilla Combinada', price: 35, category: 'banderillas', subCategory: 'banderillas', desc: 'Mitad salchicha y mitad queso mozzarella.', hasChips: false, image: 'img/BC.jpg' },
     { id: 18, name: 'Mini Salchicha (6 pz)', price: 60, category: 'banderillas', subCategory: 'banderillas', desc: '6 deliciosas minibanderillas de salchicha.', hasChips: false, image: 'img/MBS.jpg' },
     { id: 19, name: 'Mini Salchicha con Papas', price: 75, category: 'banderillas', subCategory: 'banderillas', desc: '6 minibanderillas de salchicha con papas.', hasChips: true, image: 'img/MBSP.jpg' },
     { id: 20, name: 'Mini Queso (6 pz)', price: 75, category: 'banderillas', subCategory: 'banderillas', desc: '6 minibanderillas rellenas puramente de queso.', hasChips: false, image: 'img/MBQ.jpg' },
