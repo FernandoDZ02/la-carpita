@@ -1,3 +1,10 @@
+const preciosArmaTuCombo = {
+    'Boneless': 70,
+    'Tenders': 70,
+    'Palomitas': 70,
+    'Alitas': 75,
+    'Dedos de Queso': 60
+};
 const products = [
     // --- BONELESS ---
     { id: 1, name: 'Boneless Sencillos', price: 70, category: 'snacks', subCategory: 'boneless', desc: 'Trozos de pechuga crujientes y jugosos.', hasChips: false, image: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=400&q=80' },
@@ -37,6 +44,17 @@ const products = [
     { id: 25, name: 'Salchipapas', price: 70, category: 'banderillas', subCategory: 'banderillas', desc: 'Combinación perfecta de salchichas y papas.', hasChips: true, image: 'https://tofuu.getjusto.com/orioneat-local/resized2/wbDJFHXo6gKgkBp4m-2400-x.webp' },
 
     // --- PAQUETES ---
+    {
+        id: 99,
+        name: 'Arma tu Combo',
+        price: 0, // El precio se calcula dinámicamente
+        category: 'paquetes',
+        subCategory: 'paquetes',
+        desc: 'Todos los alimentos de "Arma tu Combo" son ordenes completas excepto papas.',
+        hasChips: false,
+        isCustomCombo: true, // Identificador clave para el modal
+        image: 'https://img0.didiglobal.com/static/soda_public/do1_jNmiVwpdhmdVve7TMAYb' // Cambia por tu imagen
+    },
     { id: 26, name: 'Paquete Súper 1', price: 150, category: 'paquetes', subCategory: 'paquetes', desc: 'Boneless (1 aderezo) + Alitas (1 aderezo) + Papas. (2 Aderezos en total)', hasChips: true, image: 'img/S1.jpg' },
     { id: 27, name: 'Paquete Súper 2', price: 140, category: 'paquetes', subCategory: 'paquetes', desc: 'Tenders (1 aderezo) + Boneless (1 aderezo) + Papas. (2 Aderezos en total)', hasChips: true, image: 'img/S2.jpg' },
     { id: 28, name: 'Paquete Súper 3', price: 120, category: 'paquetes', subCategory: 'paquetes', desc: 'Dedos (1 aderezo) + Palomitas (1 aderezo) + Papas. (2 Aderezos en total)', hasChips: true, image: 'img/S3.jpg' },
@@ -48,7 +66,7 @@ const products = [
     { id: 34, name: 'Paquete Súper Mega', price: 200, category: 'paquetes', subCategory: 'paquetes', desc: 'Tenders + Dedos + Boneless + Papas.', hasChips: true, image: 'img/SM.jpg' },
 
     // --- PAPAS INDIVIDUALES ---
-    { id: 35, name: 'Papas Francesa', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Porción individual clásica de papas fritas.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoAhis1z1PdZuJ0LPPkfAccVlv86n1aSayDoJKrB34ysr-RS2C-JwZnAU&s=10' },
+    { id: 35, name: 'Papas Francesa', price: 55, category: 'paquetes', subCategory: 'papas', desc: 'Porción individual clásica de papas fritas.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoAhis1z1PdZuJ0LPPkfAccVlv86n1aSayDoJKrB34ysr-RS2C-JwZnAU&s=10' },
     { id: 36, name: 'Papas Curly', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Papas sazonadas en espiral.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDg8lJ0xBVThwuCjQSxS6bNgav9lLNKsfIgiTSgSmYlX1E7fERwyWz9RL7&s=10' },
     { id: 37, name: 'Papas Waffle', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Papas en corte rejilla crujientes.', hasChips: true, image: 'https://carnesmag.mx/storage/app/media/products/papas-waffle.jpg' },
     { id: 38, name: 'Papas Gajo', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Gajos de papa sazonados con piel.', hasChips: true, image: 'https://thecookinglab.es/wp-content/uploads/2024/09/Patatas-gajo-en-freidora-de-aire.jpg' },
@@ -64,8 +82,11 @@ const products = [
     { id: 46, name: 'Salsa Tamarindo Habanero Extra', price: 8, category: 'paquetes', subCategory: 'aderezos', desc: 'Toque agridulce frutal con picante habanero.', hasChips: false, isSauceProduct: true, image: 'img/TH.jpg' },
     { id: 47, name: 'Salsa Ajo Parmesano Extra', price: 8, category: 'paquetes', subCategory: 'aderezos', desc: 'Mezcla cremosa e intensa de ajo y queso parmesano.', hasChips: false, isSauceProduct: true, image: 'img/AP.jpg' },
     { id: 48, name: 'Salsa Mostaza y Miel', price: 8, category: 'paquetes', subCategory: 'aderezos', desc: 'Mezcla cremosa e intensa de mostaza y miel.', hasChips: false, isSauceProduct: true, image: 'img/MM.jpg' },
+
+
 ];
 const sauceOptions = ['Ranch', 'Ranch Habanero', 'Mango Habanero', 'Buffalo', 'BBQ', 'Tamarindo Habanero', 'Ajo Parmesano', 'Adobadas (Maggi, Inglesa, Tajin y Salsa)', 'Mostaza y Miel'];
+
 
 
 // ==========================================
@@ -85,8 +106,14 @@ function renderProducts(items) {
 
     items.forEach(product => {
         const card = document.createElement('div');
-        card.className = 'product-card';
+
+        // AGREGAMOS UNA CLASE ESPECIAL SI ES EL COMBO PERSONALIZADO
+        const extraClass = product.isCustomCombo ? 'highlight-promo-card' : '';
+        const promoBadge = product.isCustomCombo ? '<div class="promo-badge-card">¡NUEVO!</div>' : '';
+
+        card.className = `product-card ${extraClass}`;
         card.innerHTML = `
+            ${promoBadge}
             <div class="product-image-container">
                 <img src="${product.image}" alt="${product.name}" loading="lazy">
             </div>
@@ -96,7 +123,7 @@ function renderProducts(items) {
                     <p>${product.desc}</p>
                 </div>
                 <div class="product-meta">
-                    <span class="price">$${product.price}.00</span>
+                    <span class="price">${product.price === 0 ? '$$Variable' : '$' + product.price + '.00'}</span>
                     <button class="add-btn" onclick="openCustomModal(${product.id})" aria-label="Agregar">
                         <i class="fa-solid fa-plus"></i>
                     </button>
@@ -352,7 +379,7 @@ function openCustomModal(productId) {
         `;
     }
     // SECCIÓN DE ADEREZOS INCLUIDOS POR DEFECTO
-    else if (!isBanderilla && !isIndividualChips && !isMixPapas && !isArosCebolla && !isExtraSauce) {
+    else if (!isBanderilla && !isIndividualChips && !isMixPapas && !isArosCebolla && !isExtraSauce && !product.isCustomCombo) {
         let labelSauce1 = 'Elige el Aderezo / Salsa:';
         let labelSauce2 = 'Elige el Aderezo 2:';
         let labelSauce3 = 'Elige el Aderezo 3:';
@@ -463,6 +490,83 @@ function openCustomModal(productId) {
             </div>
         `;
     }
+    // --- LÓGICA ESPECIAL: ARMA TU COMBO ---
+    if (product.isCustomCombo) {
+        modalHTML += `
+            <div class="custom-section">
+                <label class="section-title"><i class="fa-solid fa-list-ol"></i> ¿De cuántos alimentos será tu combo?</label>
+                <div class="radio-tile-group" onchange="handleComboSizeChange()" style="margin-bottom: 16px;">
+                    <label class="radio-tile"><input type="radio" name="combo-size" value="2" checked><span>2 Alimentos</span></label>
+                    <label class="radio-tile"><input type="radio" name="combo-size" value="3"><span>3 Alimentos</span></label>
+                </div>
+            </div>
+
+            <!-- Contenedores de Alimentos Generados Dinámicamente -->
+            ${generateComboFoodSection(1)}
+            ${generateComboFoodSection(2)}
+
+            <div id="combo-food-3-container" style="display: none;">
+                ${generateComboFoodSection(3)}
+            </div>
+
+            <!-- Módulo de Papas Extra -->
+            <div class="custom-section border-top">
+                <label class="checkbox-tile" style="margin:0;padding:12px;display:flex;align-items:center;gap:10px;">
+                    <input type="checkbox" id="combo-extra-fries" onchange="toggleComboFriesPanel()">
+                    <span>Agregar Papas (+$20.00)</span>
+                </label>
+
+                <div id="combo-fries-panel" style="display:none;margin-top:12px;">
+                    <label class="section-title"><i class="fa-solid fa-potato"></i> Tipo de Papa:</label>
+                    <select id="combo-fries-type" class="minimal-select">
+                        <option value="Francesa">Papa Francesa</option>
+                        <option value="Curly">Papa Curly</option>
+                        <option value="Waffle">Papa Waffle</option>
+                        <option value="Gajo">Papa Gajo</option>
+                    </select>
+
+                   <label class="section-title" style="margin-top: 15px;"><i class="fa-solid fa-cheese"></i> Condimentos de las Papas:</label>
+                    <div class="radio-tile-group" onchange="handleComboFriesModeChange()" style="margin-bottom: 16px;">
+                        <label class="radio-tile"><input type="radio" name="combo-fries-mode" value="Con Todo" checked><span>Con todo</span></label>
+                        <label class="radio-tile"><input type="radio" name="combo-fries-mode" value="Todo Aparte"><span>Todo aparte</span></label>
+                        <label class="radio-tile"><input type="radio" name="combo-fries-mode" value="Solas"><span>Solas</span></label>
+                        <label class="radio-tile"><input type="radio" name="combo-fries-mode" value="Personalizar"><span>Personalizar</span></label>
+                    </div>
+
+
+
+                    <div id="combo-fries-custom" style="display:none; background:var(--bg-color); padding:12px; border-radius:var(--radius-sm); margin-top:10px;">
+                        <div class="addon-row">
+                            <span>Catsup</span>
+                            <div class="radio-tile-group small-group">
+                                <label class="radio-tile"><input type="radio" name="c-catsup" value="Untado" checked><span>Untado</span></label>
+                                <label class="radio-tile"><input type="radio" name="c-catsup" value="Aparte"><span>Aparte</span></label>
+                                <label class="radio-tile"><input type="radio" name="c-catsup" value="Solo"><span>Solo</span></label>
+                            </div>
+                        </div>
+                        <div class="addon-row">
+                            <span>Queso</span>
+                            <div class="radio-tile-group small-group">
+                                <label class="radio-tile"><input type="radio" name="c-queso" value="Untado" checked><span>Untado</span></label>
+                                <label class="radio-tile"><input type="radio" name="c-queso" value="Aparte"><span>Aparte</span></label>
+                                <label class="radio-tile"><input type="radio" name="c-queso" value="Solo"><span>Solo</span></label>
+                            </div>
+                        </div>
+                        <div class="addon-row">
+                            <span>Salsa Casera</span>
+                            <div class="radio-tile-group small-group">
+                                <label class="radio-tile"><input type="radio" name="c-salsa" value="Untado" checked><span>Untado</span></label>
+                                <label class="radio-tile"><input type="radio" name="c-salsa" value="Aparte"><span>Aparte</span></label>
+                                <label class="radio-tile"><input type="radio" name="c-salsa" value="Solo"><span>Solo</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }else
+    // --- FIN LÓGICA ESPECIAL ---
+    // (AQUÍ CONTINÚA TU CÓDIGO ORIGINAL CON LOS OTROS if... else if(isExtraSauce)...)
 
     // --- SECCIÓN DE COMPLEMENTOS FRITOS ---
     if ((product.hasChips && !isSalchi) || isIndividualChips || isMixPapas || isArosCebolla) {
@@ -718,6 +822,94 @@ function openCustomModal(productId) {
     updateModalPrice();
 }
 
+// ==========================================
+// FUNCIONES AUXILIARES PARA "ARMA TU COMBO"
+// ==========================================
+function generateComboFoodSection(index) {
+    const targetId = `combo-subitem-${index}`;
+    return `
+        <div class="custom-section border-top">
+            <label class="section-title"><i class="fa-solid fa-drumstick-bite"></i> Alimento ${index}:</label>
+            <select id="combo-food-${index}" class="minimal-select" onchange="updateModalPrice()">
+                <option value="Boneless">Boneless</option>
+                <option value="Tenders">Tenders</option>
+                <option value="Palomitas">Palomitas</option>
+                <option value="Alitas">Alitas</option>
+                <option value="Dedos de Queso">Dedos de Queso</option>
+            </select>
+
+            <label class="section-title" style="margin-top: 10px; font-size: 0.85rem;"><i class="fa-solid fa-bowl-food"></i> Aderezo para este alimento:</label>
+            <select id="combo-sauce-${index}" class="minimal-select">
+                ${sauceOptions.map(sauce => `<option value="${sauce}">${sauce}</option>`).join('')}
+            </select>
+            <div class="radio-tile-group" id="combo-sauce-prep-${index}" onchange="handleComboSaucePrepChange(${index})">
+                <label class="radio-tile"><input type="radio" name="combo-prep-${index}" value="Untado" checked><span>Untado</span></label>
+                <label class="radio-tile"><input type="radio" name="combo-prep-${index}" value="Aparte"><span>Aparte</span></label>
+                <label class="radio-tile"><input type="radio" name="combo-prep-${index}" value="Solo"><span>Solos</span></label>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <label class="checkbox-tile" style="margin:0; padding: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" class="modal-extra-sauce-checkbox" id="checkbox-extra-${targetId}" onchange="updateModalPrice()">
+                    <span style="font-weight: 500;">Aderezo extra (+$8.00)</span>
+                </label>
+                <div id="subpanel-extra-${targetId}" style="display: none; background-color: var(--bg-color); padding: 12px; border-radius: var(--radius-sm); margin-top: 8px; border-left: 3px solid var(--accent-color)">
+                    <select id="select-extra-${targetId}" class="minimal-select" style="margin-bottom:8px;">
+                        ${sauceOptions.map(sauce => `<option value="${sauce}">${sauce}</option>`).join('')}
+                    </select>
+                    <div class="radio-tile-group small-group">
+                        <label class="radio-tile"><input type="radio" name="prep-extra-${targetId}" value="Untado" checked><span>Untado</span></label>
+                        <label class="radio-tile"><input type="radio" name="prep-extra-${targetId}" value="Aparte"><span>Aparte</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Agrega esto en tu script.js
+document.addEventListener('change', function(e) {
+    if (e.target && e.target.classList.contains('modal-extra-sauce-checkbox')) {
+        const targetId = e.target.id.replace('checkbox-extra-', '');
+        const subpanel = document.getElementById(`subpanel-extra-${targetId}`);
+        if (subpanel) subpanel.style.display = e.target.checked ? 'block' : 'none';
+    }
+});
+
+function handleComboSaucePrepChange(index) {
+    const prepRadio = document.querySelector(`input[name="combo-prep-${index}"]:checked`);
+    const sauceSelect = document.getElementById(`combo-sauce-${index}`);
+
+    if (!prepRadio || !sauceSelect) return;
+
+    if (prepRadio.value === 'Solo') {
+        sauceSelect.disabled = true;
+        sauceSelect.style.opacity = '0.5'; // Efecto visual de apagado
+    } else {
+        sauceSelect.disabled = false;
+        sauceSelect.style.opacity = '1';
+    }
+}
+
+function handleComboSizeChange() {
+    const size = document.querySelector('input[name="combo-size"]:checked').value;
+    document.getElementById('combo-food-3-container').style.display = size === '3' ? 'block' : 'none';
+    updateModalPrice();
+}
+
+function toggleComboFriesPanel() {
+    const check = document.getElementById('combo-extra-fries');
+    const panel = document.getElementById('combo-fries-panel');
+    if (panel) panel.style.display = check.checked ? 'block' : 'none';
+    updateModalPrice();
+}
+
+function handleComboFriesModeChange() {
+    const mode = document.querySelector('input[name="combo-fries-mode"]:checked')?.value;
+    const custom = document.getElementById('combo-fries-custom');
+    if (custom) custom.style.display = mode === 'Personalizar' ? 'block' : 'none';
+}
+
 function toggleExtraSauceSubpanel() {
     const checkbox = document.getElementById('modal-extra-sauce-checkbox');
     const subpanel = document.getElementById('extra-sauce-subpanel');
@@ -799,9 +991,33 @@ function handleBanderillaModeChange() {
 function updateModalPrice() {
     if (!selectedProductForModal) return;
 
+
     let currentPrice = selectedProductForModal.price;
     const extraSauceIds = [41, 42, 43, 44, 45, 46, 47, 48];
 
+    // CÁLCULO DE PRECIO PARA "ARMA TU COMBO"
+    if (selectedProductForModal.isCustomCombo) {
+        const size = parseInt(document.querySelector('input[name="combo-size"]:checked')?.value || 2);
+        let calculatedPrice = 0;
+
+        // Suma el precio establecido en "preciosArmaTuCombo" por cada alimento seleccionado
+        for (let i = 1; i <= size; i++) {
+            const foodSelect = document.getElementById(`combo-food-${i}`);
+            if (foodSelect) {
+                calculatedPrice += preciosArmaTuCombo[foodSelect.value] || 0;
+            }
+        }
+
+        // Suma $20 si activaron las papas
+        const friesCheck = document.getElementById('combo-extra-fries');
+        if (friesCheck && friesCheck.checked) {
+            calculatedPrice += 20;
+        }
+
+        currentPrice = calculatedPrice;
+    } else
+        // ... Todo el código original de if(extraSauceIds.includes...
+        // ... (el resto del código de updateModalPrice) ...
     if (extraSauceIds.includes(selectedProductForModal.id)) {
         const selectedSizeRadio = document.querySelector('input[name="sauce-size"]:checked');
         if (selectedSizeRadio) {
@@ -974,6 +1190,70 @@ function confirmCustomization() {
     const isLargeSize = [9, 10, 13, 14, 26, 27, 28, 29, 30, 31].includes(selectedProductForModal.id);
     const isMegaSize = [32, 33, 34].includes(selectedProductForModal.id);
 
+    // 0. CONFIGURACIÓN "ARMA TU COMBO"
+    if (selectedProductForModal.isCustomCombo) {
+        const size = parseInt(document.querySelector('input[name="combo-size"]:checked').value);
+
+        // Leer cada alimento y su aderezo de forma limpia
+        for (let i = 1; i <= size; i++) {
+            const foodName = document.getElementById(`combo-food-${i}`).value;
+            const sauceName = document.getElementById(`combo-sauce-${i}`).value;
+            const prep = document.querySelector(`input[name="combo-prep-${i}"]:checked`).value;
+
+            // Leer extra
+            let extraText = "";
+            const extraCb = document.getElementById(`checkbox-extra-combo-subitem-${i}`);
+            if (extraCb && extraCb.checked) {
+                const eSauce = document.getElementById(`select-extra-combo-subitem-${i}`).value;
+                const ePrep = document.querySelector(`input[name="prep-extra-combo-subitem-${i}"]:checked \n`).value;
+                extraText = ` + Extra: ${eSauce} (${ePrep})`;
+            }
+
+            if (prep === 'Solo') {
+                specs.push(`${foodName}: Solos${extraText}`);
+            } else {
+                specs.push(`${foodName}: ${sauceName} (${prep})${extraText}`);
+            }
+        }
+
+        // Leer si agregaron papas con texto simplificado
+        const extraFries = document.getElementById('combo-extra-fries');
+        if (extraFries && extraFries.checked) {
+            const fType = document.getElementById('combo-fries-type').value;
+            const fMode = document.querySelector('input[name="combo-fries-mode"]:checked').value;
+            let friesText = `Extra Papas ${fType}`;
+
+            if (fMode === 'Con Todo') specs.push(`${friesText}: Con todo`);
+            else if (fMode === 'Todo Aparte') specs.push(`${friesText}: Todo aparte`);
+            else if (fMode === 'Solas') specs.push(`${friesText}: Solas`);
+            else if (fMode === 'Personalizar') {
+                const fCatsup = document.querySelector('input[name="c-catsup"]:checked').value;
+                const fQueso = document.querySelector('input[name="c-queso"]:checked').value;
+                const fSalsa = document.querySelector('input[name="c-salsa"]:checked').value;
+
+                if (fCatsup === 'Untado' && fQueso === 'Untado' && fSalsa === 'Untado') {
+                    specs.push(`${friesText}: Con todo`);
+                }
+                else if (fCatsup === 'Aparte' && fQueso === 'Aparte' && fSalsa === 'Aparte') {
+                    specs.push(`${friesText}: Todo aparte`);
+                }
+                else if (fCatsup === 'Solo' && fQueso === 'Solo' && fSalsa === 'Solo') {
+                    specs.push(`${friesText}: Solas`);
+                }
+                else {
+                    let fCond = [];
+                    if(fCatsup !== 'Solo') fCond.push(`Catsup: ${fCatsup}`);
+                    if(fQueso !== 'Solo') fCond.push(`Queso: ${fQueso}`);
+                    if(fSalsa !== 'Solo') fCond.push(`Salsa: ${fSalsa}`);
+                    specs.push(`${friesText}: ${fCond.join(', ')}`);
+                }
+            }
+        }
+
+        // Asignamos el precio dinámico total que ya se calculó en updateModalPrice
+        finalPrice = document.getElementById('modal-submit-btn').innerText.match(/\$(\d+)\.00/)[1];
+        finalPrice = parseInt(finalPrice, 10);
+    }
     // 1. CASO: SI EL PRODUCTO ES UN BOTE DE ADEREZO EXTRA (IDs 41 al 48)
     if (isExtraSauce) {
         const selectedSize = document.querySelector('input[name="sauce-size"]:checked').value;
@@ -1050,7 +1330,7 @@ function confirmCustomization() {
         }
     }
     // 5. CAPTURA AGRUPADA DE LOS ADEREZOS INCLUIDOS Y EXTRAS
-    else if (!isIndividualChips && !isMixPapas && !isArosCebolla && !isExtraSauce) {
+    else if (!isIndividualChips && !isMixPapas && !isArosCebolla && !isExtraSauce && !selectedProductForModal.isCustomCombo) {
         const sauceSelected1 = document.getElementById('modal-sauce-select').value;
         const saucePrep1 = document.querySelector('input[name="sauce-prep"]:checked').value;
 
@@ -1131,7 +1411,7 @@ function confirmCustomization() {
     }
 
     // 6. CONFIGURACIÓN DE COMPLEMENTOS FRITOS (PAPAS / AROS) SIMPLIFICADO
-    if (((selectedProductForModal.hasChips && !isSalchi) || isIndividualChips || isMixPapas || isArosCebolla) && !isExtraSauce) {
+    if (((selectedProductForModal.hasChips && !isSalchi) || isIndividualChips || isMixPapas || isArosCebolla) && !isExtraSauce && !selectedProductForModal.isCustomCombo) {
         const chipSelect = document.getElementById('modal-chip-type-select');
         let chipName = isArosCebolla ? 'Aros' : 'Papas'; // Nombre base
 
