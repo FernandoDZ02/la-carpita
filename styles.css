@@ -118,14 +118,22 @@ body {
 }
 
 /* Menú de Categorías */
+/* Menú de Categorías */
 .categories-nav {
     display: flex;
     gap: 12px;
     padding: 12px 24px;
-    overflow-x: auto; /* Permite scroll horizontal si los botones no caben */
+    overflow-x: auto;
     white-space: nowrap;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+
+    /* NUEVO: Lo hacemos estático */
+    position: sticky;
+    top: 75px; /* Ajusta este valor si tu header es más alto o bajo */
+    z-index: 80;
+    background-color: var(--bg-color); /* Color de fondo para cubrir el contenido */
+    border-bottom: 1px solid var(--border-color); /* Opcional: línea divisoria */
 }
 
 /* Ocultar la barra de scroll para que se vea más limpio */
@@ -162,10 +170,9 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     position: sticky;
-    top: 0;
-    z-index: 100;
+    top: 135px; /* Ajusta según la altura real de tu header + nav */
+    z-index: 70;
     background-color: var(--bg-color);
-    border-radius: var(--radius-md);
 }
 
 .search-wrapper {
@@ -1032,4 +1039,32 @@ body.dark-mode .custom-toast {
         transform:scale(1);
         opacity:1;
     }
+}
+
+/* Estilos para la tarjeta destacada */
+.highlight-promo-card {
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.15);
+    position: relative;
+}
+
+.promo-badge-card {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 20px;
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: pulseBadge 2s infinite;
+}
+
+@keyframes pulseBadge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
