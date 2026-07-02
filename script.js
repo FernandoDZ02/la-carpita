@@ -1,3 +1,40 @@
+/* ==========================
+   CONTROL DE DÍAS SIN SERVICIO
+   ========================== */
+
+// Días cerrados:
+// 0 = Domingo
+// 1 = Lunes
+// 2 = Martes
+// 3 = Miércoles
+// 4 = Jueves
+// 5 = Viernes
+// 6 = Sábado
+
+const diasSinServicio = [3]; // Lunes
+
+function verificarServicio() {
+
+    const hoy = new Date().getDay();
+
+    if (diasSinServicio.includes(hoy)) {
+
+        document.getElementById("service-modal")
+            .classList.add("show");
+
+        document.getElementById("service-message")
+            .innerHTML =
+            "Hoy no contamos con servicio.<br>Te esperamos mañana.";
+    }
+}
+
+function closeServiceModal() {
+    document.getElementById("service-modal")
+        .classList.remove("show");
+}
+
+window.addEventListener("load", verificarServicio);
+
 const preciosArmaTuCombo = {
     'Boneless': 70,
     'Tenders': 70,
