@@ -2047,7 +2047,7 @@ function finalCheckoutSubmit() {
         }
     }
 
-    const phoneNumber = '525657861068';
+    const phoneNumber = '525541051524';
 
     // Generar la fecha con el nuevo formato
     const ahora = new Date();
