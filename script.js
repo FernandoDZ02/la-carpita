@@ -1699,6 +1699,7 @@ function openCheckoutModal() {
     document.getElementById('overlay').classList.add('open');
 
     handleDeliveryChange(); // Inicializa el estado del campo dirección
+    updateCheckoutSummary();
 }
 
 function closeCheckoutModal() {
@@ -1806,6 +1807,40 @@ function getCheckoutCurrentTotal() {
         : 'Domicilio';
     let costoEnvio = (deliveryMethod === 'Domicilio') ? 10 : 0;
     return totalCarrito + costoEnvio;
+}
+
+// ==========================================
+// NUEVA FUNCIÓN: ACTUALIZAR RESUMEN DE CHECKOUT
+// ==========================================
+function updateCheckoutSummary() {
+    // Calcular subtotal
+    let totalCarrito = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    document.getElementById('checkout-subtotal').innerText = `$${totalCarrito}.00`;
+
+    // Determinar método de envío y costo
+    const checkedMethod = document.querySelector('input[name="delivery-method"]:checked');
+    const deliveryMethod = checkedMethod ? checkedMethod.value : 'Domicilio';
+    let costoEnvio = 0;
+    const deliveryLabel = document.getElementById('checkout-delivery-label');
+    const deliveryCostDisplay = document.getElementById('checkout-delivery-cost');
+
+    if (deliveryMethod === 'Domicilio') {
+        costoEnvio = 10;
+        deliveryLabel.innerText = 'Envío a Domicilio:';
+        deliveryCostDisplay.innerText = '+$10.00';
+    } else {
+        costoEnvio = 0;
+        deliveryLabel.innerText = 'Pasar por Sucursal:';
+        deliveryCostDisplay.innerText = '+$0.00';
+    }
+
+    // Calcular y mostrar total final
+    const totalFinal = totalCarrito + costoEnvio;
+    document.getElementById('checkout-final-total').innerText = `$${totalFinal}.00`;
+
+    // Importante: Recalcular también el cambio si ya ingresaron efectivo
+    calculateSoloChange();
+    calculateMixOutputs();
 }
 
 function handlePaymentMethodChange() {
@@ -1946,6 +1981,7 @@ handleDeliveryChange = function() {
     if (typeof originalHandleDeliveryChange === 'function') {
         originalHandleDeliveryChange();
     }
+    updateCheckoutSummary();
     calculateSoloChange();
     calculateMixOutputs();
 };
@@ -2190,3 +2226,72 @@ function closeWelcomeModal(){
 
     localStorage.setItem("welcomeShown","true");
 }
+
+// ==========================================
+// CONTADOR DINÁMICO DE HORARIO (7:30 PM a 10:30 PM)
+// ==========================================
+function updateStoreStatus() {
+    const banner = document.getElementById('store-status-banner');
+    const textElement = document.getElementById('store-status-text');
+    const iconElement = document.getElementById('store-status-icon');
+
+    if (!banner || !textElement) return;
+
+    // Verificar si hoy es día sin servicio usando tu variable global
+    const hoy = new Date().getDay();
+    if (typeof diasSinServicio !== 'undefined' && diasSinServicio.includes(hoy)) {
+        banner.className = 'store-status-banner closed';
+        iconElement.className = 'fa-solid fa-triangle-exclamation';
+        textElement.innerHTML = 'Hoy no contamos con servicio. ¡Te esperamos mañana!';
+        return;
+    }
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentSecond = now.getSeconds();
+
+    // Convertir la hora actual a minutos totales del día para calcular fácil
+    const currentTotalMinutes = currentHour * 60 + currentMinute;
+
+    // Horario de apertura: 19:30 (7:30 PM) y Cierre: 22:30 (10:30 PM)
+    const openTotalMinutes = 19 * 60 + 30;
+    const closeTotalMinutes = 22 * 60 + 30;
+
+    banner.className = 'store-status-banner'; // Resetear clases
+
+    if (currentTotalMinutes < openTotalMinutes) {
+        // AÚN NO ABREN (Cuenta regresiva para abrir)
+        const diff = openTotalMinutes * 60 - (currentTotalMinutes * 60 + currentSecond);
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        const s = diff % 60;
+
+        banner.classList.add('soon');
+        iconElement.className = 'fa-solid fa-clock';
+        textElement.innerHTML = `Abrimos en: <strong>${h}h ${m}m ${s}s</strong> (7:30 PM)`;
+
+    } else if (currentTotalMinutes >= openTotalMinutes && currentTotalMinutes < closeTotalMinutes) {
+        // ESTÁN ABIERTOS (Cuenta regresiva para cerrar)
+        const diff = closeTotalMinutes * 60 - (currentTotalMinutes * 60 + currentSecond);
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        const s = diff % 60;
+
+        banner.classList.add('open');
+        iconElement.className = 'fa-solid fa-door-open';
+        textElement.innerHTML = `¡Estamos abiertos! Cerramos en: <strong>${h}h ${m}m ${s}s</strong>`;
+
+    } else {
+        // YA CERRARON POR HOY
+        banner.classList.add('closed');
+        iconElement.className = 'fa-solid fa-store-slash';
+        textElement.innerHTML = `Cerrado por hoy. Abrimos mañana a las 7:30 PM`;
+    }
+}
+
+// Iniciar el contador cuando cargue la página y actualizarlo cada segundo
+window.addEventListener('load', () => {
+    updateStoreStatus();
+    setInterval(updateStoreStatus, 1000);
+});
