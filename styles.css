@@ -1068,3 +1068,48 @@ body.dark-mode .custom-toast {
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
+
+/* ==========================
+   CONTADOR DE HORARIO
+   ========================== */
+.store-status-banner {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 215px;
+    z-index: 60;
+}
+
+/* Estado: Próximo a abrir (Naranja) */
+.store-status-banner.soon {
+    color: #f59e0b;
+    border-left: 4px solid #f59e0b;
+}
+
+/* Estado: Abierto (Verde estilo WhatsApp) */
+.store-status-banner.open {
+    color: #25d366;
+    border-left: 4px solid #25d366;
+}
+
+/* Estado: Cerrado (Rojo, usa tu accent-color) */
+.store-status-banner.closed {
+    color: var(--accent-color);
+    border-left: 4px solid var(--accent-color);
+}
+
+.store-status-banner i {
+    font-size: 1.2rem;
+}
