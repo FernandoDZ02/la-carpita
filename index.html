@@ -52,6 +52,10 @@
     </div>
 
     <main class="main-content">
+        <div class="store-status-banner" id="store-status-banner">
+            <i id="store-status-icon" class="fa-solid fa-clock"></i>
+            <span id="store-status-text">Calculando horario...</span>
+        </div>
         <div id="products-grid" class="products-grid">
             </div>
     </main>
@@ -117,6 +121,26 @@
         <button type="button" id="whatsapp-geo-button" class="action-btn-secondary" onclick="sendLocationViaWhatsApp()" style="width: 100%; padding: 12px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-sm); border: 1px solid #25D366; background-color: rgba(37, 211, 102, 0.1); color: #25D366; cursor: pointer; margin-bottom: 10px; transition: background-color 0.2s;">
             <i class="fa-brands fa-whatsapp"></i> Mandar ubicación en chat de WhatsApp
         </button>
+    </div>
+</div>
+
+
+<div class="custom-section border-top" id="checkout-summary-section">
+    <label class="section-title"><i class="fa-solid fa-receipt"></i> Resumen de tu pedido:</label>
+    <div style="background-color: var(--bg-color); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+            <span>Subtotal:</span>
+            <span id="checkout-subtotal">$0.00</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+            <span id="checkout-delivery-label">Envío a Domicilio:</span>
+            <span id="checkout-delivery-cost">+$10.00</span>
+        </div>
+        <hr style="border: 0; border-top: 1px dashed var(--border-color); margin: 8px 0;">
+        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; color: var(--accent-color);">
+            <span>Total a Pagar:</span>
+            <span id="checkout-final-total">$0.00</span>
+        </div>
     </div>
 </div>
 
