@@ -122,7 +122,7 @@ const products = [
 
 
 ];
-const sauceOptions = ['Ranch', 'Ranch Habanero', 'Mango Habanero', 'Buffalo', 'BBQ', 'Tamarindo Habanero', 'Ajo Parmesano', 'Adobadas (Maggi, Inglesa, Tajin y Salsa)', 'Mostaza y Miel'];
+const sauceOptions = ['Ranch', 'Ranch Habanero', 'Mango Habanero', 'Buffalo', 'BBQ', 'Ajo Parmesano', 'Adobadas (Maggi, Inglesa, Tajin y Salsa)', 'Mostaza y Miel'];
 
 
 
