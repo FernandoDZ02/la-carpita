@@ -11,7 +11,7 @@
 // 5 = Viernes
 // 6 = Sábado
 
-const diasSinServicio = [2]; // Lunes
+const diasSinServicio = [3]; // Lunes
 
 function verificarServicio() {
 
