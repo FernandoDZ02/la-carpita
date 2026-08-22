@@ -11,7 +11,7 @@
 // 5 = Viernes
 // 6 = Sábado
 
-const diasSinServicio = [0]; // Lunes
+const diasSinServicio = [4]; // Lunes
 
 function verificarServicio() {
 
@@ -2083,7 +2083,7 @@ function finalCheckoutSubmit() {
         }
     }
 
-    const phoneNumber = '525524645912';
+    const phoneNumber = '525541051524';
 
     // Generar la fecha con el nuevo formato
     const ahora = new Date();
