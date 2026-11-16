@@ -11,7 +11,7 @@
 // 5 = Viernes
 // 6 = Sábado
 
-const diasSinServicio = [2]; // Lunes
+const diasSinServicio = [6]; // Lunes
 
 function verificarServicio() {
 
@@ -44,39 +44,39 @@ const preciosArmaTuCombo = {
 };
 const products = [
     // --- BONELESS ---
-    { id: 1, name: 'Boneless Sencillos', price: 70, category: 'snacks', subCategory: 'boneless', desc: 'Trozos de pechuga crujientes y jugosos.', hasChips: false, image: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=400&q=80' },
-    { id: 2, name: 'Boneless con Papas', price: 85, category: 'snacks', subCategory: 'boneless', desc: 'Nuestros boneless clásicos acompañados de papas.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnzjyV70NalE8nXTM69Abs6Ssl8JwHCz5jY1q6wvi1BA&s' },
+    { id: 1, name: 'Boneless Sencillos', price: 70, category: 'snacks', subCategory: 'boneless', desc: 'Trozos de pechuga crujientes y jugosos (300g).', hasChips: false, image: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=400&q=80' },
+    { id: 2, name: 'Boneless con Papas', price: 85, category: 'snacks', subCategory: 'boneless', desc: 'Nuestros boneless (240g) clásicos acompañados de papas(180g).', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnzjyV70NalE8nXTM69Abs6Ssl8JwHCz5jY1q6wvi1BA&s' },
 
     // --- TENDERS ---
     { id: 3, name: 'Tenders (5 pz)', price: 70, category: 'snacks', subCategory: 'tenders', desc: '5 tiras de pollo perfectamente empanizadas.', hasChips: false, image: 'https://foodservice.grupobachoco.com/images/productos/5171_TENDER-EMPANIZADO_Plat.jpg' },
-    { id: 4, name: 'Tenders con Papas', price: 85, category: 'snacks', subCategory: 'tenders', desc: '5 tiras de pollo crujiente servidas con papas.', hasChips: true, image: 'https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/chicken_tenders_and_fries.jpg' },
+    { id: 4, name: 'Tenders con Papas', price: 85, category: 'snacks', subCategory: 'tenders', desc: '5 tiras de pollo crujiente servidas con papas(180g).', hasChips: true, image: 'https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/chicken_tenders_and_fries.jpg' },
 
     // --- PALOMITAS ---
-    { id: 5, name: 'Palomitas de Pollo', price: 70, category: 'snacks', subCategory: 'palomitas', desc: 'Esferas crujientes de pollo sazonado.', hasChips: false, image: 'https://www.cocinadelirante.com/sites/default/files/images/2024/03/receta-de-palomitas-de-pollo-sin-freir.jpg' },
-    { id: 6, name: 'Palomitas con Papas', price: 85, category: 'snacks', subCategory: 'palomitas', desc: 'Popcorn chicken acompañado de papas fritas.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVxMGqp_dn1p7m6z42HWdrL4AB-GdiNfaGMkiCQ2SOwf6zckW-5jtr6QP5&s=10' },
+    { id: 5, name: 'Palomitas de Pollo', price: 70, category: 'snacks', subCategory: 'palomitas', desc: 'Esferas crujientes de pollo sazonado(300g).', hasChips: false, image: 'https://www.cocinadelirante.com/sites/default/files/images/2024/03/receta-de-palomitas-de-pollo-sin-freir.jpg' },
+    { id: 6, name: 'Palomitas con Papas', price: 85, category: 'snacks', subCategory: 'palomitas', desc: 'Esferas crujientes(230g) acompañado de papas fritas(180g).', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVxMGqp_dn1p7m6z42HWdrL4AB-GdiNfaGMkiCQ2SOwf6zckW-5jtr6QP5&s=10' },
 
     // --- ALITAS ---
     { id: 7, name: 'Alitas Chicas (6 pz)', price: 75, category: 'snacks', subCategory: 'alitas', desc: '6 jugosas alitas listas para bañar en salsa.', hasChips: false, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTecW6_WLBEhdeKKcdXHjZPZQhP9---D_O-7npkRq0JRVdfIv1uYTQ-Aylx&s=10' },
-    { id: 8, name: 'Alitas Chicas con Papas', price: 90, category: 'snacks', subCategory: 'alitas', desc: '6 alitas acompañadas de una porción de papas.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4Q3_kgVxn0VFSarsMAJ-I53zG3DQsCp2lWBvE3TLqlg&s=10' },
+    { id: 8, name: 'Alitas Chicas con Papas', price: 90, category: 'snacks', subCategory: 'alitas', desc: '6 alitas acompañadas de una porción de papas(180g).', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4Q3_kgVxn0VFSarsMAJ-I53zG3DQsCp2lWBvE3TLqlg&s=10' },
     { id: 9, name: 'Alitas Grandes (14 pz)', price: 175, category: 'snacks', subCategory: 'alitas', desc: 'Para compartir: 14 piezas de nuestras alitas.', hasChips: false, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuEFrHg40DfabrLwnzajLb1lfsMTpuxnfgHGF3dghoIl2_aVtouDPXoYxm&s=10' },
-    { id: 10, name: 'Alitas Grandes con Papas', price: 195, category: 'snacks', subCategory: 'alitas', desc: '14 alitas grandes acompañadas con papas.', hasChips: true, image: 'https://media-cdn.tripadvisor.com/media/photo-s/18/ae/84/30/tiernas-alitas-de-pollo.jpg' },
+    { id: 10, name: 'Alitas Grandes con Papas', price: 195, category: 'snacks', subCategory: 'alitas', desc: '14 alitas grandes acompañadas con papas(180g).', hasChips: true, image: 'https://media-cdn.tripadvisor.com/media/photo-s/18/ae/84/30/tiernas-alitas-de-pollo.jpg' },
 
     // --- DEDOS DE QUESO ---
     { id: 11, name: 'Dedos Chicos (6 pz)', price: 60, category: 'banderillas', subCategory: 'dedos', desc: '6 palitos de queso mozzarella crujiente.', hasChips: false, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9j9NPCr7vAcjj4NCwHaPNdRo5Db9ykoPJVBJMJsn0SA&s=10' },
-    { id: 12, name: 'Dedos Chicos con Papas', price: 80, category: 'banderillas', subCategory: 'dedos', desc: '6 dedos de queso acompañados de papas.', hasChips: true, image: 'https://http2.mlstatic.com/D_Q_NP_680244-MLM109823452274_042026-F.webp' },
+    { id: 12, name: 'Dedos Chicos con Papas', price: 80, category: 'banderillas', subCategory: 'dedos', desc: '6 dedos de queso acompañados de papas(180g).', hasChips: true, image: 'https://http2.mlstatic.com/D_Q_NP_680244-MLM109823452274_042026-F.webp' },
     { id: 13, name: 'Dedos Grandes (14 pz)', price: 135, category: 'banderillas', subCategory: 'dedos', desc: 'Charola grande con 14 dedos de queso mozzarella.', hasChips: false, image: 'https://i.blogs.es/ae5816/dedos-de-queso-empanizados-freidora-de-aire-2-/650_1200.jpg' },
-    { id: 14, name: 'Dedos Grandes con Papas', price: 155, category: 'banderillas', subCategory: 'dedos', desc: '14 dedos de queso acompañados con papas.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLT1gd8ac49vy2ufWlcAqC_Nio14TteC84BkFWuD2C1dRQfxkAOxav8jUN&s=10' },
+    { id: 14, name: 'Dedos Grandes con Papas', price: 155, category: 'banderillas', subCategory: 'dedos', desc: '14 dedos de queso acompañados con papas(180g).', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLT1gd8ac49vy2ufWlcAqC_Nio14TteC84BkFWuD2C1dRQfxkAOxav8jUN&s=10' },
 
     // --- BANDERILLAS Y SALCHIS ---
     { id: 15, name: 'Banderilla Salchicha', price: 30, category: 'banderillas', subCategory: 'banderillas', desc: 'Banderilla clásica frita al momento.', hasChips: false, image: 'img/BS.jpg' },
     { id: 16, name: 'Banderilla Queso', price: 35, category: 'banderillas', subCategory: 'banderillas', desc: 'Rellena completamente de queso derretido.', hasChips: false, image: 'img/BQ.jpg' },
     { id: 17, name: 'Banderilla Combinada', price: 35, category: 'banderillas', subCategory: 'banderillas', desc: 'Mitad salchicha y mitad queso mozzarella.', hasChips: false, image: 'img/BC.jpg' },
     { id: 18, name: 'Mini Salchicha (6 pz)', price: 60, category: 'banderillas', subCategory: 'banderillas', desc: '6 deliciosas minibanderillas de salchicha.', hasChips: false, image: 'img/MBS.jpg' },
-    { id: 19, name: 'Mini Salchicha con Papas', price: 75, category: 'banderillas', subCategory: 'banderillas', desc: '6 minibanderillas de salchicha con papas.', hasChips: true, image: 'img/MBSP.jpg' },
+    { id: 19, name: 'Mini Salchicha con Papas', price: 75, category: 'banderillas', subCategory: 'banderillas', desc: '6 minibanderillas de salchicha con papas(180g).', hasChips: true, image: 'img/MBSP.jpg' },
     { id: 20, name: 'Mini Queso (6 pz)', price: 65, category: 'banderillas', subCategory: 'banderillas', desc: '6 minibanderillas rellenas puramente de queso.', hasChips: false, image: 'img/MBQ.jpg' },
-    { id: 21, name: 'Mini Queso con Papas', price: 80, category: 'banderillas', subCategory: 'banderillas', desc: '6 minibanderillas de queso acompañadas con papas.', hasChips: true, image: 'img/MBQP.jpg' },
+    { id: 21, name: 'Mini Queso con Papas', price: 80, category: 'banderillas', subCategory: 'banderillas', desc: '6 minibanderillas de queso acompañadas con papas(180g).', hasChips: true, image: 'img/MBQP.jpg' },
     { id: 22, name: 'Mini Combinadas (6 pz)', price: 65, category: 'banderillas', subCategory: 'banderillas', desc: '6 piezas de minibanderillas surtidas.', hasChips: false, image: 'img/MBC.jpg' },
-    { id: 23, name: 'Mini Combinadas con Papas', price: 80, category: 'banderillas', subCategory: 'banderillas', desc: '6 piezas de minibanderillas mixtas con papas.', hasChips: true, image: 'img/MBCP.jpg' },
+    { id: 23, name: 'Mini Combinadas con Papas', price: 80, category: 'banderillas', subCategory: 'banderillas', desc: '6 piezas de minibanderillas mixtas con papas(180g).', hasChips: true, image: 'img/MBCP.jpg' },
     { id: 24, name: 'Salchipulpos (10 pz)', price: 55, category: 'banderillas', subCategory: 'banderillas', desc: '10 piezas divertidas de salchicha frita.', hasChips: false, image: 'https://i.pinimg.com/736x/a1/e3/e6/a1e3e64cb8746e8711f0ec98b0562fb0.jpg' },
     { id: 25, name: 'Salchipapas', price: 70, category: 'banderillas', subCategory: 'banderillas', desc: 'Combinación perfecta de salchichas y papas.', hasChips: true, image: 'https://tofuu.getjusto.com/orioneat-local/resized2/wbDJFHXo6gKgkBp4m-2400-x.webp' },
 
@@ -92,22 +92,22 @@ const products = [
         isCustomCombo: true, // Identificador clave para el modal
         image: 'https://img0.didiglobal.com/static/soda_public/do1_jNmiVwpdhmdVve7TMAYb' // Cambia por tu imagen
     },
-    { id: 26, name: 'Paquete Súper 1', price: 150, category: 'paquetes', subCategory: 'paquetes', desc: 'Boneless (1 aderezo) + Alitas (1 aderezo) + Papas. (2 Aderezos en total)', hasChips: true, image: 'img/S1.jpg' },
-    { id: 27, name: 'Paquete Súper 2', price: 140, category: 'paquetes', subCategory: 'paquetes', desc: 'Tenders (1 aderezo) + Boneless (1 aderezo) + Papas. (2 Aderezos en total)', hasChips: true, image: 'img/S2.jpg' },
-    { id: 28, name: 'Paquete Súper 3', price: 120, category: 'paquetes', subCategory: 'paquetes', desc: 'Dedos (1 aderezo) + Palomitas (1 aderezo) + Papas. (2 Aderezos en total)', hasChips: true, image: 'img/S3.jpg' },
-    { id: 29, name: 'Paquete Súper 4', price: 140, category: 'paquetes', subCategory: 'paquetes', desc: 'Dedos (1 aderezo) + Boneless (1 aderezo) + Papas. (2 Aderezos en total)', hasChips: true, image: 'img/S4.jpg' },
-    { id: 30, name: 'Paquete Súper 5', price: 135, category: 'paquetes', subCategory: 'paquetes', desc: 'Alitas (1 aderezo) + Palomitas (1 aderezo) + Papas. (2 Aderezos en total)', hasChips: true, image: 'img/S5.jpg' },
-    { id: 31, name: 'Paquete Súper 6', price: 135, category: 'paquetes', subCategory: 'paquetes', desc: 'Palomitas (1 aderezo) + Tenders (1 aderezo) + Papas. (2 Aderezos en total)', hasChips: true, image: 'img/S6.jpg' },
-    { id: 32, name: 'Paquete Mega 1', price: 185, category: 'paquetes', subCategory: 'paquetes', desc: 'Boneless + Alitas + Dedos.', hasChips: false, image: 'img/M1.jpg' },
-    { id: 33, name: 'Paquete Mega 2', price: 175, category: 'paquetes', subCategory: 'paquetes', desc: 'Tenders + Palomitas + Boneless.', hasChips: false, image: 'img/M2.jpg' },
-    { id: 34, name: 'Paquete Súper Mega', price: 200, category: 'paquetes', subCategory: 'paquetes', desc: 'Tenders + Dedos + Boneless + Papas.', hasChips: true, image: 'img/SM.jpg' },
+    { id: 26, name: 'Paquete Súper 1', price: 150, category: 'paquetes', subCategory: 'paquetes', desc: 'Boneless (1 aderezo)(240g) + Alitas (1 aderezo)(4pz) + Papas(180g).', hasChips: true, image: 'img/S1.jpg' },
+    { id: 27, name: 'Paquete Súper 2', price: 140, category: 'paquetes', subCategory: 'paquetes', desc: 'Tenders (1 aderezo)(4pz) + Boneless (1 aderezo)(240g) + Papas(180g)', hasChips: true, image: 'img/S2.jpg' },
+    { id: 28, name: 'Paquete Súper 3', price: 120, category: 'paquetes', subCategory: 'paquetes', desc: 'Dedos (1 aderezo)(4pz) + Palomitas (1 aderezo)(235g) + Papas(180g) ', hasChips: true, image: 'img/S3.jpg' },
+    { id: 29, name: 'Paquete Súper 4', price: 140, category: 'paquetes', subCategory: 'paquetes', desc: 'Dedos (1 aderezo)(4pz) + Boneless (1 aderezo)(240g) + Papas(180g) ', hasChips: true, image: 'img/S4.jpg' },
+    { id: 30, name: 'Paquete Súper 5', price: 135, category: 'paquetes', subCategory: 'paquetes', desc: 'Alitas (1 aderezo)(4pz) + Palomitas (1 aderezo)(235g) + Papas(180g)', hasChips: true, image: 'img/S5.jpg' },
+    { id: 31, name: 'Paquete Súper 6', price: 135, category: 'paquetes', subCategory: 'paquetes', desc: 'Palomitas (1 aderezo)(235g) + Tenders (1 aderezo)(4pz) + Papas(180g)', hasChips: true, image: 'img/S6.jpg' },
+    { id: 32, name: 'Paquete Mega 1', price: 185, category: 'paquetes', subCategory: 'paquetes', desc: 'Boneless (300g) + Alitas (6pz) + Dedos (6pz).', hasChips: false, image: 'img/M1.jpg' },
+    { id: 33, name: 'Paquete Mega 2', price: 175, category: 'paquetes', subCategory: 'paquetes', desc: 'Tenders(5pz) + Palomitas(300g) + Boneless(300g)', hasChips: false, image: 'img/M2.jpg' },
+    { id: 34, name: 'Paquete Súper Mega', price: 200, category: 'paquetes', subCategory: 'paquetes', desc: 'Tenders(5pz) + Dedos(6pz) + Boneless(300g) + Papas(180g)', hasChips: true, image: 'img/SM.jpg' },
 
     // --- PAPAS INDIVIDUALES ---
-    { id: 35, name: 'Papas Francesa', price: 55, category: 'paquetes', subCategory: 'papas', desc: 'Porción individual clásica de papas fritas.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoAhis1z1PdZuJ0LPPkfAccVlv86n1aSayDoJKrB34ysr-RS2C-JwZnAU&s=10' },
-    { id: 36, name: 'Papas Curly', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Papas sazonadas en espiral.', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDg8lJ0xBVThwuCjQSxS6bNgav9lLNKsfIgiTSgSmYlX1E7fERwyWz9RL7&s=10' },
-    { id: 37, name: 'Papas Waffle', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Papas en corte rejilla crujientes.', hasChips: true, image: 'https://carnesmag.mx/storage/app/media/products/papas-waffle.jpg' },
-    { id: 38, name: 'Papas Gajo', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Gajos de papa sazonados con piel.', hasChips: true, image: 'https://thecookinglab.es/wp-content/uploads/2024/09/Patatas-gajo-en-freidora-de-aire.jpg' },
-    { id: 39, name: 'Mix de Papas', price: 115, category: 'paquetes', subCategory: 'papas', desc: 'Combinación especial de todos nuestros cortes.', hasChips: true, image: 'https://luisarturoacademy.com/wp-content/uploads/2022/04/Tipos-de-papas.png' },
+    { id: 35, name: 'Papas Francesa', price: 55, category: 'paquetes', subCategory: 'papas', desc: 'Porción individual clásica de papas fritas(300g).', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoAhis1z1PdZuJ0LPPkfAccVlv86n1aSayDoJKrB34ysr-RS2C-JwZnAU&s=10' },
+    { id: 36, name: 'Papas Curly', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Papas sazonadas en espiral(300g)', hasChips: true, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDg8lJ0xBVThwuCjQSxS6bNgav9lLNKsfIgiTSgSmYlX1E7fERwyWz9RL7&s=10' },
+    { id: 37, name: 'Papas Waffle', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Papas en corte rejilla crujientes(300g)', hasChips: true, image: 'https://carnesmag.mx/storage/app/media/products/papas-waffle.jpg' },
+    { id: 38, name: 'Papas Gajo', price: 60, category: 'paquetes', subCategory: 'papas', desc: 'Gajos de papa sazonados con piel(300g)', hasChips: true, image: 'https://thecookinglab.es/wp-content/uploads/2024/09/Patatas-gajo-en-freidora-de-aire.jpg' },
+    { id: 39, name: 'Mix de Papas', price: 115, category: 'paquetes', subCategory: 'papas', desc: 'Combinación especial de todos nuestros cortes(300)', hasChips: true, image: 'https://luisarturoacademy.com/wp-content/uploads/2022/04/Tipos-de-papas.png' },
     { id: 40, name: 'Aros de Cebolla (15 pz)', price: 55, category: 'paquetes', subCategory: 'papas', desc: '15 aros de cebolla empanizados extra crujientes.', hasChips: false, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL1B0r_sw54Mv63DkMvY5iNcTfbTmxTf8hqghN1U4UR7_2auoxlhUmeiU&s=10' },
 
     // --- ADEREZOS / SALSAS ---
@@ -1342,27 +1342,36 @@ function confirmCustomization() {
         }
     }
     // 4. CONFIGURACIÓN DE BANDERILLAS
+    // 4. CONFIGURACIÓN DE BANDERILLAS
     else if (isBanderilla) {
         const bMode = document.querySelector('input[name="banderilla-mode"]:checked').value;
-        if (bMode === 'Con Todo') specs.push('Con Todo');
-        else if (bMode === 'Todo Aparte') specs.push('Todo Aparte');
-        else if (bMode === 'Solas') specs.push('Solas');
+
+        // Detectar si es mini basándose en el nombre del producto
+        const isMini = selectedProductForModal.name.toLowerCase().includes('mini');
+        const banderillaPrefix = isMini ? 'Mini Banderilla' : 'Banderilla';
+
+        if (bMode === 'Con Todo') specs.push(`${banderillaPrefix}: Con todo`);
+        else if (bMode === 'Todo Aparte') specs.push(`${banderillaPrefix}: Todo aparte`);
+        else if (bMode === 'Solas') specs.push(`${banderillaPrefix}: Solas`);
         else if (bMode === 'Personalizar') {
             const mayo = document.querySelector('input[name="b-mayo"]:checked').value;
             const queso = document.querySelector('input[name="b-queso"]:checked').value;
             const catsup = document.querySelector('input[name="b-catsup"]:checked').value;
             const salsa = document.querySelector('input[name="b-salsa"]:checked').value;
 
-            if (mayo === 'Untado' && queso === 'Untado' && catsup === 'Untado' && salsa === 'Untado') specs.push('Con Todo');
-            else if (mayo === 'Aparte' && queso === 'Aparte' && catsup === 'Aparte' && salsa === 'Aparte') specs.push('Todo Aparte');
-            else if (mayo === 'Solo' && queso === 'Solo' && catsup === 'Solo' && salsa === 'Solo') specs.push('Solas');
-            else {
+            if (mayo === 'Untado' && queso === 'Untado' && catsup === 'Untado' && salsa === 'Untado') {
+                specs.push(`${banderillaPrefix}: Con todo`);
+            } else if (mayo === 'Aparte' && queso === 'Aparte' && catsup === 'Aparte' && salsa === 'Aparte') {
+                specs.push(`${banderillaPrefix}: Todo aparte`);
+            } else if (mayo === 'Solo' && queso === 'Solo' && catsup === 'Solo' && salsa === 'Solo') {
+                specs.push(`${banderillaPrefix}: Solas`);
+            } else {
                 let bActivos = [];
                 if (mayo !== 'Solo') bActivos.push(`Mayonesa: ${mayo}`);
                 if (queso !== 'Solo') bActivos.push(`Queso: ${queso}`);
                 if (catsup !== 'Solo') bActivos.push(`Catsup: ${catsup}`);
                 if (salsa !== 'Solo') bActivos.push(`Salsa: ${salsa}`);
-                specs.push(`${bActivos.join(', ')}`);
+                specs.push(`${banderillaPrefix}: ${bActivos.join(', ')}`);
             }
         }
     }
@@ -2041,7 +2050,7 @@ function finalCheckoutSubmit() {
 
     } else if (paymentMethodSelect === 'Transferencia') {
         metodoPagoTexto = "Transferencia Bancaria";
-        especificacionesPago = "🏦 *Cuenta NU:* 638180000136730578\n   - Beneficiario: Fernando Gael Duran Zamora\n⚠️ _Favor de compartir su comprobante por este chat._\n";
+        especificacionesPago = "🏦 *Cuenta BBVA:* 012 180 015 656 056 712\n   - Beneficiario: Laura Vazquez Bartolo\n⚠️ _Favor de compartir su comprobante por este chat._\n";
 
     } else if (paymentMethodSelect === 'Mixto') {
         if (checkedMixPayments.length !== 2) {
